@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AR Business Card</title>
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+
+    <style>
+        /* CSS cho màn hình chờ (Overlay) */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 9999;
+            display: flex; justify-content: center; align-items: center;
+            flex-direction: column; color: white; font-family: sans-serif;
+        }
+        #start-btn {
+            padding: 15px 30px; background: #2ecc71; border: none;
+            border-radius: 5px; color: white; font-size: 18px; font-weight: bold;
+            cursor: pointer; margin-top: 20px;
+        }
+        .hidden { display: none !important; }
+    </style>
+
+    <script>
+        // Component xử lý click vào nút ảo (Link mở tab mới)
+        AFRAME.registerComponent('click-handler', {
+            schema: { url: { type: 'string' } },
+            init: function () {
+                this.el.addEventListener('click', () => {
+                    window.open(this.data.url, '_blank');
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="overlay">
+        <div style="text-align: center">
+            <h1>AR Business Card</h1>
+            <p>Hướng camera vào danh thiếp để xem</p>
+            <button id="start-btn">BẮT ĐẦU TRẢI NGHIỆM</button>
+        </div>
+    </div>
+
+    <a-scene mindar-image="imageTargetSrc: ./assets/card.mind; uiScanning: no;" 
+             color-space="sRGB" 
+             renderer="colorManagement: true, physicallyCorrectLights" 
+             vr-mode-ui="enabled: false" 
+             device-orientation-permission-ui="enabled: false">
+        
+        <a-assets>
+            <video id="vid" src="./assets/video.mp4" preload="auto" loop="true" playsinline webkit-playsinline crossorigin="anonymous"></video>
+            <img id="icon-fb" src="./assets/icon-fb.png">
+            <img id="icon-web" src="./assets/icon-web.png">
+        </a-assets>
+
+        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 10000; objects: .clickable"></a-camera>
+
+        <a-entity mindar-image-target="targetIndex: 0" id="ar-target">
+            
+            <a-video src="#vid" position="0 0 0" height="0.552" width="1" rotation="0 0 0"></a-video>
+
+            <a-image src="#icon-fb" position="-0.3 -0.4 0.1" width="0.15" height="0.15" 
+                     class="clickable" 
+                     click-handler="url: https://facebook.com/yourprofile"
+                     animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; loop: true; dur: 1000">
+            </a-image>
+
+            <a-image src="#icon-web" position="0.3 -0.4 0.1" width="0.15" height="0.15" 
+                     class="clickable" 
+                     click-handler="url: https://yourwebsite.com">
+            </a-image>
+
+        </a-entity>
+    </a-scene>
+
+    <script>
+        // Logic điều khiển Video và Start Button
+        const overlay = document.querySelector('#overlay');
+        const startBtn = document.querySelector('#start-btn');
+        const video = document.querySelector('#vid');
+        const arTarget = document.querySelector('#ar-target');
+        
+        // Khi bấm nút Start -> Ẩn overlay và sẵn sàng video
+        startBtn.addEventListener('click', () => {
+            overlay.classList.add('hidden');
+            video.play(); // Trick để kích hoạt âm thanh
+            video.pause(); // Dừng lại ngay chờ AR
+            video.currentTime = 0;
+        });
+
+        // Khi AR nhận diện được hình
+        arTarget.addEventListener("targetFound", event => {
+            console.log("Found target");
+            video.play();
+        });
+
+        // Khi mất hình
+        arTarget.addEventListener("targetLost", event => {
+            console.log("Lost target");
+            video.pause();
+        });
+    </script>
+</body>
+</html>
