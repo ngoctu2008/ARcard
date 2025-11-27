@@ -2,104 +2,178 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AR Business Card</title>
+    <title>AR Business Card - Blue Screen Tech</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v6.1.1/dist/aframe-extras.min.js"></script>
 
     <style>
-        /* CSS cho màn hình chờ (Overlay) */
         #overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8); z-index: 9999;
+            background: rgba(0,0,0,0.85); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
-            flex-direction: column; color: white; font-family: sans-serif;
+            flex-direction: column; color: white; font-family: 'Arial', sans-serif;
         }
         #start-btn {
-            padding: 15px 30px; background: #2ecc71; border: none;
-            border-radius: 5px; color: white; font-size: 18px; font-weight: bold;
-            cursor: pointer; margin-top: 20px;
+            padding: 15px 40px; background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            border: none; border-radius: 30px; color: white; 
+            font-size: 18px; font-weight: bold; cursor: pointer; margin-top: 20px;
+            box-shadow: 0 0 15px #00d2ff;
         }
         .hidden { display: none !important; }
     </style>
 
     <script>
-        // Component xử lý click vào nút ảo (Link mở tab mới)
+        // SHADER TÁCH NỀN (Cập nhật cho màu Xanh Dương)
+        AFRAME.registerComponent('chroma-key-material', {
+            schema: {
+                videoSrc: {type: 'selector'},
+                color: {type: 'color', default: '#049adc'}, // Màu xanh dương từ video của bạn
+                similarity: {type: 'number', default: 0.28}, // Độ nhạy (Tinh chỉnh số này nếu bị viền)
+                smoothness: {type: 'number', default: 0.1}
+            },
+            init: function () {
+                const data = this.data;
+                const videoEl = data.videoSrc;
+                const texture = new THREE.VideoTexture(videoEl);
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                texture.format = THREE.RGBAFormat;
+
+                const keyColorObject = new THREE.Color(data.color);
+                const keyColorVector = new THREE.Vector3(keyColorObject.r, keyColorObject.g, keyColorObject.b);
+
+                const fragmentShader = `
+                    uniform sampler2D map;
+                    uniform vec3 keyColor;
+                    uniform float similarity;
+                    uniform float smoothness;
+                    varying vec2 vUv;
+                    void main() {
+                        vec4 videoColor = texture2D(map, vUv);
+                        float d = distance(videoColor.rgb, keyColor);
+                        float alpha = smoothstep(similarity, similarity + smoothness, d);
+                        gl_FragColor = vec4(videoColor.rgb, videoColor.a * alpha);
+                    }
+                `;
+                const vertexShader = `
+                    varying vec2 vUv;
+                    void main() {
+                        vUv = uv;
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+                    }
+                `;
+                this.material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        map: { value: texture },
+                        keyColor: { value: keyColorVector },
+                        similarity: { value: data.similarity },
+                        smoothness: { value: data.smoothness }
+                    },
+                    vertexShader: vertexShader,
+                    fragmentShader: fragmentShader,
+                    transparent: true,
+                    side: THREE.DoubleSide
+                });
+                this.el.getObject3D('mesh').material = this.material;
+            },
+            update: function () {
+                // Cho phép cập nhật runtime nếu cần debug
+                const data = this.data;
+                const color = new THREE.Color(data.color);
+                this.material.uniforms.keyColor.value = new THREE.Vector3(color.r, color.g, color.b);
+                this.material.uniforms.similarity.value = data.similarity;
+                this.material.uniforms.smoothness.value = data.smoothness;
+            }
+        });
+
+        // Click Handler mở link
         AFRAME.registerComponent('click-handler', {
             schema: { url: { type: 'string' } },
             init: function () {
-                this.el.addEventListener('click', () => {
-                    window.open(this.data.url, '_blank');
-                });
+                this.el.addEventListener('click', () => { window.open(this.data.url, '_blank'); });
             }
         });
     </script>
 </head>
 <body>
     <div id="overlay">
-        <div style="text-align: center">
-            <h1>AR Business Card</h1>
-            <p>Hướng camera vào danh thiếp để xem</p>
-            <button id="start-btn">BẮT ĐẦU TRẢI NGHIỆM</button>
-        </div>
+        <h1>XIN CHÀO</h1>
+        <p>Phạm Ngọc Tú - AR Business Card</p>
+        <button id="start-btn">KẾT NỐI NGAY</button>
     </div>
 
-    <a-scene mindar-image="imageTargetSrc: ./assets/card.mind; uiScanning: no;" 
-             color-space="sRGB" 
-             renderer="colorManagement: true, physicallyCorrectLights" 
-             vr-mode-ui="enabled: false" 
-             device-orientation-permission-ui="enabled: false">
+    <a-scene mindar-image="imageTargetSrc: ./assets/card.mind; uiScanning: no; filterMinCF:0.0001; filterBeta: 0.001;" 
+             color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" 
+             vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
         
         <a-assets>
             <video id="vid" src="./assets/video.mp4" preload="auto" loop="true" playsinline webkit-playsinline crossorigin="anonymous"></video>
             <img id="icon-fb" src="./assets/icon-fb.png">
+            <img id="icon-phone" src="./assets/icon-phone.png">
             <img id="icon-web" src="./assets/icon-web.png">
+            <img id="tech-grid" src="https://cdn.glitch.global/b6214d02-e200-474d-966e-21332034177d/tech-circle.png?v=1646278800000"> 
         </a-assets>
 
         <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 10000; objects: .clickable"></a-camera>
 
         <a-entity mindar-image-target="targetIndex: 0" id="ar-target">
             
-            <a-video src="#vid" position="0 0 0" height="0.552" width="1" rotation="0 0 0"></a-video>
+            <a-entity position="0 0 0" rotation="0 0 0" 
+                      animation="property: rotation; to: 0 0 360; dur: 8000; loop: true; easing: linear">
+                 <a-ring radius-inner="0.4" radius-outer="0.41" color="#00d2ff" opacity="0.5"></a-ring>
+                 <a-ring radius-inner="0.6" radius-outer="0.605" color="#00d2ff" opacity="0.3"></a-ring>
+            </a-entity>
+            <a-ring radius-inner="0.01" radius-outer="0.8" color="#00d2ff" opacity="0.1"
+                    animation="property: scale; from: 0 0 0; to: 2 2 2; dur: 2000; loop: true; easing: easeOutQuad">
+            </a-ring>
 
-            <a-image src="#icon-fb" position="-0.3 -0.4 0.1" width="0.15" height="0.15" 
-                     class="clickable" 
-                     click-handler="url: https://facebook.com/yourprofile"
-                     animation="property: scale; to: 1.2 1.2 1.2; dir: alternate; loop: true; dur: 1000">
-            </a-image>
+            <a-entity rotation="90 0 0" position="0 0.3 0"> <a-plane id="video-plane" 
+                         position="0 0.35 0.5" 
+                         width="1.2" height="0.675"
+                         chroma-key-material="videoSrc: #vid; color: #049adc; similarity: 0.28; smoothness: 0.05">
+                </a-plane>
 
-            <a-image src="#icon-web" position="0.3 -0.4 0.1" width="0.15" height="0.15" 
-                     class="clickable" 
-                     click-handler="url: https://yourwebsite.com">
-            </a-image>
+                <a-circle position="0 -0.05 0.5" rotation="-90 0 0" radius="0.3" color="black" opacity="0.5" blur="0.5"></a-circle>
+            </a-entity>
+
+            <a-entity position="0 -0.5 0.2">
+                
+                <a-plane position="0 0 0" width="1.2" height="0.35" color="black" opacity="0.6" radius="0.1"></a-plane>
+
+                <a-image src="#icon-phone" position="-0.35 0 0.01" width="0.2" height="0.2" class="clickable" 
+                         click-handler="url: tel:0905123456"
+                         animation="property: scale; to: 1.1 1.1 1.1; dir: alternate; loop: true; dur: 1000"></a-image>
+
+                <a-image src="#icon-fb" position="0 0 0.01" width="0.2" height="0.2" class="clickable" 
+                         click-handler="url: https://facebook.com/phamngoctu"></a-image>
+                
+                <a-image src="#icon-web" position="0.35 0 0.01" width="0.2" height="0.2" class="clickable" 
+                         click-handler="url: https://website.com"></a-image>
+            </a-entity>
 
         </a-entity>
     </a-scene>
 
     <script>
-        // Logic điều khiển Video và Start Button
         const overlay = document.querySelector('#overlay');
         const startBtn = document.querySelector('#start-btn');
         const video = document.querySelector('#vid');
         const arTarget = document.querySelector('#ar-target');
         
-        // Khi bấm nút Start -> Ẩn overlay và sẵn sàng video
         startBtn.addEventListener('click', () => {
             overlay.classList.add('hidden');
-            video.play(); // Trick để kích hoạt âm thanh
-            video.pause(); // Dừng lại ngay chờ AR
-            video.currentTime = 0;
+            video.play(); video.pause(); video.currentTime = 0;
         });
 
-        // Khi AR nhận diện được hình
-        arTarget.addEventListener("targetFound", event => {
-            console.log("Found target");
-            video.play();
+        arTarget.addEventListener("targetFound", () => { 
+            console.log("Found"); 
+            video.play(); 
         });
-
-        // Khi mất hình
-        arTarget.addEventListener("targetLost", event => {
-            console.log("Lost target");
-            video.pause();
+        arTarget.addEventListener("targetLost", () => { 
+            console.log("Lost"); 
+            video.pause(); 
         });
     </script>
 </body>
