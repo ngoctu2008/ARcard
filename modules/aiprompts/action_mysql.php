@@ -7,7 +7,7 @@
  * @Createdate Sat, 25 May 2024 10:00:00 GMT
  */
 
-if (!defined('NV_IS_FILE_MODULES')) {
+if (!defined('NV_MAINFILE')) {
     die('Stop!!!');
 }
 
