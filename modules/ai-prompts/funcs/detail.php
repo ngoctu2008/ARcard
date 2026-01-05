@@ -113,10 +113,16 @@ if (!empty($current_section['groups']) || !empty($current_section['label'])) {
 }
 
 // Pass to View
+$sec_idx = 0;
 foreach ($sections as $sec) {
+    $sec_idx++;
+    $sec['index'] = $sec_idx;
     $xtpl->assign('SEC', $sec);
 
+    $grp_idx = 0;
     foreach ($sec['groups'] as $grp) {
+        $grp_idx++;
+        $grp['index'] = $sec_idx . '-' . $grp_idx; // Unique index like 1-1, 1-2
         $grp['has_icon'] = !empty($grp['icon']) ? '' : 'display:none';
         $xtpl->assign('GRP', $grp);
 
