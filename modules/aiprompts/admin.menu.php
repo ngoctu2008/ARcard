@@ -11,8 +11,5 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE')) {
     die('Stop!!!');
 }
 
-define('NV_IS_MOD_AIPROMPTS', true);
-
-$allow_func = array('main', 'cat', 'content');
-
-define('NV_IS_FILE_ADMIN', true);
+$submenu['cat'] = $lang_module['cat_manage'];
+$submenu['content'] = $lang_module['template_manage'];
