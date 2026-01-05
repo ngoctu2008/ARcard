@@ -21,7 +21,7 @@ while ($row = $result->fetch()) {
 }
 
 if (empty($array_cat)) {
-    Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat');
+    Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat');
     die();
 }
 
@@ -94,7 +94,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                     ':id' => $id
                 );
                 $db->prepare($sql)->execute($data_insert);
-                Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=content');
+                Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=content');
                 die();
             } else {
                 $sql = "INSERT INTO `" . NV_PREFIXLANG . "_" . $module_data . "_templates` (catid, title, alias, description, prompt_body, input_config, status, add_time, edit_time) VALUES (:catid, :title, :alias, :description, :prompt_body, :input_config, :status, :add_time, :edit_time)";
@@ -111,7 +111,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                 );
 
                  if ($db->prepare($sql)->execute($data_insert)) {
-                    Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=content');
+                    Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=content');
                     die();
                  }
             }

@@ -23,7 +23,7 @@ if ($id > 0) {
 }
 
 if (empty($row)) {
-    Header('Location: ' . NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name);
+    Header('Location: ' . NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
     die();
 }
 
@@ -39,7 +39,7 @@ $xtpl->assign('ROW', $row);
 $sql_siblings = "SELECT id, title, alias FROM `" . NV_PREFIXLANG . "_" . $module_data . "_templates` WHERE catid=" . $row['catid'] . " AND status=1 ORDER BY weight ASC";
 $result_siblings = $db->query($sql_siblings);
 while ($sib = $result_siblings->fetch()) {
-    $sib['link'] = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=detail/' . $sib['alias'] . '-' . $sib['id'];
+    $sib['link'] = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=detail/' . $sib['alias'] . '-' . $sib['id'];
     $sib['active'] = ($sib['id'] == $row['id']) ? 'active' : '';
     $xtpl->assign('TAB', $sib);
     $xtpl->parse('main.tab');
