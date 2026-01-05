@@ -12,7 +12,7 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label class="control-label">{LANG.title} <span class="red">(*)</span></label>
-                        <input class="form-control" type="text" name="title" value="{ROW.title}" required="required" onchange="nv_get_alias('id_alias');" />
+                        <input class="form-control" type="text" name="title" id="id_title" value="{ROW.title}" required="required" onchange="nv_get_alias('id_alias');" />
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -106,20 +106,34 @@
     <table class="table table-striped table-bordered table-hover">
         <thead>
             <tr>
-                <th class="text-center" width="50">ID</th>
+                <th class="text-center" width="50">{LANG.weight}</th>
                 <th>{LANG.title}</th>
-                <th>{LANG.catid}</th>
-                <th class="text-center" width="100">{LANG.status}</th>
+                <th class="text-center">{LANG.add_time}</th>
+                <th class="text-center">{LANG.edit_time}</th>
+                <th class="text-center" width="150">{LANG.status}</th>
                 <th class="text-center" width="150"></th>
             </tr>
         </thead>
         <tbody>
             <!-- BEGIN: list -->
             <tr>
-                <td class="text-center">{ITEM.id}</td>
+                <td class="text-center">
+                    <select class="form-control" id="id_weight_{ITEM.id}" onchange="nv_change_weight({ITEM.id});">
+                        <!-- BEGIN: weight -->
+                        <option value="{WEIGHT.key}" {WEIGHT.selected}>{WEIGHT.title}</option>
+                        <!-- END: weight -->
+                    </select>
+                </td>
                 <td><a href="{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&amp;{NV_NAME_VARIABLE}={MODULE_NAME}&amp;{NV_OP_VARIABLE}={OP}&amp;id={ITEM.id}">{ITEM.title}</a></td>
-                <td>{ITEM.cat_title}</td>
-                <td class="text-center">{ITEM.status}</td>
+                <td class="text-center">{ITEM.add_time}</td>
+                <td class="text-center">{ITEM.edit_time}</td>
+                <td class="text-center">
+                    <select class="form-control" id="change_status_{ITEM.id}" onchange="nv_change_status({ITEM.id});">
+                        <!-- BEGIN: status -->
+                        <option value="{STATUS.key}" {STATUS.selected}>{STATUS.title}</option>
+                        <!-- END: status -->
+                    </select>
+                </td>
                 <td class="text-center">
                     <em class="fa fa-edit fa-lg">&nbsp;</em> <a href="{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&amp;{NV_NAME_VARIABLE}={MODULE_NAME}&amp;{NV_OP_VARIABLE}={OP}&amp;id={ITEM.id}">{LANG.edit}</a> -
                     <em class="fa fa-trash-o fa-lg">&nbsp;</em> <a href="javascript:void(0);" onclick="nv_del_content({ITEM.id});">{LANG.delete}</a>
@@ -129,6 +143,16 @@
         </tbody>
     </table>
 </div>
+
+<!-- BEGIN: auto_get_alias -->
+<script type="text/javascript">
+//<![CDATA[
+    $("[name='title']").change(function() {
+        nv_get_alias('id_alias');
+    });
+//]]>
+</script>
+<!-- END: auto_get_alias -->
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -192,7 +216,9 @@ function renderOptionsUI(container, textarea, type) {
 
     container.html(html);
 
-    // Bind events
+    // Bind events - IMPORTANT: unbind previous handlers if any to prevent duplicates?
+    // No, new html replaces old html, so no old handlers.
+
     container.find('.btn-delete-opt').click(function() {
         $(this).closest('li').remove();
         updateTextarea(container, textarea);
@@ -263,6 +289,37 @@ function nv_del_content(id) {
                 alert('Error!');
             }
         });
+    }
+}
+
+function nv_change_weight(id) {
+    var nv_timer = nv_settimeout_disable('id_weight_' + id, 5000);
+    var new_vid = $('#id_weight_' + id).val();
+    $.post('{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&amp;{NV_NAME_VARIABLE}={MODULE_NAME}&amp;{NV_OP_VARIABLE}={OP}&amp;nocache=' + new Date().getTime(), 'ajax_action=1&id=' + id + '&new_vid=' + new_vid, function(res) {
+        var r_split = res.split('_');
+        if (r_split[0] != 'OK') {
+            alert('{LANG.error_save}');
+        } else {
+             window.location.href = window.location.href;
+        }
+    });
+}
+
+function nv_change_status(id) {
+    var new_status = $('#change_status_' + id).val();
+    if (confirm('{LANG.confirm_change_status}')) {
+        var nv_timer = nv_settimeout_disable('change_status_' + id, 5000);
+        $.post('{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&amp;{NV_NAME_VARIABLE}={MODULE_NAME}&amp;{NV_OP_VARIABLE}={OP}&amp;nocache=' + new Date().getTime(), 'change_status=1&id='+id + '&new_status=' + new_status, function(res) {
+            var r_split = res.split('_');
+            if (r_split[0] != 'OK') {
+                alert('{LANG.error_save}');
+            }
+        });
+    }
+    else{
+        // Reset check if cancelled (optional, for checkbox mainly, here select box might stay)
+        // For select box, we might reload page or reset value if we tracked previous value
+        window.location.href = window.location.href;
     }
 }
 </script>
