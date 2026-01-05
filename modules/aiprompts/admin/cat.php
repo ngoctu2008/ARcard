@@ -13,7 +13,7 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE')) {
 
 $page_title = $lang_module['cat_manage'];
 
-$sql = "SELECT * FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat ORDER BY weight ASC";
+$sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat ORDER BY weight ASC";
 $result = $db->query($sql);
 
 $array_cat = array();
@@ -44,7 +44,7 @@ if ($nv_Request->isset_request('save', 'post')) {
         $error = $lang_module['error_title'];
     } else {
         // Check alias unique
-        $sql = "SELECT catid FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat WHERE alias= :alias AND catid != :catid";
+        $sql = "SELECT catid FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat WHERE alias= :alias AND catid != :catid";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':alias', $row['alias'], PDO::PARAM_STR);
         $stmt->bindParam(':catid', $catid, PDO::PARAM_INT);
@@ -54,7 +54,7 @@ if ($nv_Request->isset_request('save', 'post')) {
              $error = $lang_module['error_alias'];
         } else {
             if ($catid > 0) {
-                $sql = "UPDATE " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat SET title=:title, alias=:alias, description=:description, weight=:weight, status=:status WHERE catid=:catid";
+                $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_cat SET title=:title, alias=:alias, description=:description, weight=:weight, status=:status WHERE catid=:catid";
                 $data_insert = array(
                     ':title' => $row['title'],
                     ':alias' => $row['alias'],
@@ -68,7 +68,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                 Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat');
                 die();
             } else {
-                $sql = "INSERT INTO " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat (title, alias, description, weight, status) VALUES (:title, :alias, :description, :weight, :status)";
+                $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_cat (title, alias, description, weight, status) VALUES (:title, :alias, :description, :weight, :status)";
                 $data_insert = array(
                     ':title' => $row['title'],
                     ':alias' => $row['alias'],
@@ -102,8 +102,8 @@ if ($nv_Request->isset_request('save', 'post')) {
 if ($nv_Request->isset_request('delete', 'post')) {
     $catid_del = $nv_Request->get_int('delete', 'post', 0);
     if ($catid_del > 0) {
-        $db->query("DELETE FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat WHERE catid=" . $catid_del);
-        $db->query("DELETE FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_templates WHERE catid=" . $catid_del);
+        $db->query("DELETE FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat WHERE catid=" . $catid_del);
+        $db->query("DELETE FROM " . NV_PREFIXLANG . "_" . $module_data . "_templates WHERE catid=" . $catid_del);
         $nv_Cache->delMod($module_name);
         die('OK');
     }

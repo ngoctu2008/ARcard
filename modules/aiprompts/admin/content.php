@@ -13,7 +13,7 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE')) {
 
 $page_title = $lang_module['template_manage'];
 
-$sql = "SELECT catid, title FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat ORDER BY weight ASC";
+$sql = "SELECT catid, title FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat ORDER BY weight ASC";
 $result = $db->query($sql);
 $array_cat = array();
 while ($row = $result->fetch()) {
@@ -75,7 +75,7 @@ if ($nv_Request->isset_request('save', 'post')) {
         $error = $lang_module['error_catid'];
     } else {
         // Check alias unique
-        $sql = "SELECT id FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_templates WHERE alias= :alias AND id != :id";
+        $sql = "SELECT id FROM " . NV_PREFIXLANG . "_" . $module_data . "_templates WHERE alias= :alias AND id != :id";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':alias', $row['alias'], PDO::PARAM_STR);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -85,7 +85,7 @@ if ($nv_Request->isset_request('save', 'post')) {
              $error = $lang_module['error_alias'];
         } else {
             if ($id > 0) {
-                $sql = "UPDATE " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_templates SET catid=:catid, title=:title, alias=:alias, description=:description, prompt_body=:prompt_body, input_config=:input_config, status=:status, edit_time=:edit_time WHERE id=:id";
+                $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_templates SET catid=:catid, title=:title, alias=:alias, description=:description, prompt_body=:prompt_body, input_config=:input_config, status=:status, edit_time=:edit_time WHERE id=:id";
                 $data_insert = array(
                     ':catid' => $row['catid'],
                     ':title' => $row['title'],
@@ -101,7 +101,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                 Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=content');
                 die();
             } else {
-                $sql = "INSERT INTO " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_templates (catid, title, alias, description, prompt_body, input_config, status, add_time, edit_time) VALUES (:catid, :title, :alias, :description, :prompt_body, :input_config, :status, :add_time, :edit_time)";
+                $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_templates (catid, title, alias, description, prompt_body, input_config, status, add_time, edit_time) VALUES (:catid, :title, :alias, :description, :prompt_body, :input_config, :status, :add_time, :edit_time)";
                 $data_insert = array(
                     ':catid' => $row['catid'],
                     ':title' => $row['title'],
@@ -122,7 +122,7 @@ if ($nv_Request->isset_request('save', 'post')) {
         }
     }
 } elseif ($id > 0) {
-    $sql = "SELECT * FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_templates WHERE id=" . $id;
+    $sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_templates WHERE id=" . $id;
     $result = $db->query($sql);
     $row = $result->fetch();
 } else {
@@ -142,7 +142,7 @@ if ($nv_Request->isset_request('save', 'post')) {
 if ($nv_Request->isset_request('delete', 'post')) {
     $id_del = $nv_Request->get_int('delete', 'post', 0);
     if ($id_del > 0) {
-        $db->query("DELETE FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_templates WHERE id=" . $id_del);
+        $db->query("DELETE FROM " . NV_PREFIXLANG . "_" . $module_data . "_templates WHERE id=" . $id_del);
         die('OK');
     }
     die('NO');
@@ -192,7 +192,7 @@ if (empty($input_config)) {
 
 
 // List of existing templates
-$sql = "SELECT t.*, c.title as cat_title FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_templates t LEFT JOIN " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat c ON t.catid = c.catid ORDER BY t.id DESC";
+$sql = "SELECT t.*, c.title as cat_title FROM " . NV_PREFIXLANG . "_" . $module_data . "_templates t LEFT JOIN " . NV_PREFIXLANG . "_" . $module_data . "_cat c ON t.catid = c.catid ORDER BY t.id DESC";
 $result = $db->query($sql);
 while ($item = $result->fetch()) {
     $xtpl->assign('ITEM', $item);
