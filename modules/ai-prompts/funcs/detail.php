@@ -96,7 +96,14 @@ if (!empty($input_config)) {
             $conf['options_list'] = array();
             if (!empty($conf['options'])) {
                 foreach ($conf['options'] as $opt) {
-                    $conf['options_list'][] = array('value' => trim($opt), 'title' => trim($opt));
+                    $val = $opt;
+                    $title = $opt;
+                    if (strpos($opt, '|') !== false) {
+                        $parts = explode('|', $opt, 2);
+                        $val = trim($parts[0]);
+                        $title = trim($parts[1]);
+                    }
+                    $conf['options_list'][] = array('value' => $val, 'title' => $title);
                 }
             }
             $current_group['inputs'][] = $conf;

@@ -200,25 +200,35 @@ function renderOptionsUI(container, textarea, type) {
     container.show();
 
     // Re-build UI based on current textarea value
-    // Assuming textarea contains newline-separated values
+    // Assuming textarea contains newline-separated values in format: Value|Label or just Value
     var currentVal = textarea.val();
     var options = currentVal ? currentVal.split('\n') : [];
 
     var html = '<ul class="list-unstyled options-list" style="margin-bottom:5px;">';
-    options.forEach(function(opt) {
-        if(opt.trim() !== '') {
-            html += '<li style="margin-bottom:5px;"><div class="input-group input-group-sm"><input type="text" class="form-control" value="'+escapeHtml(opt)+'" readonly><span class="input-group-btn"><button class="btn btn-default btn-delete-opt" type="button"><i class="fa fa-trash"></i></button></span></div></li>';
+    options.forEach(function(optStr) {
+        if(optStr.trim() !== '') {
+            // Parse Value|Label
+            var parts = optStr.split('|');
+            var val = parts[0];
+            var lbl = parts.length > 1 ? parts[1] : parts[0];
+
+            html += '<li style="margin-bottom:5px;"><div class="input-group input-group-sm">';
+            html += '<input type="text" class="form-control opt-value" value="'+escapeHtml(val)+'" readonly style="width:40%" title="Value">';
+            html += '<input type="text" class="form-control opt-label" value="'+escapeHtml(lbl)+'" readonly style="width:60%; border-left:0;" title="Label">';
+            html += '<span class="input-group-btn"><button class="btn btn-default btn-delete-opt" type="button"><i class="fa fa-trash"></i></button></span></div></li>';
         }
     });
     html += '</ul>';
 
-    html += '<div class="input-group input-group-sm"><input type="text" class="form-control new-option-input" placeholder="Add option"><span class="input-group-btn"><button class="btn btn-success btn-add-opt" type="button"><i class="fa fa-plus"></i></button></span></div>';
+    html += '<div class="row" style="margin:0 -2px;">';
+    html += '<div class="col-xs-5" style="padding:0 2px;"><input type="text" class="form-control input-sm new-option-value" placeholder="Value"></div>';
+    html += '<div class="col-xs-5" style="padding:0 2px;"><input type="text" class="form-control input-sm new-option-label" placeholder="Label"></div>';
+    html += '<div class="col-xs-2" style="padding:0 2px;"><button class="btn btn-success btn-sm btn-block btn-add-opt" type="button"><i class="fa fa-plus"></i></button></div>';
+    html += '</div>';
 
     container.html(html);
 
-    // Bind events - IMPORTANT: unbind previous handlers if any to prevent duplicates?
-    // No, new html replaces old html, so no old handlers.
-
+    // Bind events
     container.find('.btn-delete-opt').click(function() {
         $(this).closest('li').remove();
         updateTextarea(container, textarea);
@@ -228,7 +238,7 @@ function renderOptionsUI(container, textarea, type) {
         addOptionFromInput(container, textarea);
     });
 
-    container.find('.new-option-input').keypress(function(e) {
+    container.find('.new-option-label').keypress(function(e) {
         if(e.which == 13) {
             e.preventDefault();
             addOptionFromInput(container, textarea);
@@ -237,11 +247,22 @@ function renderOptionsUI(container, textarea, type) {
 }
 
 function addOptionFromInput(container, textarea) {
-    var input = container.find('.new-option-input');
-    var val = input.val().trim();
+    var inputVal = container.find('.new-option-value');
+    var inputLbl = container.find('.new-option-label');
+
+    var val = inputVal.val().trim();
+    var lbl = inputLbl.val().trim();
+
     if (val) {
+        if (!lbl) lbl = val; // Default label to value if empty
+
         var ul = container.find('ul.options-list');
-        var li = $('<li style="margin-bottom:5px;"><div class="input-group input-group-sm"><input type="text" class="form-control" value="'+escapeHtml(val)+'" readonly><span class="input-group-btn"><button class="btn btn-default btn-delete-opt" type="button"><i class="fa fa-trash"></i></button></span></div></li>');
+        var html = '<li style="margin-bottom:5px;"><div class="input-group input-group-sm">';
+        html += '<input type="text" class="form-control opt-value" value="'+escapeHtml(val)+'" readonly style="width:40%" title="Value">';
+        html += '<input type="text" class="form-control opt-label" value="'+escapeHtml(lbl)+'" readonly style="width:60%; border-left:0;" title="Label">';
+        html += '<span class="input-group-btn"><button class="btn btn-default btn-delete-opt" type="button"><i class="fa fa-trash"></i></button></span></div></li>';
+
+        var li = $(html);
         ul.append(li);
 
         li.find('.btn-delete-opt').click(function() {
@@ -249,16 +270,20 @@ function addOptionFromInput(container, textarea) {
             updateTextarea(container, textarea);
         });
 
-        input.val('');
-        input.focus();
+        inputVal.val('');
+        inputLbl.val('');
+        inputVal.focus();
         updateTextarea(container, textarea);
     }
 }
 
 function updateTextarea(container, textarea) {
     var options = [];
-    container.find('ul.options-list input[type="text"]').each(function() {
-        options.push($(this).val());
+    container.find('ul.options-list li').each(function() {
+        var val = $(this).find('.opt-value').val();
+        var lbl = $(this).find('.opt-label').val();
+        // Join with |
+        options.push(val + '|' + lbl);
     });
     textarea.val(options.join('\n'));
 }
