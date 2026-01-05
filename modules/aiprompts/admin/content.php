@@ -45,16 +45,19 @@ if ($nv_Request->isset_request('save', 'post')) {
     $input_labels = $nv_Request->get_array('input_label', 'post', array());
     $input_keys = $nv_Request->get_array('input_key', 'post', array());
     $input_types = $nv_Request->get_array('input_type', 'post', array());
+    $input_icons = $nv_Request->get_array('input_icon', 'post', array());
     $input_required = $nv_Request->get_array('input_required', 'post', array());
     $input_options = $nv_Request->get_array('input_options', 'post', array());
 
     $input_config = array();
     foreach ($input_labels as $key => $label) {
-        if (!empty($label) && !empty($input_keys[$key])) {
+        // Allow empty keys for Sections (Visual separators)
+        if (!empty($label) && (!empty($input_keys[$key]) || $input_types[$key] == 'section')) {
             $input_config[] = array(
                 'label' => $label,
                 'key' => $input_keys[$key],
                 'type' => $input_types[$key],
+                'icon' => isset($input_icons[$key]) ? $input_icons[$key] : '',
                 'required' => isset($input_required[$key]) ? true : false,
                 'options' => isset($input_options[$key]) ? explode("\n", trim($input_options[$key])) : array()
             );
@@ -177,6 +180,10 @@ if (empty($input_config)) {
         $conf['sel_textarea'] = ($conf['type'] == 'textarea') ? 'selected="selected"' : '';
         $conf['sel_select'] = ($conf['type'] == 'select') ? 'selected="selected"' : '';
         $conf['sel_number'] = ($conf['type'] == 'number') ? 'selected="selected"' : '';
+        $conf['sel_checkbox'] = ($conf['type'] == 'checkbox') ? 'selected="selected"' : '';
+        $conf['sel_radio'] = ($conf['type'] == 'radio') ? 'selected="selected"' : '';
+        $conf['sel_section'] = ($conf['type'] == 'section') ? 'selected="selected"' : '';
+        $conf['sel_group'] = ($conf['type'] == 'group') ? 'selected="selected"' : '';
 
         $xtpl->assign('CONF', $conf);
         $xtpl->parse('main.config_row');

@@ -58,7 +58,12 @@
                                  <option value="textarea" {CONF.sel_textarea}>Textarea</option>
                                  <option value="number" {CONF.sel_number}>Number</option>
                                  <option value="select" {CONF.sel_select}>Select</option>
+                                 <option value="checkbox" {CONF.sel_checkbox}>Checkbox</option>
+                                 <option value="radio" {CONF.sel_radio}>Radio</option>
+                                 <option value="section" {CONF.sel_section}>-- Section Header --</option>
+                                 <option value="group" {CONF.sel_group}>-- Group/Accordion --</option>
                              </select>
+                             <input type="text" class="form-control input-sm mt-1" name="input_icon[]" value="{CONF.icon}" placeholder="Icon (fa-users)" style="margin-top:5px" />
                         </div>
                         <div class="col-md-3">
                              <label>{LANG.input_options}</label>
@@ -129,7 +134,7 @@ function addRow() {
     var html = '<div class="config-row well well-sm"><div class="row">';
     html += '<div class="col-md-3"><input type="text" class="form-control input-sm" name="input_label[]" placeholder="Label" /></div>';
     html += '<div class="col-md-2"><input type="text" class="form-control input-sm" name="input_key[]" placeholder="Key" /></div>';
-    html += '<div class="col-md-2"><select class="form-control input-sm" name="input_type[]"><option value="text">Text</option><option value="textarea">Textarea</option><option value="number">Number</option><option value="select">Select</option></select></div>';
+    html += '<div class="col-md-2"><select class="form-control input-sm" name="input_type[]"><option value="text">Text</option><option value="textarea">Textarea</option><option value="number">Number</option><option value="select">Select</option><option value="checkbox">Checkbox</option><option value="radio">Radio</option><option value="section">-- Section Header --</option><option value="group">-- Group/Accordion --</option></select><input type="text" class="form-control input-sm mt-1" name="input_icon[]" placeholder="Icon (fa-users)" style="margin-top:5px" /></div>';
     html += '<div class="col-md-3"><textarea class="form-control input-sm" name="input_options[]" rows="1" placeholder="Options"></textarea></div>';
     html += '<div class="col-md-1"><input type="checkbox" name="input_required[]" value="1" /></div>';
     html += '<div class="col-md-1 text-center"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this);"><i class="fa fa-trash"></i></button></div>';
