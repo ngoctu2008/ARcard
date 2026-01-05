@@ -7,10 +7,8 @@
  * @Createdate Sat, 25 May 2024 10:00:00 GMT
  */
 
-if (!defined('NV_SYSTEM')) {
+if (!defined('NV_IS_FILE_MODULES')) {
     die('Stop!!!');
 }
 
-define('NV_IS_MOD_AIPROMPTS', true);
-
-$allow_func = array('main', 'detail');
+include_once NV_ROOTDIR . '/modules/' . $module_file . '/action_mysql.php';
