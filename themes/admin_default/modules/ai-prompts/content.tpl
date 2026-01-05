@@ -53,7 +53,7 @@
                         </div>
                         <div class="col-md-2">
                              <label>{LANG.input_type}</label>
-                             <select class="form-control input-sm" name="input_type[]">
+                             <select class="form-control input-sm input-type-select" name="input_type[]">
                                  <option value="text" {CONF.sel_text}>Text</option>
                                  <option value="textarea" {CONF.sel_textarea}>Textarea</option>
                                  <option value="number" {CONF.sel_number}>Number</option>
@@ -67,7 +67,8 @@
                         </div>
                         <div class="col-md-3">
                              <label>{LANG.input_options}</label>
-                             <textarea class="form-control input-sm" name="input_options[]" rows="1" placeholder="Line separated options">{CONF.options_text}</textarea>
+                             <textarea class="form-control input-sm hidden-options" name="input_options[]" rows="1" style="display:none;">{CONF.options_text}</textarea>
+                             <div class="options-builder"></div>
                         </div>
                          <div class="col-md-1">
                              <label>{LANG.input_required}</label><br>
@@ -130,20 +131,127 @@
 </div>
 
 <script type="text/javascript">
+$(document).ready(function() {
+    // Initialize existing rows
+    $('.config-row').each(function() {
+        initRowBuilder($(this));
+    });
+});
+
 function addRow() {
     var html = '<div class="config-row well well-sm"><div class="row">';
     html += '<div class="col-md-3"><input type="text" class="form-control input-sm" name="input_label[]" placeholder="Label" /></div>';
     html += '<div class="col-md-2"><input type="text" class="form-control input-sm" name="input_key[]" placeholder="Key" /></div>';
-    html += '<div class="col-md-2"><select class="form-control input-sm" name="input_type[]"><option value="text">Text</option><option value="textarea">Textarea</option><option value="number">Number</option><option value="select">Select</option><option value="checkbox">Checkbox</option><option value="radio">Radio</option><option value="section">-- Section Header --</option><option value="group">-- Group/Accordion --</option></select><input type="text" class="form-control input-sm mt-1" name="input_icon[]" placeholder="Icon (fa-users)" style="margin-top:5px" /></div>';
-    html += '<div class="col-md-3"><textarea class="form-control input-sm" name="input_options[]" rows="1" placeholder="Options"></textarea></div>';
+    html += '<div class="col-md-2"><select class="form-control input-sm input-type-select" name="input_type[]"><option value="text">Text</option><option value="textarea">Textarea</option><option value="number">Number</option><option value="select">Select</option><option value="checkbox">Checkbox</option><option value="radio">Radio</option><option value="section">-- Section Header --</option><option value="group">-- Group/Accordion --</option></select><input type="text" class="form-control input-sm mt-1" name="input_icon[]" placeholder="Icon (fa-users)" style="margin-top:5px" /></div>';
+    html += '<div class="col-md-3"><textarea class="form-control input-sm hidden-options" name="input_options[]" rows="1" style="display:none;"></textarea><div class="options-builder"></div></div>';
     html += '<div class="col-md-1"><input type="checkbox" name="input_required[]" value="1" /></div>';
     html += '<div class="col-md-1 text-center"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this);"><i class="fa fa-trash"></i></button></div>';
     html += '</div></div>';
-    $('#input-config-container').append(html);
+
+    var newRow = $(html).appendTo('#input-config-container');
+    initRowBuilder(newRow);
+}
+
+function initRowBuilder(row) {
+    var typeSelect = row.find('.input-type-select');
+    var optionsTextarea = row.find('.hidden-options');
+    var optionsBuilder = row.find('.options-builder');
+
+    // Initial render
+    renderOptionsUI(optionsBuilder, optionsTextarea, typeSelect.val());
+
+    // On type change
+    typeSelect.on('change', function() {
+        renderOptionsUI(optionsBuilder, optionsTextarea, $(this).val());
+    });
+}
+
+function renderOptionsUI(container, textarea, type) {
+    // Only allow for select, checkbox, radio
+    if (['select', 'checkbox', 'radio'].indexOf(type) === -1) {
+        container.html('');
+        container.hide();
+        return;
+    }
+    container.show();
+
+    // Re-build UI based on current textarea value
+    // Assuming textarea contains newline-separated values
+    var currentVal = textarea.val();
+    var options = currentVal ? currentVal.split('\n') : [];
+
+    var html = '<ul class="list-unstyled options-list" style="margin-bottom:5px;">';
+    options.forEach(function(opt) {
+        if(opt.trim() !== '') {
+            html += '<li style="margin-bottom:5px;"><div class="input-group input-group-sm"><input type="text" class="form-control" value="'+escapeHtml(opt)+'" readonly><span class="input-group-btn"><button class="btn btn-default btn-delete-opt" type="button"><i class="fa fa-trash"></i></button></span></div></li>';
+        }
+    });
+    html += '</ul>';
+
+    html += '<div class="input-group input-group-sm"><input type="text" class="form-control new-option-input" placeholder="Add option"><span class="input-group-btn"><button class="btn btn-success btn-add-opt" type="button"><i class="fa fa-plus"></i></button></span></div>';
+
+    container.html(html);
+
+    // Bind events
+    container.find('.btn-delete-opt').click(function() {
+        $(this).closest('li').remove();
+        updateTextarea(container, textarea);
+    });
+
+    container.find('.btn-add-opt').click(function() {
+        addOptionFromInput(container, textarea);
+    });
+
+    container.find('.new-option-input').keypress(function(e) {
+        if(e.which == 13) {
+            e.preventDefault();
+            addOptionFromInput(container, textarea);
+        }
+    });
+}
+
+function addOptionFromInput(container, textarea) {
+    var input = container.find('.new-option-input');
+    var val = input.val().trim();
+    if (val) {
+        var ul = container.find('ul.options-list');
+        var li = $('<li style="margin-bottom:5px;"><div class="input-group input-group-sm"><input type="text" class="form-control" value="'+escapeHtml(val)+'" readonly><span class="input-group-btn"><button class="btn btn-default btn-delete-opt" type="button"><i class="fa fa-trash"></i></button></span></div></li>');
+        ul.append(li);
+
+        li.find('.btn-delete-opt').click(function() {
+            $(this).closest('li').remove();
+            updateTextarea(container, textarea);
+        });
+
+        input.val('');
+        input.focus();
+        updateTextarea(container, textarea);
+    }
+}
+
+function updateTextarea(container, textarea) {
+    var options = [];
+    container.find('ul.options-list input[type="text"]').each(function() {
+        options.push($(this).val());
+    });
+    textarea.val(options.join('\n'));
+}
+
+function escapeHtml(text) {
+  var map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
 function removeRow(btn) {
-    $(btn).closest('.config-row').remove();
+    if(confirm('{LANG.confirm_delete}')) {
+        $(btn).closest('.config-row').remove();
+    }
 }
 
 function nv_del_content(id) {
