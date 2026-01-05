@@ -11,6 +11,6 @@ if (!defined('NV_SYSTEM')) {
     die('Stop!!!');
 }
 
-define('NV_IS_MOD_AIPROMPTS', true);
+define('NV_IS_MOD_AI_PROMPTS', true);
 
 $allow_func = array('main', 'detail');

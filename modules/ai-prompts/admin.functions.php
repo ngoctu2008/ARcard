@@ -11,6 +11,6 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE')) {
     die('Stop!!!');
 }
 
-define('NV_IS_MOD_AIPROMPTS', true);
+define('NV_IS_MOD_AI_PROMPTS', true);
 
 $allow_func = array('main', 'cat', 'content');

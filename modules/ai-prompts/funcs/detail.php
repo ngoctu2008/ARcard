@@ -7,7 +7,7 @@
  * @Createdate Sat, 25 May 2024 10:00:00 GMT
  */
 
-if (!defined('NV_IS_MOD_AIPROMPTS')) {
+if (!defined('NV_IS_MOD_AI_PROMPTS')) {
     die('Stop!!!');
 }
 
@@ -17,7 +17,7 @@ $array_page = explode('-', $alias);
 $id = intval(end($array_page));
 
 if ($id > 0) {
-    $sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_templates WHERE id=" . $id . " AND status=1";
+    $sql = "SELECT * FROM `" . NV_PREFIXLANG . "_" . $module_data . "_templates` WHERE id=" . $id . " AND status=1";
     $result = $db->query($sql);
     $row = $result->fetch();
 }
@@ -36,7 +36,7 @@ $xtpl->assign('MODULE_NAME', $module_name);
 $xtpl->assign('ROW', $row);
 
 // Fetch Sibling Templates for Tabs
-$sql_siblings = "SELECT id, title, alias FROM " . NV_PREFIXLANG . "_" . $module_data . "_templates WHERE catid=" . $row['catid'] . " AND status=1 ORDER BY weight ASC";
+$sql_siblings = "SELECT id, title, alias FROM `" . NV_PREFIXLANG . "_" . $module_data . "_templates` WHERE catid=" . $row['catid'] . " AND status=1 ORDER BY weight ASC";
 $result_siblings = $db->query($sql_siblings);
 while ($sib = $result_siblings->fetch()) {
     $sib['link'] = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=detail/' . $sib['alias'] . '-' . $sib['id'];

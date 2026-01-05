@@ -12,7 +12,7 @@ if (!defined('NV_MAINFILE')) {
 }
 
 $module_version = array(
-    'name' => 'AIPrompts',
+    'name' => 'AI Prompts',
     'modfuncs' => 'main,detail',
     'change_alias' => 'main,detail',
     'submenu' => 'main,detail',

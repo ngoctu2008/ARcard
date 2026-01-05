@@ -7,14 +7,14 @@
  * @Createdate Sat, 25 May 2024 10:00:00 GMT
  */
 
-if (!defined('NV_IS_MOD_AIPROMPTS')) {
+if (!defined('NV_IS_MOD_AI_PROMPTS')) {
     die('Stop!!!');
 }
 
 $page_title = $module_info['custom_title'];
 $key_words = $module_info['keywords'];
 
-$sql = "SELECT catid, title FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat WHERE status=1 ORDER BY weight ASC";
+$sql = "SELECT catid, title FROM `" . NV_PREFIXLANG . "_" . $module_data . "_cat` WHERE status=1 ORDER BY weight ASC";
 $result = $db->query($sql);
 
 $array_cat = array();
@@ -30,7 +30,7 @@ foreach ($array_cat as $cat) {
     $xtpl->assign('CAT', $cat);
 
     // Get templates for this cat
-    $sql_t = "SELECT id, title, alias, description FROM " . NV_PREFIXLANG . "_" . $module_data . "_templates WHERE catid=" . $cat['catid'] . " AND status=1 ORDER BY weight ASC";
+    $sql_t = "SELECT id, title, alias, description FROM `" . NV_PREFIXLANG . "_" . $module_data . "_templates` WHERE catid=" . $cat['catid'] . " AND status=1 ORDER BY weight ASC";
     $result_t = $db->query($sql_t);
 
     while ($item = $result_t->fetch()) {
