@@ -204,8 +204,8 @@ if (empty($input_config)) {
 } else {
     foreach ($input_config as $idx => $conf) {
         $conf['index'] = $idx;
-        $conf['checked_required'] = ($conf['required']) ? 'checked="checked"' : '';
-        $conf['options_text'] = implode("\n", $conf['options']);
+        $conf['checked_required'] = (isset($conf['required']) && $conf['required']) ? 'checked="checked"' : '';
+        $conf['options_text'] = (isset($conf['options']) && is_array($conf['options'])) ? implode("\n", $conf['options']) : '';
 
         $conf['sel_text'] = ($conf['type'] == 'text') ? 'selected="selected"' : '';
         $conf['sel_textarea'] = ($conf['type'] == 'textarea') ? 'selected="selected"' : '';
