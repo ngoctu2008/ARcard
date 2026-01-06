@@ -3,7 +3,7 @@
     <!-- BEGIN: cat -->
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">{CAT.title}</h3>
+            <h3 class="panel-title"><a href="{CAT.link}">{CAT.title}</a></h3>
         </div>
         <div class="panel-body">
             <div class="row" style="display: flex; flex-wrap: wrap;">

@@ -31,11 +31,12 @@ $page_title = $row['title'];
 $key_words = $row['title'];
 
 // Add Breadcrumb to Category
-$sql_cat = "SELECT title, alias FROM `" . NV_PREFIXLANG . "_" . $module_data . "_cat` WHERE catid=" . $row['catid'];
+// Correct Link: id-alias.html
+$sql_cat = "SELECT catid, title, alias FROM `" . NV_PREFIXLANG . "_" . $module_data . "_cat` WHERE catid=" . $row['catid'];
 $result_cat = $db->query($sql_cat);
 if ($row_cat = $result_cat->fetch()) {
     $array_mod_title[] = array(
-        'link' => NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&catid=' . $row['catid'],
+        'link' => nv_url_rewrite(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '/' . $row_cat['catid'] . '-' . $row_cat['alias'] . '.html', true),
         'title' => $row_cat['title']
     );
 }

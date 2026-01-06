@@ -14,11 +14,12 @@ if (!defined('NV_IS_MOD_AI_PROMPTS')) {
 $page_title = $module_info['custom_title'];
 $key_words = $module_info['keywords'];
 
-$sql = "SELECT catid, title FROM `" . NV_PREFIXLANG . "_" . $module_data . "_cat` WHERE status=1 ORDER BY weight ASC";
+$sql = "SELECT catid, title, alias FROM `" . NV_PREFIXLANG . "_" . $module_data . "_cat` WHERE status=1 ORDER BY weight ASC";
 $result = $db->query($sql);
 
 $array_cat = array();
 while ($row = $result->fetch()) {
+    $row['link'] = nv_url_rewrite(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '/' . $row['catid'] . '-' . $row['alias'] . '.html', true);
     $array_cat[$row['catid']] = $row;
 }
 
