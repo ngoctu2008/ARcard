@@ -35,6 +35,7 @@ $sql_create_module[] = "CREATE TABLE `" . $db_config['prefix'] . "_" . $lang . "
   catid mediumint(8) unsigned NOT NULL DEFAULT '0',
   title varchar(250) NOT NULL,
   alias varchar(250) NOT NULL,
+  icon varchar(50) NOT NULL DEFAULT '',
   description mediumtext NOT NULL,
   prompt_body text NOT NULL,
   input_config mediumtext NOT NULL,

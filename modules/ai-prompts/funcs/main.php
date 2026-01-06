@@ -30,7 +30,7 @@ foreach ($array_cat as $cat) {
     $xtpl->assign('CAT', $cat);
 
     // Get templates for this cat
-    $sql_t = "SELECT id, title, alias, description FROM `" . NV_PREFIXLANG . "_" . $module_data . "_templates` WHERE catid=" . $cat['catid'] . " AND status=1 ORDER BY weight ASC";
+    $sql_t = "SELECT id, title, alias, icon, description FROM `" . NV_PREFIXLANG . "_" . $module_data . "_templates` WHERE catid=" . $cat['catid'] . " AND status=1 ORDER BY weight ASC";
     $result_t = $db->query($sql_t);
 
     while ($item = $result_t->fetch()) {

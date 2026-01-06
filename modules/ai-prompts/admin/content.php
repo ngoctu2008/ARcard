@@ -57,6 +57,7 @@ if ($nv_Request->isset_request('save', 'post')) {
     $row['catid'] = $nv_Request->get_int('catid', 'post', 0);
     $row['title'] = $nv_Request->get_title('title', 'post', '');
     $row['alias'] = $nv_Request->get_title('alias', 'post', '');
+    $row['icon'] = $nv_Request->get_string('icon', 'post', '');
     $row['description'] = $nv_Request->get_string('description', 'post', '');
     $row['prompt_body'] = $nv_Request->get_string('prompt_body', 'post', '');
     $row['status'] = $nv_Request->isset_request('status', 'post') ? 1 : 0;
@@ -105,11 +106,12 @@ if ($nv_Request->isset_request('save', 'post')) {
              $error = $lang_module['error_alias'];
         } else {
             if ($id > 0) {
-                $sql = "UPDATE `" . NV_PREFIXLANG . "_" . $module_data . "_templates` SET catid=:catid, title=:title, alias=:alias, description=:description, prompt_body=:prompt_body, input_config=:input_config, status=:status, edit_time=:edit_time WHERE id=:id";
+                $sql = "UPDATE `" . NV_PREFIXLANG . "_" . $module_data . "_templates` SET catid=:catid, title=:title, alias=:alias, icon=:icon, description=:description, prompt_body=:prompt_body, input_config=:input_config, status=:status, edit_time=:edit_time WHERE id=:id";
                 $data_insert = array(
                     ':catid' => $row['catid'],
                     ':title' => $row['title'],
                     ':alias' => $row['alias'],
+                    ':icon' => $row['icon'],
                     ':description' => $row['description'],
                     ':prompt_body' => $row['prompt_body'],
                     ':input_config' => $row['input_config'],
@@ -127,11 +129,12 @@ if ($nv_Request->isset_request('save', 'post')) {
                 $weight = $result_weight->fetchColumn();
                 $weight = intval($weight) + 1;
 
-                $sql = "INSERT INTO `" . NV_PREFIXLANG . "_" . $module_data . "_templates` (catid, title, alias, description, prompt_body, input_config, status, weight, add_time, edit_time) VALUES (:catid, :title, :alias, :description, :prompt_body, :input_config, :status, :weight, :add_time, :edit_time)";
+                $sql = "INSERT INTO `" . NV_PREFIXLANG . "_" . $module_data . "_templates` (catid, title, alias, icon, description, prompt_body, input_config, status, weight, add_time, edit_time) VALUES (:catid, :title, :alias, :icon, :description, :prompt_body, :input_config, :status, :weight, :add_time, :edit_time)";
                 $data_insert = array(
                     ':catid' => $row['catid'],
                     ':title' => $row['title'],
                     ':alias' => $row['alias'],
+                    ':icon' => $row['icon'],
                     ':description' => $row['description'],
                     ':prompt_body' => $row['prompt_body'],
                     ':input_config' => $row['input_config'],
@@ -158,6 +161,7 @@ if ($nv_Request->isset_request('save', 'post')) {
         'catid' => 0,
         'title' => '',
         'alias' => '',
+        'icon' => '',
         'description' => '',
         'prompt_body' => '',
         'input_config' => '[]',
@@ -205,8 +209,8 @@ if (empty($input_config)) {
 
         $conf['sel_text'] = ($conf['type'] == 'text') ? 'selected="selected"' : '';
         $conf['sel_textarea'] = ($conf['type'] == 'textarea') ? 'selected="selected"' : '';
-        $conf['sel_select'] = ($conf['type'] == 'select') ? 'selected="selected"' : '';
         $conf['sel_number'] = ($conf['type'] == 'number') ? 'selected="selected"' : '';
+        $conf['sel_select'] = ($conf['type'] == 'select') ? 'selected="selected"' : '';
         $conf['sel_checkbox'] = ($conf['type'] == 'checkbox') ? 'selected="selected"' : '';
         $conf['sel_radio'] = ($conf['type'] == 'radio') ? 'selected="selected"' : '';
         $conf['sel_section'] = ($conf['type'] == 'section') ? 'selected="selected"' : '';

@@ -33,6 +33,10 @@
                 <input class="form-control" type="text" name="alias" value="{ROW.alias}" id="id_alias" />
             </div>
             <div class="form-group">
+                <label class="control-label">Icon (FontAwesome)</label>
+                <input class="form-control" type="text" name="icon" value="{ROW.icon}" placeholder="fa-book" />
+            </div>
+            <div class="form-group">
                 <label class="control-label">{LANG.description}</label>
                 <textarea class="form-control" name="description" rows="3">{ROW.description}</textarea>
             </div>

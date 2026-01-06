@@ -254,7 +254,7 @@ function generatePrompt() {
         // Checkboxes name often has [] but the key in prompt is just name
         // e.g. name="purpose[]" -> key "purpose"
         var cleanKey = key.replace('[]', '');
-        var regex = new RegExp('\\\\{' + cleanKey + '\\\\}', 'g');
+        var regex = new RegExp('\\{' + cleanKey + '\\}', 'g');
         prompt = prompt.replace(regex, value);
     }
 
