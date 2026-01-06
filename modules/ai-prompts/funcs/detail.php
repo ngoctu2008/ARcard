@@ -30,6 +30,16 @@ if (empty($row)) {
 $page_title = $row['title'];
 $key_words = $row['title'];
 
+// Add Breadcrumb to Category
+$sql_cat = "SELECT title, alias FROM `" . NV_PREFIXLANG . "_" . $module_data . "_cat` WHERE catid=" . $row['catid'];
+$result_cat = $db->query($sql_cat);
+if ($row_cat = $result_cat->fetch()) {
+    $array_mod_title[] = array(
+        'link' => NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&catid=' . $row['catid'],
+        'title' => $row_cat['title']
+    );
+}
+
 $xtpl = new XTemplate('detail.tpl', NV_ROOTDIR . '/themes/' . $module_info['template'] . '/modules/' . $module_file);
 $xtpl->assign('LANG', $lang_module);
 $xtpl->assign('MODULE_NAME', $module_name);
@@ -39,7 +49,8 @@ $xtpl->assign('ROW', $row);
 $sql_siblings = "SELECT id, title, alias FROM `" . NV_PREFIXLANG . "_" . $module_data . "_templates` WHERE catid=" . $row['catid'] . " AND status=1 ORDER BY weight ASC";
 $result_siblings = $db->query($sql_siblings);
 while ($sib = $result_siblings->fetch()) {
-    $sib['link'] = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=detail/' . $sib['alias'] . '-' . $sib['id'];
+    // Shortened Link
+    $sib['link'] = nv_url_rewrite(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '/' . $sib['alias'] . '-' . $sib['id'] . '.html', true);
     $sib['active'] = ($sib['id'] == $row['id']) ? 'active' : '';
     $xtpl->assign('TAB', $sib);
     $xtpl->parse('main.tab');

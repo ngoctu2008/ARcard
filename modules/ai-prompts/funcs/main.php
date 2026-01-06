@@ -34,7 +34,8 @@ foreach ($array_cat as $cat) {
     $result_t = $db->query($sql_t);
 
     while ($item = $result_t->fetch()) {
-        $item['link'] = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=detail/' . $item['alias'] . '-' . $item['id'];
+        // Shortened Link
+        $item['link'] = nv_url_rewrite(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '/' . $item['alias'] . '-' . $item['id'] . '.html', true);
         $xtpl->assign('ITEM', $item);
         $xtpl->parse('main.cat.item');
     }
