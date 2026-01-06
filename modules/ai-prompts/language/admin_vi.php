@@ -19,7 +19,8 @@ $lang_translator['langtype'] = 'lang_module';
 
 $lang_module['main'] = 'Trang chính';
 $lang_module['cat_manage'] = 'Quản lý danh mục';
-$lang_module['template_manage'] = 'Quản lý mẫu Prompt';
+$lang_module['template_manage'] = 'Danh sách mẫu';
+$lang_module['add_template'] = 'Thêm mẫu mới';
 $lang_module['save'] = 'Lưu lại';
 $lang_module['add'] = 'Thêm mới';
 $lang_module['edit'] = 'Sửa';

@@ -11,5 +11,6 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE')) {
     die('Stop!!!');
 }
 
+$submenu['main'] = $lang_module['template_manage'];
+$submenu['content'] = $lang_module['add_template'];
 $submenu['cat'] = $lang_module['cat_manage'];
-$submenu['content'] = $lang_module['template_manage'];

@@ -62,7 +62,7 @@
 
 <div class="aiprompts-detail">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-24">
             <!-- Tabs Navigation -->
             <ul class="nav nav-tabs mb-3">
                 <!-- BEGIN: tab -->

@@ -8,7 +8,7 @@
         <div class="panel-body">
             <div class="row">
                 <!-- BEGIN: item -->
-                <div class="col-md-4 col-sm-6 mb-3">
+                <div class="col-md-8 col-sm-12 mb-3">
                     <div class="card h-100" style="border: 1px solid #ddd; padding: 10px; margin-bottom: 15px;">
                         <div class="card-body text-center">
                             <div style="font-size: 3em; margin-bottom: 15px; color: #337ab7;">
