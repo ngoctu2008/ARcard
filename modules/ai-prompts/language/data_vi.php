@@ -61,8 +61,11 @@ Cấu trúc giáo án cần có:
 Mỗi hoạt động cần ghi rõ: Mục tiêu, Nội dung, Sản phẩm, Tổ chức thực hiện.";
 
 $config = [
+    ["label" => "Thông tin cơ bản", "type" => "section", "required" => false],
+    ["label" => "Thông tin chung", "type" => "group", "icon" => "fa-info-circle", "required" => false],
     ["label" => "Môn học", "key" => "subject", "type" => "text", "required" => true],
     ["label" => "Khối lớp", "key" => "grade", "type" => "select", "required" => true, "options" => ["Lớp 1", "Lớp 2", "Lớp 3", "Lớp 4", "Lớp 5", "Lớp 6", "Lớp 7", "Lớp 8", "Lớp 9", "Lớp 10", "Lớp 11", "Lớp 12"]],
+    ["label" => "Chi tiết bài giảng", "type" => "group", "icon" => "fa-list-alt", "required" => false],
     ["label" => "Chủ đề/Tên bài", "key" => "topic", "type" => "text", "required" => true],
     ["label" => "Thời lượng (phút)", "key" => "duration", "type" => "number", "required" => true],
     ["label" => "Mục tiêu chính", "key" => "objectives", "type" => "textarea", "required" => false],
@@ -78,10 +81,12 @@ Yêu cầu:
 - {requirement_plus}.";
 
 $config = [
+    ["label" => "Thông tin bài tập", "type" => "group", "icon" => "fa-pencil-square-o", "required" => false],
     ["label" => "Môn học", "key" => "subject", "type" => "text", "required" => true],
     ["label" => "Lớp", "key" => "grade", "type" => "select", "required" => true, "options" => ["Lớp 1", "Lớp 2", "Lớp 3", "Lớp 4", "Lớp 5", "Lớp 6", "Lớp 7", "Lớp 8", "Lớp 9", "Lớp 10", "Lớp 11", "Lớp 12"]],
     ["label" => "Chủ đề", "key" => "topic", "type" => "text", "required" => true],
     ["label" => "Dạng bài", "key" => "type", "type" => "radio", "required" => true, "options" => ["Trắc nghiệm khách quan", "Tự luận", "Điền khuyết", "Đúng/Sai"]],
+    ["label" => "Cấu hình chi tiết", "type" => "group", "icon" => "fa-cogs", "required" => false],
     ["label" => "Số lượng câu", "key" => "quantity", "type" => "number", "required" => true],
     ["label" => "Độ khó", "key" => "difficulty", "type" => "select", "required" => true, "options" => ["Cơ bản (Nhận biết/Thông hiểu)", "Vận dụng", "Vận dụng cao", "Hỗn hợp"]],
     ["label" => "Yêu cầu thêm", "key" => "requirement_plus", "type" => "textarea", "required" => false]
@@ -100,6 +105,7 @@ Hãy đưa ra:
 3. Lời khuyên cho giáo viên/phụ huynh.";
 
 $config = [
+    ["label" => "Chi tiết tình huống", "type" => "group", "icon" => "fa-info", "required" => false],
     ["label" => "Đối tượng học sinh", "key" => "target", "type" => "text", "required" => true, "options" => ["Học sinh tiểu học", "Học sinh cá biệt", "Học sinh năng khiếu"]],
     ["label" => "Mô tả tình huống", "key" => "situation", "type" => "textarea", "required" => true],
     ["label" => "Kết quả mong muốn", "key" => "outcome", "type" => "textarea", "required" => false]
@@ -116,9 +122,11 @@ Quy mô: {scale}.
 Yêu cầu chi tiết kế hoạch gồm: Mục đích, Chuẩn bị, Tiến trình thực hiện, Dự trù kinh phí (nếu có).";
 
 $config = [
+    ["label" => "Thông tin hoạt động", "type" => "group", "icon" => "fa-info-circle", "required" => false],
     ["label" => "Khối lớp", "key" => "grade", "type" => "text", "required" => true],
     ["label" => "Chủ đề hoạt động", "key" => "topic", "type" => "text", "required" => true],
     ["label" => "Hình thức", "key" => "format", "type" => "select", "required" => true, "options" => ["Sinh hoạt dưới cờ", "Sinh hoạt lớp", "Tham quan dã ngoại", "Cuộc thi/Rung chuông vàng", "Câu lạc bộ"]],
+    ["label" => "Chi tiết tổ chức", "type" => "group", "icon" => "fa-clock-o", "required" => false],
     ["label" => "Thời gian dự kiến", "key" => "time", "type" => "text", "required" => false],
     ["label" => "Quy mô", "key" => "scale", "type" => "text", "required" => false, "options" => ["Toàn trường", "Khối lớp", "Lớp học"]]
 ];
@@ -132,6 +140,7 @@ Số lượng câu hỏi: {quantity}.
 Dạng câu hỏi: {type}.";
 
 $config = [
+    ["label" => "Cấu hình khảo sát", "type" => "group", "icon" => "fa-check-square-o", "required" => false],
     ["label" => "Chủ đề khảo sát", "key" => "topic", "type" => "text", "required" => true],
     ["label" => "Đối tượng", "key" => "target", "type" => "text", "required" => true],
     ["label" => "Mục đích", "key" => "purpose", "type" => "textarea", "required" => false],
@@ -153,6 +162,7 @@ Hãy viết:
 4. Hiệu quả dự kiến.";
 
 $config = [
+    ["label" => "Thông tin sáng kiến", "type" => "group", "icon" => "fa-lightbulb-o", "required" => false],
     ["label" => "Lĩnh vực/Môn học", "key" => "field", "type" => "text", "required" => true],
     ["label" => "Đối tượng áp dụng", "key" => "target", "type" => "text", "required" => true],
     ["label" => "Vấn đề tồn tại", "key" => "problem", "type" => "textarea", "required" => true],
@@ -173,6 +183,7 @@ Hãy đề xuất:
 3. Lời khuyên phát triển bản thân.";
 
 $config = [
+    ["label" => "Hồ sơ học sinh", "type" => "group", "icon" => "fa-user", "required" => false],
     ["label" => "Sở thích", "key" => "interest", "type" => "textarea", "required" => true],
     ["label" => "Sở trường", "key" => "strength", "type" => "textarea", "required" => true],
     ["label" => "Môn học thế mạnh", "key" => "subjects", "type" => "text", "required" => true],
@@ -193,7 +204,9 @@ Màu sắc chủ đạo: {colors}.
 Độ phân giải: --ar {ratio} --v 6.0";
 
 $config = [
+    ["label" => "Mô tả hình ảnh", "type" => "group", "icon" => "fa-picture-o", "required" => false],
     ["label" => "Mô tả hình ảnh", "key" => "subject", "type" => "textarea", "required" => true],
+    ["label" => "Thông số kỹ thuật", "type" => "group", "icon" => "fa-sliders", "required" => false],
     ["label" => "Phong cách", "key" => "style", "type" => "select", "required" => true, "options" => ["Realistic (Thực tế)", "Anime/Manga", "Oil Painting (Tranh sơn dầu)", "Cyberpunk", "Cinematic (Điện ảnh)", "3D Render"]],
     ["label" => "Ánh sáng", "key" => "lighting", "type" => "select", "required" => false, "options" => ["Natural Light", "Cinematic Lighting", "Neon Lights", "Studio Lighting", "Golden Hour"]],
     ["label" => "Tỷ lệ khung hình", "key" => "ratio", "type" => "select", "required" => true, "options" => ["16:9|Ngang (16:9)", "9:16|Dọc (9:16)", "1:1|Vuông (1:1)", "4:3|Chuẩn (4:3)"]],
@@ -212,6 +225,7 @@ Yêu cầu:
 - Mô tả hình ảnh và lời thoại nhân vật trong từng khung.";
 
 $config = [
+    ["label" => "Kịch bản truyện", "type" => "group", "icon" => "fa-book", "required" => false],
     ["label" => "Thể loại", "key" => "genre", "type" => "text", "required" => true, "options" => ["Hành động", "Hài hước", "Kinh dị", "Đời thường", "Cổ tích"]],
     ["label" => "Cốt truyện", "key" => "plot", "type" => "textarea", "required" => true],
     ["label" => "Nhân vật", "key" => "characters", "type" => "textarea", "required" => true],
@@ -231,6 +245,7 @@ Yêu cầu:
 - Ghi chú hợp âm (Chords) cơ bản đi kèm.";
 
 $config = [
+    ["label" => "Yêu cầu bài hát", "type" => "group", "icon" => "fa-music", "required" => false],
     ["label" => "Thể loại nhạc", "key" => "genre", "type" => "select", "required" => true, "options" => ["Pop Ballad", "Rap/Hip-hop", "Bolero", "Nhạc thiếu nhi", "Rock"]],
     ["label" => "Chủ đề/Cảm xúc", "key" => "mood", "type" => "textarea", "required" => true],
     ["label" => "Cấu trúc", "key" => "structure", "type" => "select", "required" => true, "options" => ["Verse-Chorus-Verse-Chorus", "Verse-Chorus-Bridge-Chorus", "Tự do"]],
@@ -246,6 +261,7 @@ Phong cách: {style}.
 Hãy mô tả chi tiết bức tranh cần vẽ: Bố cục, màu sắc, ý nghĩa ẩn dụ.";
 
 $config = [
+    ["label" => "Ý tưởng tranh", "type" => "group", "icon" => "fa-paint-brush", "required" => false],
     ["label" => "Chủ đề", "key" => "topic", "type" => "textarea", "required" => true],
     ["label" => "Chất liệu", "key" => "material", "type" => "text", "required" => true, "options" => ["Màu nước", "Sơn dầu", "Chì than", "Digital Art"]],
     ["label" => "Phong cách", "key" => "style", "type" => "text", "required" => false]
@@ -261,6 +277,7 @@ Thông điệp muốn truyền tải: {message}.
 Định dạng đầu ra: Bảng phân cảnh (Kịch bản phân cảnh) gồm: Số thứ tự, Cảnh quay (Góc máy), Nội dung (Hành động), Lời thoại/Âm thanh.";
 
 $config = [
+    ["label" => "Kịch bản phim", "type" => "group", "icon" => "fa-video-camera", "required" => false],
     ["label" => "Chủ đề", "key" => "topic", "type" => "textarea", "required" => true],
     ["label" => "Thời lượng", "key" => "duration", "type" => "text", "required" => true, "options" => ["Dưới 1 phút (Shorts/TikTok)", "3-5 phút", "10-15 phút"]],
     ["label" => "Thông điệp", "key" => "message", "type" => "textarea", "required" => true],
@@ -281,6 +298,7 @@ Hãy mô tả:
 3. Điều kiện thắng/thua.";
 
 $config = [
+    ["label" => "Thiết kế Game", "type" => "group", "icon" => "fa-gamepad", "required" => false],
     ["label" => "Thể loại Game", "key" => "genre", "type" => "text", "required" => true, "options" => ["RPG (Nhập vai)", "Puzzle (Giải đố)", "Action (Hành động)", "Strategy (Chiến thuật)", "Giáo dục"]],
     ["label" => "Bối cảnh", "key" => "setting", "type" => "textarea", "required" => true],
     ["label" => "Cơ chế chơi chính", "key" => "gameplay", "type" => "textarea", "required" => true],
@@ -301,6 +319,7 @@ Yêu cầu:
 - Hashtag liên quan.";
 
 $config = [
+    ["label" => "Nội dung bài viết", "type" => "group", "icon" => "fa-newspaper-o", "required" => false],
     ["label" => "Kênh đăng tải", "key" => "channel", "type" => "select", "required" => true, "options" => ["Facebook", "Zalo OA", "Website/Blog", "Email Marketing"]],
     ["label" => "Chủ đề/Sự kiện", "key" => "topic", "type" => "textarea", "required" => true],
     ["label" => "Giọng văn", "key" => "tone", "type" => "select", "required" => true, "options" => ["Hài hước, bắt trend", "Trang trọng, chuyên nghiệp", "Cảm xúc, chia sẻ", "Thân thiện"]],
@@ -321,10 +340,12 @@ Yêu cầu về giọng văn: {tone}.
 Đảm bảo đúng thể thức văn bản hành chính nhà nước hiện hành.";
 
 $config = [
+    ["label" => "Thông tin văn bản", "type" => "group", "icon" => "fa-file-text-o", "required" => false],
     ["label" => "Loại văn bản", "key" => "type", "type" => "select", "required" => true, "options" => ["Công văn", "Tờ trình", "Báo cáo", "Biên bản cuộc họp", "Thông báo", "Quyết định"]],
     ["label" => "Nơi nhận/Kính gửi", "key" => "receiver", "type" => "text", "required" => true],
     ["label" => "Nội dung chính", "key" => "content", "type" => "textarea", "required" => true],
     ["label" => "Lý do/Căn cứ", "key" => "reason", "type" => "textarea", "required" => false],
+    ["label" => "Tùy chọn nâng cao", "type" => "group", "icon" => "fa-cog", "required" => false],
     ["label" => "Giọng văn", "key" => "tone", "type" => "select", "required" => true, "options" => ["Trang trọng", "Kiên quyết", "Thuyết phục", "Khẩn cấp"]]
 ];
 insert_template($db, $module_data, 3, 'Xử lý văn bản', 'xu-ly-van-ban', 'fa-file-text', 'Soạn thảo công văn, báo cáo, tờ trình', $prompt, $config, 1);
@@ -341,6 +362,7 @@ Hãy thực hiện:
 4. Gợi ý loại biểu đồ nên dùng để trực quan hóa.";
 
 $config = [
+    ["label" => "Dữ liệu phân tích", "type" => "group", "icon" => "fa-table", "required" => false],
     ["label" => "Mô tả dữ liệu", "key" => "data_desc", "type" => "textarea", "required" => true, "options" => [], "description" => "Copy số liệu hoặc mô tả bảng dữ liệu vào đây"],
     ["label" => "Mục tiêu phân tích", "key" => "goal", "type" => "textarea", "required" => true, "options" => ["Tìm xu hướng tăng trưởng", "So sánh hiệu quả", "Tìm nguyên nhân sụt giảm"]]
 ];
