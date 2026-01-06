@@ -48,30 +48,56 @@ if (!function_exists('insert_template')) {
 // ================= CATEGORY 1: GIÁO DỤC =================
 
 // 1. Kế hoạch bài dạy (Lesson Plan)
-$prompt = "Đóng vai chuyên gia giáo dục. Soạn kế hoạch bài dạy (giáo án) môn {subject} cho lớp {grade}.
-Chủ đề: {topic}.
-Thời lượng: {duration} phút.
-Mục tiêu bài học: {objectives}.
-Phương pháp: {method}.
+$prompt = "Vai trò: Bạn là một chuyên gia sư phạm xuất sắc với phương pháp giảng dạy hiện đại (dạy học tích cực, lấy người học làm trung tâm). Bạn có khả năng thiết kế bài giảng chi tiết, logic và tuân thủ các chuẩn mực giáo dục hiện hành.
+Nhiệm vụ: Hãy soạn thảo một Kế hoạch bài dạy (Giáo án) chi tiết dựa trên các thông tin tôi cung cấp dưới đây.
+Thông tin đầu vào:
+1. Tên bài học: {topic}
+2. Môn học/Mô đun: {subject}
+3. Đối tượng học viên: {grade}
+4. Thời lượng: {duration} phút/tiết
+5. Mục tiêu chính cần đạt: {objectives} (Kiến thức/Kỹ năng quan trọng nhất học viên phải làm được sau bài học)
+6. Phương pháp dạy học chủ đạo: {method}
+7. Thiết bị/Đồ dùng dạy học sẵn có: {equipment}
 
-Cấu trúc giáo án cần có:
-1. Mục tiêu (Kiến thức, Năng lực, Phẩm chất).
-2. Thiết bị dạy học và học liệu.
-3. Tiến trình dạy học (Hoạt động khởi động, Khám phá, Luyện tập, Vận dụng).
-Mỗi hoạt động cần ghi rõ: Mục tiêu, Nội dung, Sản phẩm, Tổ chức thực hiện.";
+Yêu cầu về cấu trúc (Bắt buộc tuân thủ): Bài soạn cần chia thành các phần rõ ràng sau:
+I. Mục tiêu bài học (Phân loại theo Bloom nếu có thể):
+• Về kiến thức: Nêu rõ nội dung cần nhớ/hiểu.
+• Về kỹ năng: Nêu rõ thao tác hoặc hành động người học thực hiện được (đặc biệt quan trọng nếu là dạy nghề).
+• Về thái độ/phẩm chất: Tính cẩn thận, an toàn, hợp tác nhóm...
+II. Chuẩn bị:
+• Giáo viên cần chuẩn bị gì?
+• Học sinh cần chuẩn bị gì?
+III. Tiến trình dạy học (Quan trọng nhất): Hãy thiết kế thành 4 hoạt động chính theo chuỗi: Khởi động -> Hình thành kiến thức/Kỹ năng mới -> Luyện tập/Thực hành -> Vận dụng/Mở rộng.
+Với mỗi hoạt động, hãy trình bày chi tiết theo cấu trúc:
+1. Tên hoạt động & Thời gian:
+2. Mục tiêu của hoạt động:
+3. Nội dung hoạt động:
+4. Sản phẩm dự kiến: (Học sinh/Học viên làm ra cái gì hoặc trả lời được gì).
+5. Tổ chức thực hiện (Chia thành 4 bước):
+o Bước 1: Chuyển giao nhiệm vụ (Giáo viên giao việc gì?).
+o Bước 2: Thực hiện nhiệm vụ (Học sinh làm gì? Giáo viên hỗ trợ ra sao?).
+o Bước 3: Báo cáo, thảo luận (Học sinh trình bày thế nào?).
+o Bước 4: Kết luận, nhận định (Giáo viên chốt kiến thức/kỹ năng).
+IV. Rút kinh nghiệm/Đánh giá:
+• Gợi ý các tiêu chí đánh giá nhanh cuối giờ (Rubric hoặc câu hỏi trắc nghiệm ngắn).
+
+Yêu cầu về văn phong:
+• Ngôn ngữ sư phạm, rõ ràng, hướng dẫn cụ thể từng bước hành động.
+• Sử dụng các động từ chỉ hành động (Mô tả, thực hiện, phân tích, lắp ráp...) để viết mục tiêu.";
 
 $config = [
     ["label" => "Thông tin cơ bản", "type" => "section", "required" => false],
     ["label" => "Thông tin chung", "type" => "group", "icon" => "fa-info-circle", "required" => false],
-    ["label" => "Môn học", "key" => "subject", "type" => "text", "required" => true],
-    ["label" => "Khối lớp", "key" => "grade", "type" => "select", "required" => true, "options" => ["Lớp 1", "Lớp 2", "Lớp 3", "Lớp 4", "Lớp 5", "Lớp 6", "Lớp 7", "Lớp 8", "Lớp 9", "Lớp 10", "Lớp 11", "Lớp 12"]],
+    ["label" => "Môn học/Mô đun", "key" => "subject", "type" => "text", "required" => true],
+    ["label" => "Đối tượng/Lớp", "key" => "grade", "type" => "select", "required" => true, "options" => ["Lớp 1", "Lớp 2", "Lớp 3", "Lớp 4", "Lớp 5", "Lớp 6", "Lớp 7", "Lớp 8", "Lớp 9", "Lớp 10", "Lớp 11", "Lớp 12", "Sơ cấp nghề", "Trung cấp nghề", "Cao đẳng nghề"]],
     ["label" => "Chi tiết bài giảng", "type" => "group", "icon" => "fa-list-alt", "required" => false],
-    ["label" => "Chủ đề/Tên bài", "key" => "topic", "type" => "text", "required" => true],
-    ["label" => "Thời lượng (phút)", "key" => "duration", "type" => "number", "required" => true],
-    ["label" => "Mục tiêu chính", "key" => "objectives", "type" => "textarea", "required" => false],
-    ["label" => "Phương pháp", "key" => "method", "type" => "radio", "required" => true, "options" => ["Dạy học nêu vấn đề", "Dạy học theo dự án", "Thảo luận nhóm", "Bàn tay nặn bột", "Truyền thống"]]
+    ["label" => "Tên bài học", "key" => "topic", "type" => "text", "required" => true],
+    ["label" => "Thời lượng (phút/tiết)", "key" => "duration", "type" => "text", "required" => true],
+    ["label" => "Mục tiêu chính", "key" => "objectives", "type" => "textarea", "required" => false, "description" => "Kiến thức/Kỹ năng quan trọng nhất"],
+    ["label" => "Phương pháp", "key" => "method", "type" => "textarea", "required" => true, "description" => "Ví dụ: Thảo luận nhóm, Dạy học dự án, Làm mẫu..."],
+    ["label" => "Thiết bị/Đồ dùng", "key" => "equipment", "type" => "textarea", "required" => false, "description" => "Máy chiếu, mô hình, vật tư..."]
 ];
-insert_template($db, $module_data, 1, 'Kế hoạch bài dạy', 'ke-hoach-bai-day', 'fa-graduation-cap', 'Soạn giáo án chi tiết theo chuẩn mới', $prompt, $config, 1);
+insert_template($db, $module_data, 1, 'Kế hoạch bài dạy', 'ke-hoach-bai-day', 'fa-graduation-cap', 'Soạn giáo án chi tiết theo chuẩn mới (CV 5512/TCGD)', $prompt, $config, 1);
 
 // 2. Bài tập (Exercises)
 $prompt = "Tạo {quantity} bài tập {type} môn {subject} lớp {grade} về chủ đề: {topic}.
@@ -150,25 +176,47 @@ $config = [
 insert_template($db, $module_data, 1, 'Khảo sát', 'khao-sat', 'fa-check-square-o', 'Tạo phiếu khảo sát ý kiến', $prompt, $config, 5);
 
 // 6. Sáng kiến (Kinh nghiệm)
-$prompt = "Gợi ý đề tài và lập dàn ý chi tiết cho Sáng kiến kinh nghiệm (SKKN) lĩnh vực {field}.
-Đối tượng áp dụng: {target}.
-Vấn đề thực tiễn đang gặp phải: {problem}.
-Giải pháp dự kiến: {solution}.
+$prompt = "Vai trò của bạn: Hãy đóng vai là một chuyên gia giáo dục (hoặc chuyên gia kỹ thuật) có 20 năm kinh nghiệm trong việc chấm thi và viết Sáng kiến kinh nghiệm. Bạn có khả năng tư duy logic, văn phong sư phạm, chuẩn mực, thuyết phục và sử dụng từ ngữ chuyên ngành chính xác.
+Nhiệm vụ: Hãy viết cho tôi một đề cương chi tiết và nội dung đầy đủ cho một Sáng kiến kinh nghiệm dựa trên các thông tin đầu vào dưới đây.
+Thông tin đầu vào:
+1. Tên đề tài: {topic}
+2. Lĩnh vực/Môn học: {field}
+3. Đối tượng áp dụng: {target}
+4. Thực trạng/Khó khăn ban đầu: {problem} (Mô tả ngắn gọn 2-3 khó khăn lớn nhất)
+5. Giải pháp/Biện pháp chính: {solution} (Liệt kê các giải pháp đã làm)
+6. Kết quả đạt được (định lượng/định tính): {result}
 
-Hãy viết:
-1. Tên đề tài hấp dẫn, khoa học.
-2. Lý do chọn đề tài (Tính cấp thiết).
-3. Các biện pháp thực hiện chi tiết.
-4. Hiệu quả dự kiến.";
+Yêu cầu về cấu trúc bài viết (Bắt buộc tuân thủ): Bài viết cần chia làm 3 phần chính rõ ràng:
+Phần I: Đặt vấn đề
+• Lý do chọn đề tài (Tính cấp thiết, lý luận và thực tiễn).
+• Mục đích nghiên cứu.
+• Đối tượng và phạm vi nghiên cứu.
+Phần II: Giải quyết vấn đề (Nội dung chính - Cần viết sâu và chi tiết nhất)
+• Cơ sở lý luận: Nêu ngắn gọn các lý thuyết liên quan.
+• Thực trạng vấn đề: Phân tích kỹ ưu điểm và nhược điểm (nguyên nhân của hạn chế) trước khi áp dụng sáng kiến.
+• Các biện pháp đã tiến hành: Đây là phần trọng tâm. Hãy trình bày thành các mục nhỏ (Biện pháp 1, Biện pháp 2, Biện pháp 3...). Mỗi biện pháp cần mô tả cách thức thực hiện chi tiết, có ví dụ minh họa cụ thể, cách làm mới mẻ và sáng tạo.
+• Hiệu quả của sáng kiến: So sánh kết quả trước và sau khi áp dụng (Gợi ý bảng số liệu giả định nếu cần).
+Phần III: Kết luận và kiến nghị
+• Kết luận chung về ý nghĩa của sáng kiến.
+• Bài học kinh nghiệm rút ra.
+• Kiến nghị, đề xuất với cấp trên.
+
+Yêu cầu về văn phong:
+• Sử dụng ngôn ngữ hành chính, trang trọng, khách quan.
+• Tránh dùng từ ngữ cảm thán, văn nói.
+• Các luận điểm phải rõ ràng, gãy gọn.";
 
 $config = [
-    ["label" => "Thông tin sáng kiến", "type" => "group", "icon" => "fa-lightbulb-o", "required" => false],
+    ["label" => "Thông tin chung", "type" => "group", "icon" => "fa-lightbulb-o", "required" => false],
+    ["label" => "Tên đề tài Sáng kiến", "key" => "topic", "type" => "textarea", "required" => true],
     ["label" => "Lĩnh vực/Môn học", "key" => "field", "type" => "text", "required" => true],
-    ["label" => "Đối tượng áp dụng", "key" => "target", "type" => "text", "required" => true],
-    ["label" => "Vấn đề tồn tại", "key" => "problem", "type" => "textarea", "required" => true],
-    ["label" => "Giải pháp chính", "key" => "solution", "type" => "textarea", "required" => false]
+    ["label" => "Đối tượng áp dụng", "key" => "target", "type" => "text", "required" => true, "options" => ["Học sinh lớp...", "Giáo viên tổ...", "Nhân viên phòng..."]],
+    ["label" => "Nội dung sáng kiến", "type" => "group", "icon" => "fa-file-text", "required" => false],
+    ["label" => "Thực trạng/Khó khăn", "key" => "problem", "type" => "textarea", "required" => true, "description" => "Mô tả 2-3 khó khăn lớn nhất trước khi áp dụng"],
+    ["label" => "Giải pháp chính", "key" => "solution", "type" => "textarea", "required" => true, "description" => "Liệt kê các giải pháp, công cụ, phương pháp mới"],
+    ["label" => "Kết quả đạt được", "key" => "result", "type" => "textarea", "required" => true, "description" => "Số liệu hoặc thay đổi tích cực sau khi áp dụng"]
 ];
-insert_template($db, $module_data, 1, 'Sáng kiến', 'sang-kien', 'fa-lightbulb-o', 'Gợi ý và dàn ý Sáng kiến kinh nghiệm', $prompt, $config, 6);
+insert_template($db, $module_data, 1, 'Sáng kiến', 'sang-kien', 'fa-lightbulb-o', 'Hỗ trợ viết Sáng kiến kinh nghiệm (SKKN) chuẩn mực', $prompt, $config, 6);
 
 // 7. Định hướng nghề nghiệp
 $prompt = "Đóng vai chuyên gia tư vấn hướng nghiệp. Hãy tư vấn nghề nghiệp cho học sinh dựa trên thông tin sau:
@@ -307,25 +355,40 @@ $config = [
 insert_template($db, $module_data, 2, 'Games', 'games', 'fa-gamepad', 'Thiết kế ý tưởng và kịch bản trò chơi', $prompt, $config, 6);
 
 // 14. Viết bài truyền thông
-$prompt = "Viết bài đăng truyền thông (Social Media Post/PR Article) cho kênh: {channel}.
-Chủ đề/Sự kiện: {topic}.
-Đối tượng độc giả: {target}.
-Giọng văn: {tone}.
-Mục đích (Call to Action): {cta}.
+$prompt = "Vai trò: Bạn là một chuyên gia Content Marketing và Truyền thông xã hội với tư duy ngôn từ sắc bén, khả năng lan tỏa cảm xúc và thấu hiểu tâm lý độc giả.
+Nhiệm vụ: Hãy viết một bài truyền thông dựa trên các thông tin dưới đây.
+Thông tin đầu vào:
+1. Chủ đề/Sự kiện: {topic}
+2. Mục đích bài viết: {purpose} (Thông báo, kêu gọi, tuyên dương, bán hàng...)
+3. Đối tượng độc giả: {target}
+4. Kênh đăng tải: {channel}
+5. Thông điệp chính/Từ khóa (Key message): {message}
+6. Thông tin chi tiết (5W1H): {details} (Thời gian, địa điểm, nội dung chính, số liệu...)
+7. Giọng văn (Tone & Mood): {tone}
 
-Yêu cầu:
-- Viết tiêu đề hấp dẫn (giật tít).
-- Nội dung thân bài chia đoạn rõ ràng, dùng emoji phù hợp.
-- Hashtag liên quan.";
+Yêu cầu về cấu trúc bài viết (Tuân thủ nghiêm ngặt):
+1. Tiêu đề (Headline):
+• Hãy đưa ra 3 phương án tiêu đề khác nhau để tôi lựa chọn (1 tiêu đề mang tính tin tức, 1 tiêu đề bắt trend/gợi sự tò mò, 1 tiêu đề đánh vào lợi ích người đọc).
+2. Phần nội dung (Body):
+• Nếu là Facebook/Zalo: Viết ngắn gọn (dưới 300 từ), chia đoạn rõ ràng, sử dụng các Emoji (biểu tượng cảm xúc) phù hợp để tăng tính tương tác.
+• Nếu là Website/Báo: Viết theo cấu trúc tin tức (Sapo tóm tắt -> Diễn biến chi tiết -> Kết luận). Văn phong chuẩn mực, không dùng icon.
+3. Lời kêu gọi hành động (Call to Action - CTA):
+• Điều hướng người đọc làm gì tiếp theo? (VD: Nhấp vào link, Đến đăng ký ngay, Comment số điện thoại...).
+4. Hashtag (Chỉ dành cho Mạng xã hội):
+• Gợi ý 5-7 hashtag liên quan và đang thịnh hành.";
 
 $config = [
-    ["label" => "Nội dung bài viết", "type" => "group", "icon" => "fa-newspaper-o", "required" => false],
-    ["label" => "Kênh đăng tải", "key" => "channel", "type" => "select", "required" => true, "options" => ["Facebook", "Zalo OA", "Website/Blog", "Email Marketing"]],
+    ["label" => "Thông tin cơ bản", "type" => "group", "icon" => "fa-info-circle", "required" => false],
     ["label" => "Chủ đề/Sự kiện", "key" => "topic", "type" => "textarea", "required" => true],
-    ["label" => "Giọng văn", "key" => "tone", "type" => "select", "required" => true, "options" => ["Hài hước, bắt trend", "Trang trọng, chuyên nghiệp", "Cảm xúc, chia sẻ", "Thân thiện"]],
-    ["label" => "Hành động mong muốn (CTA)", "key" => "cta", "type" => "text", "required" => false]
+    ["label" => "Mục đích bài viết", "key" => "purpose", "type" => "select", "required" => true, "options" => ["Thông báo tin tức", "Tuyển sinh/Tuyển dụng", "Quảng bá sự kiện", "Chia sẻ kiến thức", "Bán hàng/Dịch vụ"]],
+    ["label" => "Đối tượng độc giả", "key" => "target", "type" => "text", "required" => true],
+    ["label" => "Kênh đăng tải", "key" => "channel", "type" => "select", "required" => true, "options" => ["Facebook/Zalo (Ngắn, icon)", "Website/Báo điện tử (Trang trọng)", "Email Marketing"]],
+    ["label" => "Nội dung chi tiết", "type" => "group", "icon" => "fa-file-text-o", "required" => false],
+    ["label" => "Thông điệp chính (Key message)", "key" => "message", "type" => "text", "required" => true, "description" => "Điều quan trọng nhất muốn người đọc nhớ"],
+    ["label" => "Thông tin chi tiết (5W1H)", "key" => "details", "type" => "textarea", "required" => true, "description" => "Thời gian, địa điểm, thành phần, nội dung chính..."],
+    ["label" => "Giọng văn", "key" => "tone", "type" => "select", "required" => true, "options" => ["Hài hước, bắt trend", "Trang trọng, chuyên nghiệp", "Cảm xúc, chia sẻ", "Gấp gáp, thôi thúc"]]
 ];
-insert_template($db, $module_data, 2, 'Viết bài truyền thông', 'viet-bai-truyen-thong', 'fa-bullhorn', 'Soạn nội dung quảng cáo, PR', $prompt, $config, 7);
+insert_template($db, $module_data, 2, 'Viết bài truyền thông', 'viet-bai-truyen-thong', 'fa-bullhorn', 'Soạn nội dung quảng cáo, PR đa kênh', $prompt, $config, 7);
 
 
 // ================= CATEGORY 3: VĂN PHÒNG & CÔNG CỤ =================
