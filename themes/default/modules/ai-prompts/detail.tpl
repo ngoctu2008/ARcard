@@ -3,10 +3,25 @@
 /* Custom Style for Professional Tool */
 .aiprompts-detail .nav-tabs {
     border-bottom: 2px solid #009688;
+    display: flex;
+    flex-wrap: wrap;
+}
+.aiprompts-detail .nav-tabs > li {
+    float: none;
+    display: inline-block;
+    margin-bottom: -2px;
 }
 .aiprompts-detail .nav-tabs > li > a {
     color: #555;
     font-weight: 600;
+    border-radius: 4px 4px 0 0;
+    margin-right: 2px;
+    border: 1px solid transparent;
+    padding: 10px 15px;
+}
+.aiprompts-detail .nav-tabs > li > a:hover {
+    background-color: #eee;
+    border-color: #eee #eee #ddd;
 }
 .aiprompts-detail .nav-tabs > li.active > a,
 .aiprompts-detail .nav-tabs > li.active > a:focus,
