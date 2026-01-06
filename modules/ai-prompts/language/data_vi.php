@@ -204,7 +204,9 @@ Phần III: Kết luận và kiến nghị
 Yêu cầu về văn phong:
 • Sử dụng ngôn ngữ hành chính, trang trọng, khách quan.
 • Tránh dùng từ ngữ cảm thán, văn nói.
-• Các luận điểm phải rõ ràng, gãy gọn.";
+• Các luận điểm phải rõ ràng, gãy gọn.
+
+Vai trò của AI: tập trung vào tính chuẩn mực, tuân thủ thể thức (Nghị định 30/2020/NĐ-CP) và tư duy logic chặt chẽ.";
 
 $config = [
     ["label" => "Thông tin chung", "type" => "group", "icon" => "fa-lightbulb-o", "required" => false],
@@ -390,28 +392,62 @@ $config = [
 ];
 insert_template($db, $module_data, 2, 'Viết bài truyền thông', 'viet-bai-truyen-thong', 'fa-bullhorn', 'Soạn nội dung quảng cáo, PR đa kênh', $prompt, $config, 7);
 
+// 17. Tin tức & Sự kiện (Website News)
+$prompt = "Hãy đóng vai một biên tập viên báo chí. Hãy viết một bản tin (News) để đăng lên website cơ quan dựa trên các thông tin sự kiện sau:
+1. Dữ liệu sự kiện:
+• Tên sự kiện: {event_name}
+• Thời gian/Địa điểm: {time_location}
+• Thành phần tham dự: {attendees}
+• Nội dung chính: {content} (Các hoạt động diễn ra, ai phát biểu gì, kết quả đạt được)
+
+2. Yêu cầu cấu trúc bài viết (Mô hình tháp ngược):
+• Tiêu đề (Headline): Đặt 3 phương án tiêu đề hấp dẫn, chứa từ khóa chính để tôi chọn.
+• Sapo (Đoạn mở đầu): Tóm tắt toàn bộ thông tin quan trọng nhất (Ai, làm gì, ở đâu, khi nào) trong 1 đoạn văn khoảng 30-40 từ.
+• Thân bài: Tường thuật diễn biến sự kiện. Trích dẫn nguyên văn 1 câu nói hay của lãnh đạo (để trong ngoặc kép).
+• Kết bài: Ý nghĩa của sự kiện.
+
+Lưu ý: Văn phong báo chí, khách quan, chuyên nghiệp. Không dùng icon, không dùng ngôn ngữ teen.
+Vai trò của AI: tập trung vào tính chuẩn mực, tuân thủ thể thức (Nghị định 30/2020/NĐ-CP) và tư duy logic chặt chẽ.";
+
+$config = [
+    ["label" => "Thông tin sự kiện", "type" => "group", "icon" => "fa-newspaper-o", "required" => false],
+    ["label" => "Tên sự kiện", "key" => "event_name", "type" => "text", "required" => true],
+    ["label" => "Thời gian & Địa điểm", "key" => "time_location", "type" => "text", "required" => true],
+    ["label" => "Thành phần tham dự", "key" => "attendees", "type" => "textarea", "required" => true],
+    ["label" => "Diễn biến nội dung", "key" => "content", "type" => "textarea", "required" => true, "description" => "Các hoạt động chính, phát biểu chỉ đạo..."]
+];
+insert_template($db, $module_data, 2, 'Tin tức sự kiện', 'tin-tuc-su-kien', 'fa-globe', 'Viết bản tin sự kiện đăng Website/Cổng thông tin', $prompt, $config, 8);
+
 
 // ================= CATEGORY 3: VĂN PHÒNG & CÔNG CỤ =================
 
-// 15. Xử lý văn bản (Hành chính)
-$prompt = "Hãy soạn thảo văn bản hành chính: {type}.
-Nơi nhận: {receiver}.
-Nội dung chính: {content}.
-Lý do/Căn cứ: {reason}.
-Yêu cầu về giọng văn: {tone}.
+// 15. Văn bản hành chính (Công văn/Tờ trình/Quyết định)
+$prompt = "Hãy soạn thảo cho tôi một {type} tuân thủ đúng thể thức văn bản hành chính nhà nước.
+1. Thông tin chi tiết:
+• Nơi gửi: {receiver}
+• Trích yếu (Về việc gì): {summary}
+• Căn cứ pháp lý: {legal_basis} (Nếu có)
+• Lý do/Sự cần thiết: {reason}
+• Nội dung đề xuất/Yêu cầu: {content}
 
-Đảm bảo đúng thể thức văn bản hành chính nhà nước hiện hành.";
+2. Yêu cầu văn phong:
+• Dùng từ ngữ chính xác, nghiêm túc.
+• Lập luận chặt chẽ, thuyết phục (nếu là Tờ trình).
+• Sử dụng kính ngữ phù hợp (Kính gửi, Trân trọng...).
+
+Vai trò của AI: tập trung vào tính chuẩn mực, tuân thủ thể thức (Nghị định 30/2020/NĐ-CP) và tư duy logic chặt chẽ.";
 
 $config = [
     ["label" => "Thông tin văn bản", "type" => "group", "icon" => "fa-file-text-o", "required" => false],
-    ["label" => "Loại văn bản", "key" => "type", "type" => "select", "required" => true, "options" => ["Công văn", "Tờ trình", "Báo cáo", "Biên bản cuộc họp", "Thông báo", "Quyết định"]],
-    ["label" => "Nơi nhận/Kính gửi", "key" => "receiver", "type" => "text", "required" => true],
-    ["label" => "Nội dung chính", "key" => "content", "type" => "textarea", "required" => true],
-    ["label" => "Lý do/Căn cứ", "key" => "reason", "type" => "textarea", "required" => false],
-    ["label" => "Tùy chọn nâng cao", "type" => "group", "icon" => "fa-cog", "required" => false],
-    ["label" => "Giọng văn", "key" => "tone", "type" => "select", "required" => true, "options" => ["Trang trọng", "Kiên quyết", "Thuyết phục", "Khẩn cấp"]]
+    ["label" => "Loại văn bản", "key" => "type", "type" => "select", "required" => true, "options" => ["Tờ trình", "Công văn", "Quyết định", "Thông báo", "Báo cáo"]],
+    ["label" => "Nơi gửi/Kính gửi", "key" => "receiver", "type" => "text", "required" => true],
+    ["label" => "Trích yếu (Về việc)", "key" => "summary", "type" => "text", "required" => true],
+    ["label" => "Nội dung chi tiết", "type" => "group", "icon" => "fa-align-justify", "required" => false],
+    ["label" => "Căn cứ pháp lý", "key" => "legal_basis", "type" => "textarea", "required" => false, "description" => "Ví dụ: Căn cứ Kế hoạch số..."],
+    ["label" => "Lý do/Sự cần thiết", "key" => "reason", "type" => "textarea", "required" => true],
+    ["label" => "Nội dung đề xuất", "key" => "content", "type" => "textarea", "required" => true]
 ];
-insert_template($db, $module_data, 3, 'Xử lý văn bản', 'xu-ly-van-ban', 'fa-file-text', 'Soạn thảo công văn, báo cáo, tờ trình', $prompt, $config, 1);
+insert_template($db, $module_data, 3, 'Soạn Văn bản hành chính', 'soan-van-ban-hanh-chinh', 'fa-file-text', 'Soạn Tờ trình, Công văn, Quyết định chuẩn thể thức', $prompt, $config, 1);
 
 // 16. Phân tích dữ liệu
 $prompt = "Bạn là một chuyên gia phân tích dữ liệu (Data Analyst). Hãy phân tích dữ liệu sau đây:
@@ -430,3 +466,93 @@ $config = [
     ["label" => "Mục tiêu phân tích", "key" => "goal", "type" => "textarea", "required" => true, "options" => ["Tìm xu hướng tăng trưởng", "So sánh hiệu quả", "Tìm nguyên nhân sụt giảm"]]
 ];
 insert_template($db, $module_data, 3, 'Phân tích dữ liệu', 'phan-tich-du-lieu', 'fa-bar-chart', 'Phân tích số liệu và đưa ra nhận xét', $prompt, $config, 2);
+
+// 18. Bài phát biểu (Diễn văn)
+$prompt = "Hãy đóng vai một người soạn thảo diễn văn chuyên nghiệp, có khả năng sử dụng ngôn từ trang trọng, giàu cảm xúc và truyền cảm hứng. Hãy viết cho tôi một bài phát biểu với các yêu cầu sau:
+1. Thông tin đầu vào:
+• Người phát biểu: {speaker}
+• Sự kiện: {event}
+• Đối tượng người nghe: {audience}
+• Thông điệp cốt lõi: {message}
+• Cảm xúc chủ đạo: {emotion}
+• Thời lượng: {duration}
+
+2. Cấu trúc bài viết:
+• Phần chào hỏi: Kính thưa đầy đủ các thành phần theo thứ tự ưu tiên quan trọng.
+• Phần mở đầu: Nêu lý do, ý nghĩa của buổi lễ và cảm xúc của người phát biểu.
+• Phần nội dung: Triển khai thông điệp cốt lõi, lồng ghép 1 câu chuyện hoặc số liệu ấn tượng (nếu có) để tạo điểm nhấn.
+• Phần kết: Tóm tắt thông điệp, gửi lời chúc sức khỏe, hạnh phúc và tuyên bố khai mạc/bế mạc (nếu có).
+
+Lưu ý: Sử dụng văn phong nói (spoken language), ngắt nghỉ nhịp nhàng để dễ đọc.
+Vai trò của AI: tập trung vào tính chuẩn mực, tuân thủ thể thức và tư duy logic chặt chẽ.";
+
+$config = [
+    ["label" => "Thông tin sự kiện", "type" => "group", "icon" => "fa-microphone", "required" => false],
+    ["label" => "Người phát biểu", "key" => "speaker", "type" => "text", "required" => true, "description" => "VD: Hiệu trưởng, Giám đốc..."],
+    ["label" => "Tên sự kiện", "key" => "event", "type" => "text", "required" => true],
+    ["label" => "Người nghe", "key" => "audience", "type" => "text", "required" => true],
+    ["label" => "Nội dung phát biểu", "type" => "group", "icon" => "fa-commenting-o", "required" => false],
+    ["label" => "Thông điệp cốt lõi", "key" => "message", "type" => "textarea", "required" => true],
+    ["label" => "Cảm xúc chủ đạo", "key" => "emotion", "type" => "select", "required" => true, "options" => ["Trang trọng, ấm áp", "Hào hùng, quyết liệt", "Xúc động, tri ân", "Vui vẻ, thân mật"]],
+    ["label" => "Thời lượng", "key" => "duration", "type" => "text", "required" => true, "description" => "VD: 3 phút, 500 từ"]
+];
+insert_template($db, $module_data, 3, 'Viết bài phát biểu', 'viet-bai-phat-bieu', 'fa-microphone', 'Soạn diễn văn khai mạc, bế mạc, tri ân', $prompt, $config, 3);
+
+// 19. Báo cáo hành chính
+$prompt = "Hãy đóng vai một chuyên viên tổng hợp dày dạn kinh nghiệm. Dựa trên các dữ liệu dưới đây, hãy viết một dự thảo Báo cáo hành chính chuẩn mực, tư duy logic, ngôn ngữ súc tích.
+1. Dữ liệu đầu vào:
+• Tên báo cáo: {report_name}
+• Đơn vị báo cáo: {unit}
+• Thành tích/Số liệu nổi bật: {achievements}
+• Hạn chế/Khó khăn: {limitations}
+• Nguyên nhân: {causes}
+
+2. Yêu cầu cấu trúc:
+• I. Đặc điểm tình hình: Nêu bối cảnh thuận lợi/khó khăn.
+• II. Kết quả thực hiện: Chia theo các mảng công việc. Sử dụng các từ ngữ mạnh như: 'đã chỉ đạo quyết liệt', 'đạt kết quả vượt bậc', 'hoàn thành xuất sắc'.
+• III. Đánh giá chung: Nhìn nhận khách quan ưu/nhược điểm.
+• IV. Phương hướng nhiệm vụ: Liệt kê các đầu việc trọng tâm thời gian tới bằng các gạch đầu dòng cụ thể, mang tính hành động.
+• V. Kiến nghị/Đề xuất (nếu có).
+
+Lưu ý: Văn phong khách quan, không dùng từ ngữ cảm thán.
+Vai trò của AI: tập trung vào tính chuẩn mực, tuân thủ thể thức (Nghị định 30/2020/NĐ-CP) và tư duy logic chặt chẽ.";
+
+$config = [
+    ["label" => "Thông tin báo cáo", "type" => "group", "icon" => "fa-file-text", "required" => false],
+    ["label" => "Tên báo cáo", "key" => "report_name", "type" => "text", "required" => true, "description" => "VD: Báo cáo tổng kết năm 2023"],
+    ["label" => "Đơn vị", "key" => "unit", "type" => "text", "required" => true],
+    ["label" => "Nội dung chi tiết", "type" => "group", "icon" => "fa-list-alt", "required" => false],
+    ["label" => "Thành tích/Số liệu", "key" => "achievements", "type" => "textarea", "required" => true, "description" => "Kết quả nổi bật, con số cụ thể"],
+    ["label" => "Hạn chế/Khó khăn", "key" => "limitations", "type" => "textarea", "required" => true],
+    ["label" => "Nguyên nhân", "key" => "causes", "type" => "textarea", "required" => false]
+];
+insert_template($db, $module_data, 3, 'Báo cáo hành chính', 'bao-cao-hanh-chinh', 'fa-files-o', 'Soạn báo cáo tổng kết, sơ kết, chuyên đề', $prompt, $config, 4);
+
+// 20. Kế hoạch hành chính
+$prompt = "Hãy đóng vai một nhà quản lý có tư duy hệ thống. Hãy soạn thảo một Kế hoạch triển khai công việc chi tiết, khả thi để trình cấp trên phê duyệt.
+1. Thông tin đầu vào:
+• Tên kế hoạch: {plan_name}
+• Mục đích/Yêu cầu: {purpose}
+• Thời gian & Địa điểm: {time_location}
+• Nội dung chính: {content}
+• Nguồn kinh phí: {budget}
+
+2. Yêu cầu cấu trúc (Thể thức văn bản hành chính):
+• I. Mục đích, yêu cầu
+• II. Nội dung thực hiện: Mô tả chi tiết các bước, timeline.
+• III. Kinh phí tổ chức
+• IV. Tổ chức thực hiện: Phần này rất quan trọng. Hãy phân công nhiệm vụ cụ thể cho từng bộ phận/phòng ban (Rõ người, rõ việc, rõ trách nhiệm).
+
+Lưu ý: Sử dụng ngôn ngữ mệnh lệnh hành chính, rõ ràng, dứt khoát.
+Vai trò của AI: tập trung vào tính chuẩn mực, tuân thủ thể thức (Nghị định 30/2020/NĐ-CP) và tư duy logic chặt chẽ.";
+
+$config = [
+    ["label" => "Thông tin kế hoạch", "type" => "group", "icon" => "fa-calendar-check-o", "required" => false],
+    ["label" => "Tên kế hoạch", "key" => "plan_name", "type" => "text", "required" => true],
+    ["label" => "Mục đích/Yêu cầu", "key" => "purpose", "type" => "textarea", "required" => true],
+    ["label" => "Triển khai", "type" => "group", "icon" => "fa-cogs", "required" => false],
+    ["label" => "Thời gian & Địa điểm", "key" => "time_location", "type" => "text", "required" => true],
+    ["label" => "Nội dung chính", "key" => "content", "type" => "textarea", "required" => true],
+    ["label" => "Nguồn kinh phí", "key" => "budget", "type" => "text", "required" => false]
+];
+insert_template($db, $module_data, 3, 'Lập Kế hoạch', 'lap-ke-hoach', 'fa-calendar', 'Lập kế hoạch tổ chức sự kiện, công tác', $prompt, $config, 5);
