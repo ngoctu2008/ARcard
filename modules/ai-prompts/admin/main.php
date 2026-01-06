@@ -2,7 +2,7 @@
 
 /**
  * @Project NUKEVIET 4.x
- * @Author Tên Của Bạn <email@domain.com>
+ * @Author Phạm Ngọc Tú <ngoctu.dnkd@gmail.com>
  * @Copyright (C) 2024. All rights reserved
  */
 
