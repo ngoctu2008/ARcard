@@ -42,6 +42,15 @@ $lang_module['input_required'] = 'Bắt buộc';
 $lang_module['input_options'] = 'Các lựa chọn (Mỗi dòng 1 lựa chọn cho Select/Radio)';
 $lang_module['add_field'] = 'Thêm trường nhập liệu';
 $lang_module['remove_field'] = 'Xóa trường';
+
+$lang_module['type_text'] = 'Văn bản ngắn (Text)';
+$lang_module['type_textarea'] = 'Văn bản dài (Textarea)';
+$lang_module['type_number'] = 'Số (Number)';
+$lang_module['type_select'] = 'Hộp chọn (Select)';
+$lang_module['type_checkbox'] = 'Hộp kiểm (Checkbox)';
+$lang_module['type_radio'] = 'Nút chọn (Radio)';
+$lang_module['type_section'] = '-- Tiêu đề phân đoạn (Section Header) --';
+$lang_module['type_group'] = '-- Nhóm/Accordion --';
 $lang_module['error_title'] = 'Lỗi: Thiếu tiêu đề';
 $lang_module['error_alias'] = 'Lỗi: Liên kết tĩnh đã tồn tại';
 $lang_module['error_catid'] = 'Lỗi: Chưa chọn danh mục';

@@ -58,14 +58,15 @@
                         <div class="col-md-4">
                              <label>{LANG.input_type}</label>
                              <select class="form-control input-sm input-type-select" name="input_type[]">
-                                 <option value="text" {CONF.sel_text}>Text</option>
-                                 <option value="textarea" {CONF.sel_textarea}>Textarea</option>
-                                 <option value="number" {CONF.sel_number}>Number</option>
-                                 <option value="select" {CONF.sel_select}>Select</option>
-                                 <option value="checkbox" {CONF.sel_checkbox}>Checkbox</option>
-                                 <option value="radio" {CONF.sel_radio}>Radio</option>
-                                 <option value="section" {CONF.sel_section}>-- Section Header --</option>
-                                 <option value="group" {CONF.sel_group}>-- Group/Accordion --</option>
+                                 <option value="section" {CONF.sel_section}>{LANG.type_section}</option>
+                                 <option value="text" {CONF.sel_text}>{LANG.type_text}</option>
+                                 <option value="textarea" {CONF.sel_textarea}>{LANG.type_textarea}</option>
+                                 <option value="number" {CONF.sel_number}>{LANG.type_number}</option>
+                                 <option value="select" {CONF.sel_select}>{LANG.type_select}</option>
+                                 <option value="checkbox" {CONF.sel_checkbox}>{LANG.type_checkbox}</option>
+                                 <option value="radio" {CONF.sel_radio}>{LANG.type_radio}</option>
+                                 <option value="section" {CONF.sel_section}>{LANG.type_section}</option>
+                                 <option value="group" {CONF.sel_group}>{LANG.type_group}</option>
                              </select>
                              <input type="text" class="form-control input-sm mt-1" name="input_icon[]" value="{CONF.icon}" placeholder="Icon (fa-users)" style="margin-top:5px" />
                         </div>
@@ -141,7 +142,7 @@ function addRow() {
     var html = '<div class="config-row well well-sm"><div class="row">';
     html += '<div class="col-md-6"><input type="text" class="form-control input-sm input-label-field" name="input_label[]" placeholder="Label" /></div>';
     html += '<div class="col-md-4"><input type="text" class="form-control input-sm input-key-field" name="input_key[]" placeholder="Key" onkeyup="updateKeyButtons()" /></div>';
-    html += '<div class="col-md-4"><select class="form-control input-sm input-type-select" name="input_type[]"><option value="text">Text</option><option value="textarea">Textarea</option><option value="number">Number</option><option value="select">Select</option><option value="checkbox">Checkbox</option><option value="radio">Radio</option><option value="section">-- Section Header --</option><option value="group">-- Group/Accordion --</option></select><input type="text" class="form-control input-sm mt-1" name="input_icon[]" placeholder="Icon (fa-users)" style="margin-top:5px" /></div>';
+    html += '<div class="col-md-4"><select class="form-control input-sm input-type-select" name="input_type[]"><option value="section">{LANG.type_section}</option><option value="text">{LANG.type_text}</option><option value="textarea">{LANG.type_textarea}</option><option value="number">{LANG.type_number}</option><option value="select">{LANG.type_select}</option><option value="checkbox">{LANG.type_checkbox}</option><option value="radio">{LANG.type_radio}</option><option value="section">{LANG.type_section}</option><option value="group">{LANG.type_group}</option></select><input type="text" class="form-control input-sm mt-1" name="input_icon[]" placeholder="Icon (fa-users)" style="margin-top:5px" /></div>';
     html += '<div class="col-md-6"><textarea class="form-control input-sm hidden-options" name="input_options[]" rows="1" style="display:none;"></textarea><div class="options-builder"></div></div>';
     html += '<div class="col-md-2"><input type="checkbox" name="input_required[]" value="1" /></div>';
     html += '<div class="col-md-2 text-center"><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this);"><i class="fa fa-trash"></i></button></div>';

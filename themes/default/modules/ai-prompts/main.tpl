@@ -6,11 +6,11 @@
             <h3 class="panel-title">{CAT.title}</h3>
         </div>
         <div class="panel-body">
-            <div class="row">
+            <div class="row" style="display: flex; flex-wrap: wrap;">
                 <!-- BEGIN: item -->
-                <div class="col-md-8 col-sm-12 mb-3">
-                    <div class="card h-100" style="border: 1px solid #ddd; padding: 10px; margin-bottom: 15px;">
-                        <div class="card-body text-center">
+                <div class="col-md-8 col-sm-12 mb-3" style="display: flex;">
+                    <div class="panel panel-default w-100" style="width: 100%; border: 1px solid #ddd; padding: 10px; margin-bottom: 15px; display: flex; flex-direction: column;">
+                        <div class="panel-body text-center" style="flex: 1;">
                             <div style="font-size: 3em; margin-bottom: 15px; color: #337ab7;">
                                 <i class="fa {ITEM.icon}" aria-hidden="true"></i>
                             </div>
