@@ -1,4 +1,34 @@
 <!-- BEGIN: main -->
+<div class="well">
+    <form action="{NV_BASE_ADMINURL}index.php" method="get">
+        <input type="hidden" name="{NV_LANG_VARIABLE}" value="{NV_LANG_DATA}" />
+        <input type="hidden" name="{NV_NAME_VARIABLE}" value="{MODULE_NAME}" />
+        <input type="hidden" name="{NV_OP_VARIABLE}" value="{OP}" />
+        <div class="row">
+            <div class="col-xs-24 col-md-6">
+                <div class="form-group">
+                    <input class="form-control" type="text" value="{Q}" name="q" maxlength="255" placeholder="{LANG.search_key}" />
+                </div>
+            </div>
+            <div class="col-xs-24 col-md-6">
+                <div class="form-group">
+                    <select class="form-control" name="catid">
+                        <option value="0">--- {LANG.cat_manage} ---</option>
+                        <!-- BEGIN: cat -->
+                        <option value="{CAT.catid}" {CAT.selected}>{CAT.title}</option>
+                        <!-- END: cat -->
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-3">
+                <div class="form-group">
+                    <input class="btn btn-primary" type="submit" value="{LANG.search}" />
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
 <div class="table-responsive">
     <table class="table table-striped table-bordered table-hover">
         <thead>
@@ -40,6 +70,12 @@
         </tbody>
     </table>
 </div>
+
+<!-- BEGIN: generate_page -->
+<div class="text-center">
+    {GENERATE_PAGE}
+</div>
+<!-- END: generate_page -->
 
 <script type="text/javascript">
 function nv_del_content(id) {

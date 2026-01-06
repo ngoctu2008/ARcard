@@ -42,6 +42,8 @@ $lang_module['input_required'] = 'Bắt buộc';
 $lang_module['input_options'] = 'Các lựa chọn (Mỗi dòng 1 lựa chọn cho Select/Radio)';
 $lang_module['add_field'] = 'Thêm trường nhập liệu';
 $lang_module['remove_field'] = 'Xóa trường';
+$lang_module['search_key'] = 'Từ khóa tìm kiếm';
+$lang_module['search'] = 'Tìm kiếm';
 
 $lang_module['type_text'] = 'Văn bản ngắn (Text)';
 $lang_module['type_textarea'] = 'Văn bản dài (Textarea)';
