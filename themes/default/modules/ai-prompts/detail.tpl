@@ -1,37 +1,6 @@
 <!-- BEGIN: main -->
 <style>
 /* Custom Style for Professional Tool */
-.aiprompts-detail .nav-tabs {
-    border-bottom: 2px solid #009688;
-    display: flex;
-    flex-wrap: wrap;
-}
-.aiprompts-detail .nav-tabs > li {
-    float: none;
-    display: inline-block;
-    margin-bottom: -2px;
-}
-.aiprompts-detail .nav-tabs > li > a {
-    color: #555;
-    font-weight: 600;
-    border-radius: 4px 4px 0 0;
-    margin-right: 2px;
-    border: 1px solid transparent;
-    padding: 10px 15px;
-}
-.aiprompts-detail .nav-tabs > li > a:hover {
-    background-color: #eee;
-    border-color: #eee #eee #ddd;
-}
-.aiprompts-detail .nav-tabs > li.active > a,
-.aiprompts-detail .nav-tabs > li.active > a:focus,
-.aiprompts-detail .nav-tabs > li.active > a:hover {
-    color: #fff;
-    cursor: default;
-    background-color: #009688;
-    border: 1px solid #009688;
-    border-bottom-color: transparent;
-}
 .section-header {
     background-color: #009688;
     color: #fff;
@@ -64,7 +33,7 @@
     color: #009688;
 }
 .panel-title i {
-    color: #666; /* Purple/Blue in image? */
+    color: #666;
     margin-right: 10px;
     width: 20px;
     text-align: center;
@@ -73,17 +42,115 @@
 .checkbox label, .radio label {
     padding-left: 5px;
 }
+
+/* --- Scrollable Tabs CSS --- */
+.aiprompts-detail .tabs-wrapper {
+    position: relative;
+    background: #fff;
+    border-radius: 10px;
+    padding: 0 10px; /* Padding for icons */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.aiprompts-detail .tabs-icon {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    background: #fff;
+    z-index: 2;
+    color: #555;
+    transition: 0.3s ease;
+}
+
+.aiprompts-detail .tabs-icon:hover {
+    background: #efefef;
+    color: #009688;
+}
+
+.aiprompts-detail .icon-left {
+    left: 0;
+    border-radius: 10px 0 0 10px;
+    background: linear-gradient(90deg, #fff 70%, transparent);
+    display: none; /* Initially hidden */
+}
+
+.aiprompts-detail .icon-right {
+    right: 0;
+    border-radius: 0 10px 10px 0;
+    background: linear-gradient(270deg, #fff 70%, transparent);
+}
+
+.aiprompts-detail .tabs-box {
+    display: flex;
+    gap: 10px;
+    list-style: none;
+    overflow-x: auto; /* Allow horizontal scroll */
+    scroll-behavior: smooth;
+    padding: 15px 40px; /* Space for icons */
+    margin: 0;
+    width: 100%;
+    scrollbar-width: none; /* Firefox */
+}
+
+.aiprompts-detail .tabs-box::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+.aiprompts-detail .tab-item {
+    cursor: pointer;
+    font-size: 1rem;
+    white-space: nowrap; /* No wrapping */
+    background: #f2f2f2;
+    padding: 10px 20px;
+    border-radius: 30px;
+    border: 1px solid transparent;
+    color: #555;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.aiprompts-detail .tab-item a {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+}
+
+.aiprompts-detail .tab-item:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.aiprompts-detail .tab-item.active {
+    color: #fff;
+    background: #009688;
+    border-color: #009688;
+}
 </style>
 
 <div class="aiprompts-detail">
     <div class="row">
         <div class="col-md-24">
-            <!-- Tabs Navigation -->
-            <ul class="nav nav-tabs mb-3">
-                <!-- BEGIN: tab -->
-                <li role="presentation" class="{TAB.active}"><a href="{TAB.link}">{TAB.title}</a></li>
-                <!-- END: tab -->
-            </ul>
+            <!-- Scrollable Tabs Navigation -->
+            <div class="tabs-wrapper">
+                <div class="tabs-icon icon-left"><i class="fa fa-angle-left"></i></div>
+                <ul class="tabs-box">
+                    <!-- BEGIN: tab -->
+                    <li class="tab-item {TAB.active}"><a href="{TAB.link}">{TAB.title}</a></li>
+                    <!-- END: tab -->
+                </ul>
+                <div class="tabs-icon icon-right"><i class="fa fa-angle-right"></i></div>
+            </div>
         </div>
     </div>
 
@@ -204,14 +271,69 @@
 <div id="raw-prompt" style="display:none;">{PROMPT_BODY}</div>
 
 <script type="text/javascript">
-// Initialize uniqueness for collapse IDs if multiple sections
 $(document).ready(function(){
-    // Basic JS to handle toggle icons if needed
+    // Collapse icon toggling
     $('.collapse').on('shown.bs.collapse', function(){
         $(this).parent().find(".fa-angle-right").removeClass("fa-angle-right").addClass("fa-angle-down");
     }).on('hidden.bs.collapse', function(){
         $(this).parent().find(".fa-angle-down").removeClass("fa-angle-down").addClass("fa-angle-right");
     });
+
+    // --- Scrollable Tabs Logic ---
+    const tabsBox = document.querySelector(".tabs-box");
+    if(tabsBox) {
+        const arrowIcons = document.querySelectorAll(".tabs-icon");
+
+        const handleIcons = () => {
+            let scrollVal = Math.round(tabsBox.scrollLeft);
+            let maxScrollableWidth = tabsBox.scrollWidth - tabsBox.clientWidth;
+
+            let iconLeft = document.querySelector(".icon-left");
+            let iconRight = document.querySelector(".icon-right");
+
+            if(iconLeft) iconLeft.style.display = scrollVal > 0 ? "flex" : "none";
+            // Tiny buffer for float calc
+            if(iconRight) iconRight.style.display = maxScrollableWidth - scrollVal > 1 ? "flex" : "none";
+        }
+
+        arrowIcons.forEach(icon => {
+            icon.addEventListener("click", () => {
+                let scrollWidth = icon.classList.contains("icon-left") ? -350 : 350;
+                tabsBox.scrollLeft += scrollWidth;
+                setTimeout(() => handleIcons(), 50);
+            });
+        });
+
+        tabsBox.addEventListener("scroll", handleIcons);
+
+        // Drag scrolling
+        let isDragging = false;
+        tabsBox.addEventListener("mousedown", () => isDragging = true);
+        tabsBox.addEventListener("mouseup", () => isDragging = false);
+        tabsBox.addEventListener("mouseleave", () => isDragging = false);
+        tabsBox.addEventListener("mousemove", (e) => {
+            if(!isDragging) return;
+            tabsBox.classList.add("dragging");
+            tabsBox.scrollLeft -= e.movementX;
+            handleIcons();
+        });
+
+        // Auto scroll to active tab
+        const activeTab = document.querySelector(".tab-item.active");
+        if(activeTab) {
+            // Use setTimeout to ensure rendering is done
+            setTimeout(() => {
+                activeTab.scrollIntoView({
+                    behavior: 'auto',
+                    inline: 'center',
+                    block: 'nearest'
+                });
+                handleIcons();
+            }, 100);
+        } else {
+            handleIcons();
+        }
+    }
 });
 
 function resetForm() {
@@ -247,7 +369,6 @@ function generatePrompt() {
     for (var i = 0; i < formData.length; i++) {
         var item = formData[i];
         if (dataObj[item.name]) {
-            // If already exists (checkbox array), append
             if (typeof dataObj[item.name] === 'string') {
                 dataObj[item.name] = [dataObj[item.name]];
             }
@@ -260,25 +381,16 @@ function generatePrompt() {
     // Replace keys
     for (var key in dataObj) {
         var value = dataObj[key];
-        // Handle array (checkbox) - join with comma
         if (Array.isArray(value)) {
             value = value.join(', ');
         }
-
-        // Regex to replace all occurrences of {key}
-        // Checkboxes name often has [] but the key in prompt is just name
-        // e.g. name="purpose[]" -> key "purpose"
         var cleanKey = key.replace('[]', '');
         var regex = new RegExp('\\{' + cleanKey + '\\}', 'g');
         prompt = prompt.replace(regex, value);
     }
 
-    // Clean up unused placeholders?
-    // For now, simple replacement is safe.
-
     $('#result-area').val(prompt);
     $('#result-container').show();
-    // Scroll to result
     $('html, body').animate({
         scrollTop: $("#result-container").offset().top
     }, 500);
