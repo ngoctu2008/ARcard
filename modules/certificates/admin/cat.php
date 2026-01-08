@@ -194,6 +194,7 @@ if ($catid > 0 and isset($array_cat[$catid])) {
 }
 $xtpl->assign('ROW', $row);
 $xtpl->assign('CAPTION', $caption);
+$xtpl->assign('UPLOADS_DIR_USER', NV_UPLOADS_DIR . '/' . $module_upload);
 
 $xtpl->parse('main.auto_get_alias');
 $xtpl->parse('main');

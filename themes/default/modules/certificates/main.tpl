@@ -1,7 +1,7 @@
 <!-- BEGIN: main -->
 <div class="container-fluid certificates-module">
     <div class="row justify-content-center">
-        <div class="col-md-16 col-md-offset-4 col-sm-24">
+        <div class="col-md-16 offset-md-4 col-sm-24">
 
             <h2 class="text-center text-uppercase margin-bottom-lg">{LANG.search}</h2>
 
