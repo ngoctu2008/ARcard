@@ -84,6 +84,8 @@ if ($nv_Request->isset_request('save', 'post')) {
     $row['required'] = $nv_Request->get_int('required', 'post', 0); // Checkbox handling? Not in sample template but logic needed.
     $row['field_type'] = $nv_Request->get_title('field_type', 'post', 'textbox');
     $row['field_choices'] = $nv_Request->get_string('field_choices', 'post', '');
+    $row['catids'] = $nv_Request->get_array('catids', 'post', []);
+    $row['catids'] = !empty($row['catids']) ? implode(',', $row['catids']) : '0';
 
     // Basic validation
     if (empty($row['field']) || empty($row['title'])) {
@@ -109,7 +111,7 @@ if ($nv_Request->isset_request('save', 'post')) {
 
                 $sql = "UPDATE " . $table_fields . " SET
                     field=:field, title=:title, description=:description, required=:required,
-                    field_type=:field_type, field_choices=:field_choices
+                    field_type=:field_type, field_choices=:field_choices, catids=:catids
                     WHERE fid=" . $fid;
                 $data = [
                     ':field' => $row['field'],
@@ -117,7 +119,8 @@ if ($nv_Request->isset_request('save', 'post')) {
                     ':description' => $row['description'],
                     ':required' => $row['required'],
                     ':field_type' => $row['field_type'],
-                    ':field_choices' => $row['field_choices']
+                    ':field_choices' => $row['field_choices'],
+                    ':catids' => $row['catids']
                 ];
                 $sth = $db->prepare($sql);
                 $sth->execute($data);
@@ -132,15 +135,16 @@ if ($nv_Request->isset_request('save', 'post')) {
                 }
              } else {
                  $sql = "INSERT INTO " . $table_fields . "
-                    (field, title, description, required, field_type, field_choices, status) VALUES
-                    (:field, :title, :description, :required, :field_type, :field_choices, 1)";
+                    (field, title, description, required, field_type, field_choices, catids, status) VALUES
+                    (:field, :title, :description, :required, :field_type, :field_choices, :catids, 1)";
                  $data = [
                     ':field' => $row['field'],
                     ':title' => $row['title'],
                     ':description' => $row['description'],
                     ':required' => $row['required'],
                     ':field_type' => $row['field_type'],
-                    ':field_choices' => $row['field_choices']
+                    ':field_choices' => $row['field_choices'],
+                    ':catids' => $row['catids']
                 ];
                 $sth = $db->prepare($sql);
                 $sth->execute($data);
@@ -228,9 +232,32 @@ if ($fid > 0) {
     $caption = $lang_module['edit_field'];
     $row['alias'] = $row['field']; // Map field to alias
 } else {
-    $row = ['fid' => 0, 'field' => '', 'alias' => '', 'title' => '', 'description' => '', 'required' => 0, 'field_type' => 'textbox', 'field_choices' => ''];
+    $row = ['fid' => 0, 'field' => '', 'alias' => '', 'title' => '', 'description' => '', 'required' => 0, 'field_type' => 'textbox', 'field_choices' => '', 'catids' => '0'];
     $caption = $lang_module['add_field'];
 }
+
+// Categories list for assignment
+$sql = "SELECT catid, title FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat ORDER BY weight ASC";
+$result = $db->query($sql);
+$catids_arr = explode(',', $row['catids']);
+
+while ($cat = $result->fetch()) {
+    $cat['checked'] = (in_array($cat['catid'], $catids_arr) || $row['catids'] == '0') ? 'checked' : '';
+    // Note: If '0', implies ALL. But UI usually allows checking specific ones.
+    // If saving '0', maybe we need a "Check All" or "All Categories" option.
+    // Let's implement: "All" checkbox (value 0) + list of cats.
+    // For now, let's just list cats. If none checked, maybe default to all or none?
+    // Let's assume user must check at least one or we have a specific "Ap dung tat ca" checkbox.
+    $xtpl->assign('CAT', $cat);
+    $xtpl->parse('main.cat_list');
+}
+
+// Check "All" logic? If $row['catids'] == '0', check all boxes or check a special box?
+// Let's rely on standard checkboxes. If user checks all, it saves '1,2,3'.
+// If user wants '0' (all future cats too), we need a specific input.
+// Added a specific checkbox for 'All'
+$is_all = ($row['catids'] == '0');
+$xtpl->assign('ALL_CHECKED', $is_all ? 'checked' : '');
 
 $xtpl->assign('CAPTION', $caption);
 $xtpl->assign('ROW', $row); // Use ROW to match sample

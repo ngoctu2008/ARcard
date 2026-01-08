@@ -89,6 +89,24 @@
     </div>
 
     <div class="form-group">
+        <label class="col-sm-5 col-md-4 control-label"><strong>Áp dụng cho loại văn bằng</strong></label>
+        <div class="col-sm-19 col-md-20">
+            <div class="checkbox">
+                <label><input type="checkbox" name="catids[]" value="0" {ALL_CHECKED}> <strong>Tất cả</strong></label>
+            </div>
+            <div class="row" style="max-height: 150px; overflow-y: scroll; border: 1px solid #ddd; padding: 5px; margin: 0;">
+                <!-- BEGIN: cat_list -->
+                <div class="col-sm-12">
+                    <label class="checkbox-inline">
+                        <input type="checkbox" name="catids[]" value="{CAT.catid}" {CAT.checked}> {CAT.title}
+                    </label>
+                </div>
+                <!-- END: cat_list -->
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
         <div class="col-sm-offset-5 col-sm-19 col-md-offset-4 col-md-20">
             <div class="checkbox">
                 <label><input type="checkbox" name="required" value="1" {REQUIRED_CHECKED}> Bắt buộc nhập</label>

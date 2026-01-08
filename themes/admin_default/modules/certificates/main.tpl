@@ -42,14 +42,14 @@
     <table class="table table-striped table-bordered table-hover">
         <thead>
             <tr>
-                <th width="50">ID</th>
-                <th>{LANG.fullname}</th>
-                <th>{LANG.birthdate}</th>
+                <th width="50" class="text-nowrap"><a href="{SORT_ID}">ID <i class="fa {ICON_ID}"></i></a></th>
+                <th class="text-nowrap"><a href="{SORT_FULLNAME}">{LANG.fullname} <i class="fa {ICON_FULLNAME}"></i></a></th>
+                <th class="text-nowrap"><a href="{SORT_BIRTHDATE}">{LANG.birthdate} <i class="fa {ICON_BIRTHDATE}"></i></a></th>
                 <th>{LANG.catid}</th>
-                <th>{LANG.cert_number}</th>
-                <th>{LANG.reg_number}</th>
-                <th>{LANG.issue_date}</th>
-                <th width="100" class="text-center">{LANG.status}</th>
+                <th class="text-nowrap"><a href="{SORT_CERT_NUMBER}">{LANG.cert_number} <i class="fa {ICON_CERT_NUMBER}"></i></a></th>
+                <th class="text-nowrap"><a href="{SORT_REG_NUMBER}">{LANG.reg_number} <i class="fa {ICON_REG_NUMBER}"></i></a></th>
+                <th class="text-nowrap"><a href="{SORT_ISSUE_DATE}">{LANG.issue_date} <i class="fa {ICON_ISSUE_DATE}"></i></a></th>
+                <th width="100" class="text-center"><a href="{SORT_STATUS}">{LANG.status} <i class="fa {ICON_STATUS}"></i></a></th>
                 <th width="100" class="text-center">Chức năng</th>
             </tr>
         </thead>

@@ -153,6 +153,9 @@ $fields_q = $db->query("SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "
 while($field = $fields_q->fetch()) {
     $field['value'] = isset($row[$field['field']]) ? $row[$field['field']] : $field['default_value'];
 
+    // Add catids attribute to field row for JS filtering
+    $field['data_catids'] = $field['catids'];
+
     if ($field['field_type'] == 'select') {
         $choices = explode("\n", $field['field_choices']);
         foreach ($choices as $choice) {

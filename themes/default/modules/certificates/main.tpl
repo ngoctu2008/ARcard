@@ -10,8 +10,8 @@
             <!-- END: error -->
 
             <!-- BEGIN: form -->
-            <div class="panel panel-primary search-panel">
-                <div class="panel-body">
+            <div class="card search-panel border-primary">
+                <div class="card-body">
                     <form action="{ACTION}" method="post" autocomplete="off">
                         <div class="form-group row">
                             <label class="col-md-6 col-form-label text-md-right">{LANG.cert_number} <span class="text-danger">(*)</span></label>

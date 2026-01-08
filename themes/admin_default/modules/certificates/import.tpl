@@ -52,7 +52,9 @@
                         <table class="table table-striped table-bordered">
                             <thead>
                                 <tr>
+                                    <th class="text-center">{LANG.import_ignore_err}</th>
                                     <th>#</th>
+                                    <th>{LANG.status}</th>
                                     <th>{LANG.fullname}</th>
                                     <th>{LANG.birthdate}</th>
                                     <th>{LANG.cert_number}</th>
@@ -64,8 +66,14 @@
                             </thead>
                             <tbody>
                                 <!-- BEGIN: loop -->
-                                <tr>
+                                <tr class="{ITEM.status_class}">
+                                    <td class="text-center">
+                                        <input type="checkbox" name="import_flags[{ITEM.index}]" value="1" {ITEM.checked} />
+                                    </td>
                                     <td>{ITEM.index}</td>
+                                    <td>
+                                        <span data-toggle="tooltip" title="{ITEM.warning}">{ITEM.status_text}</span>
+                                    </td>
                                     <td>
                                         {ITEM.fullname}
                                         <input type="hidden" name="rows[{ITEM.index}][fullname]" value="{ITEM.fullname}">

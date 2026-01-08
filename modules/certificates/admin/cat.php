@@ -135,12 +135,22 @@ if ($nv_Request->isset_request('submit', 'post')) {
 // Fetch List
 $q = $nv_Request->get_title('q', 'get', '');
 $where = '';
+$params = [];
+
 if (!empty($q)) {
-    $where = " WHERE title LIKE '%" . $q . "%'";
+    $where = " WHERE title LIKE :q";
+    $params[':q'] = '%' . $q . '%';
 }
 
 $sql = "SELECT * FROM " . $table_cat . $where . " ORDER BY weight ASC";
-$result = $db->query($sql);
+$sth = $db->prepare($sql);
+if (!empty($params)) {
+    foreach ($params as $key => $val) {
+        $sth->bindValue($key, $val, PDO::PARAM_STR);
+    }
+}
+$sth->execute();
+$result = $sth;
 $array_cat = [];
 while ($row = $result->fetch()) {
     $array_cat[$row['catid']] = $row;

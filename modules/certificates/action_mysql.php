@@ -64,6 +64,7 @@ $sql_create_module[] = "CREATE TABLE " . $db_config['prefix'] . "_" . $lang . "_
   func_callback varchar(75) DEFAULT '',
   class varchar(75) DEFAULT '',
   default_value varchar(250) DEFAULT '',
+  catids varchar(255) DEFAULT '0',
   status tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (fid),
   UNIQUE KEY field (field)

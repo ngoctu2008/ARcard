@@ -20,7 +20,7 @@
                     <div class="form-group">
                         <label class="col-sm-5 col-md-4 control-label"><strong>{LANG.catid}</strong></label>
                         <div class="col-sm-19 col-md-20">
-                            <select class="form-control" name="catid">
+                            <select class="form-control" name="catid" id="id_catid" onchange="filter_custom_fields();">
                                 <!-- BEGIN: cat -->
                                 <option value="{CAT.catid}" {CAT.selected}>{CAT.title}</option>
                                 <!-- END: cat -->
@@ -84,7 +84,7 @@
 
 
                     <!-- BEGIN: field -->
-                    <div class="form-group">
+                    <div class="form-group custom-field-row" data-catids="{FIELD.data_catids}">
                         <label class="col-sm-5 col-md-4 control-label"><strong>{FIELD.title}</strong></label>
                         <div class="col-sm-19 col-md-20">
                             <!-- BEGIN: textbox -->
@@ -116,6 +116,28 @@
         changeMonth: true,
         changeYear: true,
         showOtherMonths: true,
+    });
+
+    function filter_custom_fields() {
+        var catid = $('#id_catid').val();
+        $('.custom-field-row').each(function() {
+            var catids = $(this).data('catids');
+            if (catids == '0' || catids == 0) {
+                $(this).show();
+            } else {
+                var arr = catids.toString().split(',');
+                if (arr.includes(catid)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            }
+        });
+    }
+
+    // Run on load
+    $(document).ready(function() {
+        filter_custom_fields();
     });
 </script>
 <!-- END: main -->

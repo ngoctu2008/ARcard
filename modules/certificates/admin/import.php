@@ -23,12 +23,18 @@ $info = '';
 if ($nv_Request->isset_request('import', 'post')) {
     $rows = $nv_Request->get_array('rows', 'post', []);
     $catid = $nv_Request->get_int('catid', 'post', 0);
+    $import_flags = $nv_Request->get_array('import_flags', 'post', []);
 
     if (empty($rows)) {
         $error = "No data to import";
     } else {
         $count = 0;
-        foreach ($rows as $row) {
+        foreach ($rows as $index => $row) {
+             // Check flag (only import if checked)
+            if (!isset($import_flags[$index]) || $import_flags[$index] != 1) {
+                continue;
+            }
+
             // Check if cert_number exists
             $check = $db->query("SELECT COUNT(*) FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE cert_number=" . $db->quote($row['cert_number']))->fetchColumn();
 
@@ -156,7 +162,7 @@ if (isset($_FILES['import_file']) && is_uploaded_file($_FILES['import_file']['tm
         $i = 0;
         foreach ($rows as $r) {
             // Structure: STT (0), Fullname (1), Birthdate (2), CertNum (3), RegNum (4), IssueDate (5), Class (6), ClassEN (7)
-            if (empty($r[1]) || empty($r[3])) continue; // Skip if no name or cert number
+            if (empty($r[1]) && empty($r[3])) continue;
 
             $item = [
                 'index' => $i,
@@ -166,8 +172,35 @@ if (isset($_FILES['import_file']) && is_uploaded_file($_FILES['import_file']['tm
                 'reg_number' => isset($r[4]) ? $r[4] : '',
                 'issue_date' => isset($r[5]) ? $r[5] : '',
                 'classification' => isset($r[6]) ? $r[6] : '',
-                'classification_en' => isset($r[7]) ? $r[7] : ''
+                'classification_en' => isset($r[7]) ? $r[7] : '',
+                'status_class' => 'success',
+                'status_text' => $lang_module['status_valid'],
+                'checked' => 'checked',
+                'warning' => ''
             ];
+
+            // Validation
+            if (empty($item['fullname']) || empty($item['cert_number'])) {
+                 $item['status_class'] = 'danger';
+                 $item['status_text'] = $lang_module['error_missing_required'];
+                 $item['checked'] = '';
+            } else {
+                 // Check Duplicate Cert Number (Update warning)
+                 // Or Check Duplicate Person (Fullname + Birthdate + Catid)
+                 $check_dup = $db->query("SELECT cert_number FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE catid=" . $catid . " AND fullname=" . $db->quote($item['fullname']) . " AND birthdate=" . $db->quote($item['birthdate']))->fetchColumn();
+
+                 if ($check_dup) {
+                      $item['status_class'] = 'warning';
+                      $item['status_text'] = sprintf($lang_module['warning_duplicate'], $check_dup);
+                      $item['warning'] = $item['status_text'];
+                      // Keep checked or unchecked? User requested "tick to still import". Default maybe unchecked to force user review?
+                      // Prompt says "dấu tick để người dùng tick vẫn nhập". So default unchecked is safer if duplicate found.
+                      $item['checked'] = '';
+                 }
+
+                 // If cert_number exists, it's an update. We might warn about that too or consider it standard.
+                 // Current logic handles update silently. Let's focus on the "duplicate person" warning requested.
+            }
 
              // Handle Custom Fields
             foreach ($custom_map as $c_idx => $c_field) {

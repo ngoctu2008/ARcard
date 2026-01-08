@@ -45,6 +45,8 @@ $base_url = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_D
 $catid = $nv_Request->get_int('catid', 'get', 0);
 $q = $nv_Request->get_string('q', 'get', '');
 $status = $nv_Request->get_int('status', 'get', -1);
+$order_by = $nv_Request->get_string('order_by', 'get', 'id');
+$order_dir = $nv_Request->get_string('order_dir', 'get', 'DESC');
 
 $where = [];
 $params = [];
@@ -65,6 +67,13 @@ if (!empty($q)) {
     $base_url .= '&q=' . urlencode($q);
 }
 
+// Validate Sort
+$allowed_orders = ['id', 'fullname', 'birthdate', 'cert_number', 'reg_number', 'issue_date', 'status'];
+if (!in_array($order_by, $allowed_orders)) $order_by = 'id';
+if ($order_dir != 'ASC' && $order_dir != 'DESC') $order_dir = 'DESC';
+
+$base_url .= '&order_by=' . $order_by . '&order_dir=' . $order_dir;
+
 $where_sql = '';
 if (!empty($where)) {
     $where_sql = ' WHERE ' . implode(' AND ', $where);
@@ -80,7 +89,7 @@ $sth->execute();
 $num_items = $sth->fetchColumn();
 
 // Get data
-$sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows" . $where_sql . " ORDER BY id DESC LIMIT " . ($page - 1) * $per_page . "," . $per_page;
+$sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows" . $where_sql . " ORDER BY " . $order_by . " " . $order_dir . " LIMIT " . ($page - 1) * $per_page . "," . $per_page;
 $sth = $db->prepare($sql);
 foreach ($params as $key => $val) {
     $sth->bindValue($key, $val);
@@ -97,6 +106,15 @@ $xtpl->assign('OP', 'main');
 $xtpl->assign('Q', $q);
 
 $xtpl->assign('STATUS_' . $status, 'selected="selected"');
+
+// Sort Links
+$cols = ['id', 'fullname', 'birthdate', 'cert_number', 'reg_number', 'issue_date', 'status'];
+foreach ($cols as $col) {
+    $new_dir = ($order_by == $col && $order_dir == 'ASC') ? 'DESC' : 'ASC';
+    $icon = ($order_by == $col) ? ($order_dir == 'ASC' ? 'fa-sort-asc' : 'fa-sort-desc') : 'fa-sort';
+    $xtpl->assign('SORT_' . strtoupper($col), NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&order_by=' . $col . '&order_dir=' . $new_dir . '&catid=' . $catid . '&status=' . $status . '&q=' . $q);
+    $xtpl->assign('ICON_' . strtoupper($col), $icon);
+}
 
 // Categories select
 foreach ($array_cat as $cat) {
