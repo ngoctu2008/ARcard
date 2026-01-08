@@ -110,7 +110,11 @@ if ($nv_Request->isset_request('save', 'post')) {
 
                 // Alter table if field name changed
                 if ($old_row['field'] != $row['field']) {
-                    $db->query("ALTER TABLE " . NV_PREFIXLANG . "_" . $module_data . "_rows CHANGE `" . $old_row['field'] . "` `" . $row['field'] . "` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+                    // Check if target column exists
+                    $col_exists = $db->query("SHOW COLUMNS FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows LIKE '" . $row['field'] . "'")->fetchColumn();
+                    if (!$col_exists) {
+                        $db->query("ALTER TABLE " . NV_PREFIXLANG . "_" . $module_data . "_rows CHANGE `" . $old_row['field'] . "` `" . $row['field'] . "` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+                    }
                 }
              } else {
                  $sql = "INSERT INTO " . $table_fields . "
@@ -128,7 +132,10 @@ if ($nv_Request->isset_request('save', 'post')) {
                 $db->query("UPDATE " . $table_fields . " SET weight=" . $fid . " WHERE fid=" . $fid);
 
                 // Alter table to add column
-                $db->query("ALTER TABLE " . NV_PREFIXLANG . "_" . $module_data . "_rows ADD `" . $row['field'] . "` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+                $col_exists = $db->query("SHOW COLUMNS FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows LIKE '" . $row['field'] . "'")->fetchColumn();
+                if (!$col_exists) {
+                    $db->query("ALTER TABLE " . NV_PREFIXLANG . "_" . $module_data . "_rows ADD `" . $row['field'] . "` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
+                }
              }
              $nv_Cache->delMod($module_name);
              Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=fields');

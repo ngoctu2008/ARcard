@@ -47,10 +47,12 @@ if ($nv_Request->isset_request('import', 'post')) {
                 $sql_extra_vals = "";
                 $params_extra = [];
 
-                foreach ($custom_data as $k => $v) {
-                    $sql_extra_cols .= ", `" . $k . "`";
-                    $sql_extra_vals .= ", :" . $k;
-                    $params_extra[':'.$k] = $v;
+                if (!empty($custom_data)) {
+                    foreach ($custom_data as $k => $v) {
+                        $sql_extra_cols .= ", `" . $k . "`";
+                        $sql_extra_vals .= ", :" . $k;
+                        $params_extra[':'.$k] = $v;
+                    }
                 }
 
                 $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_rows
@@ -76,9 +78,11 @@ if ($nv_Request->isset_request('import', 'post')) {
                  // Option: Update if exists.
                  $sql_extra = "";
                  $params_extra = [];
-                 foreach ($custom_data as $k => $v) {
-                    $sql_extra .= ", `" . $k . "`=:" . $k;
-                    $params_extra[':'.$k] = $v;
+                 if (!empty($custom_data)) {
+                     foreach ($custom_data as $k => $v) {
+                        $sql_extra .= ", `" . $k . "`=:" . $k;
+                        $params_extra[':'.$k] = $v;
+                     }
                  }
 
                  $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_rows SET
