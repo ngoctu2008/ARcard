@@ -11,7 +11,10 @@
         <div class="panel panel-default">
             <div class="panel-heading">{LANG.import_step1}</div>
             <div class="panel-body">
-                <div class="alert alert-info">{LANG.import_note}</div>
+                <div class="alert alert-info">
+                    {LANG.import_note}<br/>
+                    <a href="{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}={MODULE_NAME}&{NV_OP_VARIABLE}=download_sample" class="btn btn-warning btn-xs" target="_blank"><i class="fa fa-download"></i> Tải file mẫu (.xlsx)</a>
+                </div>
                 <form class="form-horizontal" action="{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}={MODULE_NAME}&{NV_OP_VARIABLE}={OP}" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <label class="col-sm-5 col-md-4 control-label"><strong>{LANG.catid}</strong></label>
@@ -56,6 +59,7 @@
                                     <th>{LANG.reg_number}</th>
                                     <th>{LANG.issue_date}</th>
                                     <th>{LANG.classification}</th>
+                                    <th>Custom Fields</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -85,7 +89,14 @@
                                     <td>
                                         {ITEM.classification}
                                         <input type="hidden" name="rows[{ITEM.index}][classification]" value="{ITEM.classification}">
+                                        <input type="hidden" name="rows[{ITEM.index}][classification_en]" value="{ITEM.classification_en}">
                                     </td>
+                                    <!-- BEGIN: custom_field -->
+                                    <td>
+                                        {C_FIELD.val}
+                                        <input type="hidden" name="rows[{C_FIELD.i}][custom][{C_FIELD.key}]" value="{C_FIELD.val}">
+                                    </td>
+                                    <!-- END: custom_field -->
                                 </tr>
                                 <!-- END: loop -->
                             </tbody>

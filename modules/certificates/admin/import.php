@@ -38,10 +38,22 @@ if ($nv_Request->isset_request('import', 'post')) {
                 $issue_date = mktime(0, 0, 0, $m[2], $m[3], $m[1]);
             }
 
+            $custom_data = isset($row['custom']) ? $row['custom'] : [];
+
             if ($check == 0) {
+                 $sql_extra_cols = "";
+                $sql_extra_vals = "";
+                $params_extra = [];
+
+                foreach ($custom_data as $k => $v) {
+                    $sql_extra_cols .= ", `" . $k . "`";
+                    $sql_extra_vals .= ", :" . $k;
+                    $params_extra[':'.$k] = $v;
+                }
+
                 $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_rows
-                (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification) VALUES
-                (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification)";
+                (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification, classification_en" . $sql_extra_cols . ") VALUES
+                (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification, :classification_en" . $sql_extra_vals . ")";
 
                 $data = [
                     ':catid' => $catid,
@@ -50,17 +62,25 @@ if ($nv_Request->isset_request('import', 'post')) {
                     ':cert_number' => $row['cert_number'],
                     ':reg_number' => $row['reg_number'],
                     ':issue_date' => $issue_date,
-                    ':classification' => $row['classification']
+                    ':classification' => $row['classification'],
+                    ':classification_en' => isset($row['classification_en']) ? $row['classification_en'] : ''
                 ];
+                $data = array_merge($data, $params_extra);
 
                 if($db->insert_id($sql, 'id', $data)) {
                     $count++;
                 }
             } else {
-                 // Option: Update if exists. For now, we skip or update?
-                 // Requirement: "Báo lỗi hoặc Cập nhật (tùy chọn)". I will choose Update.
+                 // Option: Update if exists.
+                 $sql_extra = "";
+                 $params_extra = [];
+                 foreach ($custom_data as $k => $v) {
+                    $sql_extra .= ", `" . $k . "`=:" . $k;
+                    $params_extra[':'.$k] = $v;
+                 }
+
                  $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_rows SET
-                    catid=:catid, fullname=:fullname, birthdate=:birthdate, reg_number=:reg_number, issue_date=:issue_date, classification=:classification
+                    catid=:catid, fullname=:fullname, birthdate=:birthdate, reg_number=:reg_number, issue_date=:issue_date, classification=:classification, classification_en=:classification_en" . $sql_extra . "
                     WHERE cert_number=:cert_number";
                  $data = [
                     ':catid' => $catid,
@@ -69,8 +89,10 @@ if ($nv_Request->isset_request('import', 'post')) {
                     ':cert_number' => $row['cert_number'],
                     ':reg_number' => $row['reg_number'],
                     ':issue_date' => $issue_date,
-                    ':classification' => $row['classification']
+                    ':classification' => $row['classification'],
+                    ':classification_en' => isset($row['classification_en']) ? $row['classification_en'] : ''
                 ];
+                $data = array_merge($data, $params_extra);
                 $db->query_check($sql, $data);
                 $count++;
             }
@@ -110,21 +132,41 @@ if (isset($_FILES['import_file']) && is_uploaded_file($_FILES['import_file']['tm
         $catid = $nv_Request->get_int('catid', 'post', 0);
         $xtpl->assign('CATID', $catid);
 
+        // Custom fields map
+        $fields_q = $db->query("SELECT field FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE status=1 ORDER BY weight ASC");
+        $custom_map = [];
+        $idx = 8;
+        while ($f = $fields_q->fetch()) {
+            $custom_map[$idx] = $f['field'];
+            $idx++;
+        }
+
         $i = 0;
         foreach ($rows as $r) {
-            // Structure: STT (0), Fullname (1), Birthdate (2), CertNum (3), RegNum (4), IssueDate (5), Class (6)
-            // Adjust indices based on user requirement: "STT, Họ tên, Ngày sinh, Số hiệu, Số vào sổ, Ngày cấp, Xếp loại"
+            // Structure: STT (0), Fullname (1), Birthdate (2), CertNum (3), RegNum (4), IssueDate (5), Class (6), ClassEN (7)
             if (empty($r[1]) || empty($r[3])) continue; // Skip if no name or cert number
 
             $item = [
                 'index' => $i,
                 'fullname' => $r[1],
-                'birthdate' => isset($r[2]) ? $r[2] : '', // String
+                'birthdate' => isset($r[2]) ? $r[2] : '',
                 'cert_number' => isset($r[3]) ? $r[3] : '',
                 'reg_number' => isset($r[4]) ? $r[4] : '',
-                'issue_date' => isset($r[5]) ? $r[5] : '', // Expecting dd/mm/yyyy
-                'classification' => isset($r[6]) ? $r[6] : ''
+                'issue_date' => isset($r[5]) ? $r[5] : '',
+                'classification' => isset($r[6]) ? $r[6] : '',
+                'classification_en' => isset($r[7]) ? $r[7] : ''
             ];
+
+             // Handle Custom Fields
+            foreach ($custom_map as $c_idx => $c_field) {
+                $val = isset($r[$c_idx]) ? $r[$c_idx] : '';
+                $xtpl->assign('C_FIELD', [
+                    'key' => $c_field,
+                    'val' => $val,
+                    'i' => $i
+                ]);
+                $xtpl->parse('main.preview.loop.custom_field');
+            }
 
             $xtpl->assign('ITEM', $item);
             $xtpl->parse('main.preview.loop');
