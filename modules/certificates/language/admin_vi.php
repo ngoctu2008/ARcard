@@ -71,3 +71,6 @@ $lang_module['warning_duplicate'] = 'Trùng dữ liệu với: %s';
 $lang_module['import_ignore_err'] = 'Tick để vẫn nhập';
 $lang_module['status_valid'] = 'Hợp lệ';
 $lang_module['status_invalid'] = 'Cảnh báo';
+$lang_module['config_per_page_cat'] = 'Số lượng loại văn bằng hiển thị trên 1 trang';
+$lang_module['config_per_page'] = 'Số lượng hồ sơ hiển thị trên 1 trang';
+$lang_module['error_date_format'] = 'Lỗi định dạng ngày tháng';

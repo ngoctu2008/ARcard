@@ -26,6 +26,7 @@ while ($row = $result->fetch()) {
 if ($nv_Request->isset_request('save', 'post')) {
     $array_config = [];
     $array_config['per_page'] = $nv_Request->get_int('per_page', 'post', 20);
+    $array_config['per_page_cat'] = $nv_Request->get_int('per_page_cat', 'post', 20);
     $array_config['active_captcha'] = $nv_Request->get_int('active_captcha', 'post', 1);
     $array_config['who_view'] = $nv_Request->get_array('who_view', 'post', []);
     $array_config['who_view'] = implode(',', $array_config['who_view']);
@@ -52,6 +53,7 @@ $xtpl->assign('OP', 'config');
 
 $xtpl->assign('DATA', [
     'per_page' => isset($local_config['per_page']) ? $local_config['per_page'] : 20,
+    'per_page_cat' => isset($local_config['per_page_cat']) ? $local_config['per_page_cat'] : 20,
     'active_captcha' => isset($local_config['active_captcha']) ? $local_config['active_captcha'] : 1
 ]);
 
