@@ -19,6 +19,7 @@ $catid = $nv_Request->get_int('catid', 'get,post', 0);
 if ($nv_Request->isset_request('save', 'post')) {
     $title = $nv_Request->get_title('title', 'post', '');
     $alias = $nv_Request->get_title('alias', 'post', '');
+    $image = $nv_Request->get_string('image', 'post', '');
     $status = $nv_Request->get_int('status', 'post', 1);
 
     if (empty($alias)) {
@@ -31,25 +32,28 @@ if ($nv_Request->isset_request('save', 'post')) {
         $error = $lang_module['error_title'];
     } else {
         if ($catid > 0) {
-            $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_cat SET title=:title, alias=:alias, status=:status WHERE catid=:catid";
+            $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_cat SET title=:title, alias=:alias, image=:image, status=:status WHERE catid=:catid";
             $data_insert = [
                 ':title' => $title,
                 ':alias' => $alias,
+                ':image' => $image,
                 ':status' => $status,
                 ':catid' => $catid
             ];
-            $db->query_check($sql, $data_insert);
+            $sth = $db->prepare($sql);
+            $sth->execute($data_insert);
         } else {
-            $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_cat (title, alias, status) VALUES (:title, :alias, :status)";
+            $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_cat (title, alias, image, status) VALUES (:title, :alias, :image, :status)";
             $data_insert = [
                 ':title' => $title,
                 ':alias' => $alias,
+                ':image' => $image,
                 ':status' => $status
             ];
             $catid = $db->insert_id($sql, 'catid', $data_insert);
         }
-        $db->get_pdo()->exec("UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_cat SET weight=" . $catid . " WHERE catid=" . $catid);
-        nv_del_moduleCache($module_name);
+        $db->query("UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_cat SET weight=" . $catid . " WHERE catid=" . $catid);
+        $nv_Cache->delMod($module_name);
         Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat');
         die();
     }
@@ -63,7 +67,7 @@ if ($nv_Request->isset_request('delete', 'post')) {
             die('Error: Category is not empty');
         }
         $db->query("DELETE FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat WHERE catid=" . $catid);
-        nv_del_moduleCache($module_name);
+        $nv_Cache->delMod($module_name);
         die('OK');
     }
 }
@@ -94,7 +98,7 @@ if ($catid > 0 and isset($array_cat[$catid])) {
     $row = $array_cat[$catid];
     $caption = $lang_module['edit_cat'];
 } else {
-    $row = ['catid' => 0, 'title' => '', 'alias' => '', 'status' => 1];
+    $row = ['catid' => 0, 'title' => '', 'alias' => '', 'image' => '', 'status' => 1];
     $caption = $lang_module['add_cat'];
 }
 

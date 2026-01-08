@@ -60,7 +60,8 @@ if ($nv_Request->isset_request('save', 'post')) {
                     ':field_type' => $row['field_type'],
                     ':field_choices' => $row['field_choices']
                 ];
-                $db->query_check($sql, $data);
+                $sth = $db->prepare($sql);
+                $sth->execute($data);
 
                 // Alter table if field name changed
                 if ($old_row['field'] != $row['field']) {
@@ -84,7 +85,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                 // Assuming TEXT for simplicity for now. In real Users module, it varies.
                 $db->query("ALTER TABLE " . NV_PREFIXLANG . "_" . $module_data . "_rows ADD `" . $row['field'] . "` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
              }
-             nv_del_moduleCache($module_name);
+             $nv_Cache->delMod($module_name);
              Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=fields');
              die();
         }
@@ -98,7 +99,7 @@ if ($nv_Request->isset_request('delete', 'post')) {
         if ($row) {
             $db->query("DELETE FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE fid=" . $fid);
             $db->query("ALTER TABLE " . NV_PREFIXLANG . "_" . $module_data . "_rows DROP COLUMN `" . $row['field'] . "`");
-            nv_del_moduleCache($module_name);
+            $nv_Cache->delMod($module_name);
             die('OK');
         }
     }

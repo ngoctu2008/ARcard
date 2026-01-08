@@ -14,6 +14,8 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
 
 require_once NV_ROOTDIR . '/modules/' . $module_file . '/lib/SimpleXLSX.php';
 
+use Shuchkin\SimpleXLSX;
+
 $page_title = $lang_module['import_excel'];
 $error = '';
 $info = '';
@@ -93,12 +95,13 @@ if ($nv_Request->isset_request('import', 'post')) {
                     ':classification_en' => isset($row['classification_en']) ? $row['classification_en'] : ''
                 ];
                 $data = array_merge($data, $params_extra);
-                $db->query_check($sql, $data);
+                $sth = $db->prepare($sql);
+                $sth->execute($data);
                 $count++;
             }
         }
         $info = sprintf($lang_module['import_success'], $count);
-        nv_del_moduleCache($module_name);
+        $nv_Cache->delMod($module_name);
     }
 }
 

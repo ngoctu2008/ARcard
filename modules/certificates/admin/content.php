@@ -27,7 +27,6 @@ if ($nv_Request->isset_request('save', 'post')) {
     $issue_date = $nv_Request->get_title('issue_date', 'post', '');
     $row['classification'] = $nv_Request->get_title('classification', 'post', '');
     $row['classification_en'] = $nv_Request->get_title('classification_en', 'post', '');
-    $row['image'] = $nv_Request->get_string('image', 'post', '');
 
     // Custom Fields processing
     $custom_fields = [];
@@ -67,7 +66,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                 }
 
                 $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_rows SET
-                    catid=:catid, fullname=:fullname, birthdate=:birthdate, cert_number=:cert_number, reg_number=:reg_number, issue_date=:issue_date, classification=:classification, classification_en=:classification_en, image=:image" . $sql_extra . "
+                    catid=:catid, fullname=:fullname, birthdate=:birthdate, cert_number=:cert_number, reg_number=:reg_number, issue_date=:issue_date, classification=:classification, classification_en=:classification_en" . $sql_extra . "
                     WHERE id=" . $id;
                 $data_insert = [
                     ':catid' => $row['catid'],
@@ -77,11 +76,11 @@ if ($nv_Request->isset_request('save', 'post')) {
                     ':reg_number' => $row['reg_number'],
                     ':issue_date' => $row['issue_date'],
                     ':classification' => $row['classification'],
-                    ':classification_en' => $row['classification_en'],
-                    ':image' => $row['image']
+                    ':classification_en' => $row['classification_en']
                 ];
                 $data_insert = array_merge($data_insert, $params_extra);
-                $db->query_check($sql, $data_insert);
+                $sth = $db->prepare($sql);
+                $sth->execute($data_insert);
             } else {
                 $cols_extra = "";
                 $vals_extra = "";
@@ -93,8 +92,8 @@ if ($nv_Request->isset_request('save', 'post')) {
                 }
 
                 $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_rows
-                    (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification, classification_en, image" . $cols_extra . ") VALUES
-                    (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification, :classification_en, :image" . $vals_extra . ")";
+                    (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification, classification_en" . $cols_extra . ") VALUES
+                    (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification, :classification_en" . $vals_extra . ")";
                 $data_insert = [
                     ':catid' => $row['catid'],
                     ':fullname' => $row['fullname'],
@@ -103,13 +102,12 @@ if ($nv_Request->isset_request('save', 'post')) {
                     ':reg_number' => $row['reg_number'],
                     ':issue_date' => $row['issue_date'],
                     ':classification' => $row['classification'],
-                    ':classification_en' => $row['classification_en'],
-                    ':image' => $row['image']
+                    ':classification_en' => $row['classification_en']
                 ];
                 $data_insert = array_merge($data_insert, $params_extra);
                 $db->insert_id($sql, 'id', $data_insert);
             }
-            nv_del_moduleCache($module_name);
+            $nv_Cache->delMod($module_name);
             Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
             die();
         }
@@ -131,8 +129,7 @@ if ($nv_Request->isset_request('save', 'post')) {
             'reg_number' => '',
             'issue_date' => date('d/m/Y'),
             'classification' => '',
-            'classification_en' => '',
-            'image' => ''
+            'classification_en' => ''
         ];
     }
 }

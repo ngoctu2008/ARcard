@@ -82,17 +82,6 @@
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label class="col-sm-5 col-md-4 control-label"><strong>Hình ảnh văn bằng</strong></label>
-                        <div class="col-sm-19 col-md-20">
-                            <div class="input-group">
-                                <input class="form-control" type="text" name="image" value="{ROW.image}" id="id_image" />
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button" onclick="nv_open_browse( '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path={UPLOADS_DIR_USER}&type=image', 'NVImg', 850, 420, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no' ); return false; "><i class="fa fa-folder-open-o"></i> Browse server</button>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- BEGIN: field -->
                     <div class="form-group">

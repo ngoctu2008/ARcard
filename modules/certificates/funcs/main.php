@@ -71,11 +71,13 @@ $xtpl->assign('GFX_NUM', NV_GFX_NUM);
 
 if (!empty($result_data)) {
     // Get Categories
-    $sql = "SELECT catid, title FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat";
+    $sql = "SELECT catid, title, image FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat";
     $result = $db->query($sql);
     $cats = [];
+    $cat_images = [];
     while ($row = $result->fetch()) {
         $cats[$row['catid']] = $row['title'];
+        $cat_images[$row['catid']] = $row['image'];
     }
 
     // Get Custom Fields
@@ -89,8 +91,10 @@ if (!empty($result_data)) {
         $row['cat_title'] = isset($cats[$row['catid']]) ? $cats[$row['catid']] : '';
         $row['issue_date_str'] = ($row['issue_date'] > 0) ? date('d/m/Y', $row['issue_date']) : '';
 
-        if (!empty($row['image']) && file_exists(NV_ROOTDIR . '/' . $row['image'])) {
-            $row['image'] = NV_BASE_SITEURL . $row['image'];
+        // Image from category
+        $cat_image = isset($cat_images[$row['catid']]) ? $cat_images[$row['catid']] : '';
+        if (!empty($cat_image) && file_exists(NV_ROOTDIR . '/' . $cat_image)) {
+            $row['image'] = NV_BASE_SITEURL . $cat_image;
             $xtpl->parse('main.result_box.loop.image');
         }
 
