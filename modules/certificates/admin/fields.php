@@ -13,18 +13,63 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
 }
 
 $page_title = $lang_module['fields_manage'];
+$table_fields = NV_PREFIXLANG . "_" . $module_data . "_fields";
+
+// AJAX: Get Alias (Field Name)
+if ($nv_Request->isset_request('get_alias_title', 'post')) {
+    $title = $nv_Request->get_title('get_alias_title', 'post', '');
+    $alias = change_alias($title);
+    $alias = str_replace('-', '_', $alias); // Fields usually use underscores
+    die($alias);
+}
+
+// AJAX: Change Status
+if ($nv_Request->isset_request('change_status', 'post')) {
+    $fid = $nv_Request->get_int('fid', 'post', 0); // User sample uses catid, here fid maps to id param in JS if we adjust
+    // JS sends 'catid='+id. I should check param name in JS.
+    // Sample JS: 'change_status=1&catid='+id.
+    // So I must look for 'catid' even if it is a field ID, OR update JS.
+    // To strictly follow sample code, the JS sends `catid`.
+    // I will use `catid` in PHP request to match the JS, but logically it is FID.
+    $id = $nv_Request->get_int('catid', 'post', 0);
+
+    if ($id > 0) {
+        $sql = "SELECT status FROM " . $table_fields . " WHERE fid=" . $id;
+        $status = $db->query($sql)->fetchColumn();
+        $new_status = ($status == 1) ? 0 : 1;
+        $db->query("UPDATE " . $table_fields . " SET status=" . $new_status . " WHERE fid=" . $id);
+        $nv_Cache->delMod($module_name);
+        die('OK_' . $new_status);
+    }
+    die('NO');
+}
+
+// AJAX: Change Weight
+if ($nv_Request->isset_request('ajax_action', 'post')) {
+    $id = $nv_Request->get_int('catid', 'post', 0); // JS sends catid
+    $new_vid = $nv_Request->get_int('new_vid', 'post', 0);
+    if ($id > 0 && $new_vid > 0) {
+        $db->query("UPDATE " . $table_fields . " SET weight=" . $new_vid . " WHERE fid=" . $id);
+        $nv_Cache->delMod($module_name);
+        die('OK');
+    }
+    die('NO');
+}
 
 $fid = $nv_Request->get_int('fid', 'get,post', 0);
 $error = '';
 
 if ($nv_Request->isset_request('save', 'post')) {
     $row = [];
-    $row['field'] = $nv_Request->get_title('field', 'post', '');
+    $row['field'] = $nv_Request->get_title('alias', 'post', ''); // Input name is alias in template
+    if (empty($row['field'])) {
+        $row['field'] = $nv_Request->get_title('field', 'post', ''); // Fallback
+    }
     $row['title'] = $nv_Request->get_title('title', 'post', '');
     $row['description'] = $nv_Request->get_title('description', 'post', '');
-    $row['required'] = $nv_Request->get_int('required', 'post', 0);
+    $row['required'] = $nv_Request->get_int('required', 'post', 0); // Checkbox handling? Not in sample template but logic needed.
     $row['field_type'] = $nv_Request->get_title('field_type', 'post', 'textbox');
-    $row['field_choices'] = $nv_Request->get_string('field_choices', 'post', ''); // Choices: key|label
+    $row['field_choices'] = $nv_Request->get_string('field_choices', 'post', '');
 
     // Basic validation
     if (empty($row['field']) || empty($row['title'])) {
@@ -33,7 +78,7 @@ if ($nv_Request->isset_request('save', 'post')) {
         $error = "Field name must be alphanumeric";
     } else {
         // Check duplicate field name
-        $sql = "SELECT COUNT(*) FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE field=:field";
+        $sql = "SELECT COUNT(*) FROM " . $table_fields . " WHERE field=:field";
         if ($fid > 0) {
             $sql .= " AND fid!=" . $fid;
         }
@@ -46,9 +91,9 @@ if ($nv_Request->isset_request('save', 'post')) {
             // Save logic
              if ($fid > 0) {
                  // Get old field name to rename column if needed
-                $old_row = $db->query("SELECT field FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE fid=" . $fid)->fetch();
+                $old_row = $db->query("SELECT field FROM " . $table_fields . " WHERE fid=" . $fid)->fetch();
 
-                $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_fields SET
+                $sql = "UPDATE " . $table_fields . " SET
                     field=:field, title=:title, description=:description, required=:required,
                     field_type=:field_type, field_choices=:field_choices
                     WHERE fid=" . $fid;
@@ -68,7 +113,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                     $db->query("ALTER TABLE " . NV_PREFIXLANG . "_" . $module_data . "_rows CHANGE `" . $old_row['field'] . "` `" . $row['field'] . "` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
                 }
              } else {
-                 $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_fields
+                 $sql = "INSERT INTO " . $table_fields . "
                     (field, title, description, required, field_type, field_choices, status) VALUES
                     (:field, :title, :description, :required, :field_type, :field_choices, 1)";
                  $data = [
@@ -80,9 +125,9 @@ if ($nv_Request->isset_request('save', 'post')) {
                     ':field_choices' => $row['field_choices']
                 ];
                 $fid = $db->insert_id($sql, 'fid', $data);
+                $db->query("UPDATE " . $table_fields . " SET weight=" . $fid . " WHERE fid=" . $fid);
 
                 // Alter table to add column
-                // Assuming TEXT for simplicity for now. In real Users module, it varies.
                 $db->query("ALTER TABLE " . NV_PREFIXLANG . "_" . $module_data . "_rows ADD `" . $row['field'] . "` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL");
              }
              $nv_Cache->delMod($module_name);
@@ -92,18 +137,18 @@ if ($nv_Request->isset_request('save', 'post')) {
     }
 }
 
-if ($nv_Request->isset_request('delete', 'post')) {
-    $fid = $nv_Request->get_int('fid', 'post', 0);
+if ($nv_Request->isset_request('delete_id', 'get')) {
+    $fid = $nv_Request->get_int('delete_id', 'get', 0);
     if ($fid > 0) {
-        $row = $db->query("SELECT field FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE fid=" . $fid)->fetch();
+        $row = $db->query("SELECT field FROM " . $table_fields . " WHERE fid=" . $fid)->fetch();
         if ($row) {
-            $db->query("DELETE FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE fid=" . $fid);
+            $db->query("DELETE FROM " . $table_fields . " WHERE fid=" . $fid);
             $db->query("ALTER TABLE " . NV_PREFIXLANG . "_" . $module_data . "_rows DROP COLUMN `" . $row['field'] . "`");
             $nv_Cache->delMod($module_name);
-            die('OK');
+            Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=fields');
+            die();
         }
     }
-    die('ERR');
 }
 
 // Prepare View
@@ -121,7 +166,7 @@ if (!empty($error)) {
 }
 
 // List fields
-$sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields ORDER BY weight ASC";
+$sql = "SELECT * FROM " . $table_fields . " ORDER BY weight ASC";
 $result = $db->query($sql);
 $array_fields = [];
 while ($r = $result->fetch()) {
@@ -131,43 +176,48 @@ $num_fields = count($array_fields);
 
 foreach ($array_fields as $r) {
     $r['link_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=fields&fid=' . $r['fid'];
-    $r['status_checked'] = ($r['status'] == 1) ? 'checked' : '';
+    $r['link_delete'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=fields&delete_id=' . $r['fid'];
+    $r['status_check'] = ($r['status'] == 1) ? 'checked' : '';
 
     // Weight Loop
     for ($i = 1; $i <= $num_fields; $i++) {
         $xtpl->assign('WEIGHT', [
             'key' => $i,
             'title' => $i,
-            'selected' => ($i == $r['weight']) ? 'selected' : ''
+            'selected' => ($i == $r['weight']) ? 'selected="selected"' : ''
         ]);
-        $xtpl->parse('main.loop.weight_loop');
+        $xtpl->parse('main.view.loop.weight_loop');
     }
 
-    $xtpl->assign('ROW', $r);
-    $xtpl->parse('main.loop');
+    $xtpl->assign('CHECK', $r['status_check']);
+    $xtpl->assign('VIEW', $r);
+    $xtpl->parse('main.view.loop');
 }
+$xtpl->parse('main.view');
 
 // Edit Form Data
 if ($fid > 0) {
-    $row = $db->query("SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE fid=" . $fid)->fetch();
+    $row = $db->query("SELECT * FROM " . $table_fields . " WHERE fid=" . $fid)->fetch();
     $caption = $lang_module['edit_field'];
+    $row['alias'] = $row['field']; // Map field to alias
 } else {
-    $row = ['fid' => 0, 'field' => '', 'title' => '', 'description' => '', 'required' => 0, 'field_type' => 'textbox', 'field_choices' => ''];
+    $row = ['fid' => 0, 'field' => '', 'alias' => '', 'title' => '', 'description' => '', 'required' => 0, 'field_type' => 'textbox', 'field_choices' => ''];
     $caption = $lang_module['add_field'];
 }
 
 $xtpl->assign('CAPTION', $caption);
-$xtpl->assign('FORM', $row);
+$xtpl->assign('ROW', $row); // Use ROW to match sample
 
 // Type select
 $types = ['textbox' => 'Textbox', 'number' => 'Number', 'textarea' => 'Textarea', 'editor' => 'Editor', 'select' => 'Select Box', 'date' => 'Date'];
 foreach ($types as $key => $val) {
-    $xtpl->assign('TYPE', ['key' => $key, 'title' => $val, 'selected' => ($key == $row['field_type'] ? 'selected' : '')]);
+    $xtpl->assign('TYPE', ['key' => $key, 'title' => $val, 'selected' => ($key == $row['field_type']) ? 'selected' : '']);
     $xtpl->parse('main.field_type');
 }
 
 $xtpl->assign('REQUIRED_CHECKED', $row['required'] ? 'checked' : '');
 
+$xtpl->parse('main.auto_get_alias');
 $xtpl->parse('main');
 $contents = $xtpl->text('main');
 

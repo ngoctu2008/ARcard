@@ -13,14 +13,67 @@ if (!defined('NV_IS_MODADMIN')) {
 }
 
 $page_title = $lang_module['cat_manage'];
-$error = '';
-$catid = $nv_Request->get_int('catid', 'get,post', 0);
+$table_cat = NV_PREFIXLANG . "_" . $module_data . "_cat";
 
-if ($nv_Request->isset_request('save', 'post')) {
+// AJAX: Get Alias
+if ($nv_Request->isset_request('get_alias_title', 'post')) {
+    $title = $nv_Request->get_title('get_alias_title', 'post', '');
+    $alias = change_alias($title);
+    die($alias);
+}
+
+// AJAX: Change Status
+if ($nv_Request->isset_request('change_status', 'post')) {
+    $catid = $nv_Request->get_int('catid', 'post', 0);
+    if ($catid > 0) {
+        $sql = "SELECT status FROM " . $table_cat . " WHERE catid=" . $catid;
+        $status = $db->query($sql)->fetchColumn();
+        $new_status = ($status == 1) ? 0 : 1;
+        $db->query("UPDATE " . $table_cat . " SET status=" . $new_status . " WHERE catid=" . $catid);
+        $nv_Cache->delMod($module_name);
+        die('OK_' . $new_status);
+    }
+    die('NO');
+}
+
+// AJAX: Change Weight
+if ($nv_Request->isset_request('ajax_action', 'post')) {
+    $catid = $nv_Request->get_int('catid', 'post', 0);
+    $new_vid = $nv_Request->get_int('new_vid', 'post', 0);
+    if ($catid > 0 && $new_vid > 0) {
+        $db->query("UPDATE " . $table_cat . " SET weight=" . $new_vid . " WHERE catid=" . $catid);
+        $nv_Cache->delMod($module_name);
+        die('OK');
+    }
+    die('NO');
+}
+
+// Delete
+if ($nv_Request->isset_request('delete_id', 'get')) {
+    $catid = $nv_Request->get_int('delete_id', 'get', 0);
+    if ($catid > 0) {
+        $check = $db->query("SELECT COUNT(*) FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE catid=" . $catid)->fetchColumn();
+        if ($check > 0) {
+            $error = 'Error: Category is not empty';
+        } else {
+            $db->query("DELETE FROM " . $table_cat . " WHERE catid=" . $catid);
+            $nv_Cache->delMod($module_name);
+            Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat');
+            die();
+        }
+    }
+}
+
+// Save
+$error = '';
+$catid = $nv_Request->get_int('catid', 'post,get', 0);
+if ($nv_Request->isset_request('submit', 'post')) {
     $title = $nv_Request->get_title('title', 'post', '');
     $alias = $nv_Request->get_title('alias', 'post', '');
+    $description = $nv_Request->get_title('description', 'post', '');
     $image = $nv_Request->get_string('image', 'post', '');
-    $status = $nv_Request->get_int('status', 'post', 1);
+    // Status in form? Template doesn't show status in form, only list. Assuming Active(1) or keeping existing.
+    // Actually, user sample form doesn't have status input. Defaults to 1 for new.
 
     if (empty($alias)) {
         $alias = change_alias($title);
@@ -32,47 +85,41 @@ if ($nv_Request->isset_request('save', 'post')) {
         $error = $lang_module['error_title'];
     } else {
         if ($catid > 0) {
-            $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_cat SET title=:title, alias=:alias, image=:image, status=:status WHERE catid=:catid";
+            $sql = "UPDATE " . $table_cat . " SET title=:title, alias=:alias, description=:description, image=:image WHERE catid=:catid";
             $data_insert = [
                 ':title' => $title,
                 ':alias' => $alias,
+                ':description' => $description,
                 ':image' => $image,
-                ':status' => $status,
                 ':catid' => $catid
             ];
             $sth = $db->prepare($sql);
             $sth->execute($data_insert);
         } else {
-            $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_cat (title, alias, image, status) VALUES (:title, :alias, :image, :status)";
+            $sql = "INSERT INTO " . $table_cat . " (title, alias, description, image, status) VALUES (:title, :alias, :description, :image, 1)";
             $data_insert = [
                 ':title' => $title,
                 ':alias' => $alias,
-                ':image' => $image,
-                ':status' => $status
+                ':description' => $description,
+                ':image' => $image
             ];
             $catid = $db->insert_id($sql, 'catid', $data_insert);
+            $db->query("UPDATE " . $table_cat . " SET weight=" . $catid . " WHERE catid=" . $catid);
         }
-        $db->query("UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_cat SET weight=" . $catid . " WHERE catid=" . $catid);
         $nv_Cache->delMod($module_name);
         Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat');
         die();
     }
 }
 
-if ($nv_Request->isset_request('delete', 'post')) {
-    $catid = $nv_Request->get_int('catid', 'post', 0);
-    if ($catid > 0) {
-        $check = $db->query("SELECT COUNT(*) FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE catid=" . $catid)->fetchColumn();
-        if ($check > 0) {
-            die('Error: Category is not empty');
-        }
-        $db->query("DELETE FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat WHERE catid=" . $catid);
-        $nv_Cache->delMod($module_name);
-        die('OK');
-    }
+// Fetch List
+$q = $nv_Request->get_title('q', 'get', '');
+$where = '';
+if (!empty($q)) {
+    $where = " WHERE title LIKE '%" . $q . "%'";
 }
 
-$sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat ORDER BY weight ASC";
+$sql = "SELECT * FROM " . $table_cat . $where . " ORDER BY weight ASC";
 $result = $db->query($sql);
 $array_cat = [];
 while ($row = $result->fetch()) {
@@ -86,11 +133,35 @@ $xtpl->assign('NV_NAME_VARIABLE', NV_NAME_VARIABLE);
 $xtpl->assign('NV_OP_VARIABLE', NV_OP_VARIABLE);
 $xtpl->assign('MODULE_NAME', $module_name);
 $xtpl->assign('OP', 'cat');
+$xtpl->assign('Q', $q);
 
 if (!empty($error)) {
     $xtpl->assign('ERROR', $error);
     $xtpl->parse('main.error');
 }
+
+// View List
+$num_cats = count($array_cat);
+foreach ($array_cat as $cat) {
+    $cat['link_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat&catid=' . $cat['catid'];
+    $cat['link_delete'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat&delete_id=' . $cat['catid'];
+    $cat['status_check'] = ($cat['status'] == 1) ? 'checked' : '';
+
+    // Weight Loop
+    for ($i = 1; $i <= $num_cats; $i++) {
+        $xtpl->assign('WEIGHT', [
+            'key' => $i,
+            'title' => $i,
+            'selected' => ($i == $cat['weight']) ? 'selected="selected"' : ''
+        ]);
+        $xtpl->parse('main.view.loop.weight_loop');
+    }
+
+    $xtpl->assign('CHECK', $cat['status_check']);
+    $xtpl->assign('VIEW', $cat);
+    $xtpl->parse('main.view.loop');
+}
+$xtpl->parse('main.view');
 
 // Form
 $row = [];
@@ -98,32 +169,13 @@ if ($catid > 0 and isset($array_cat[$catid])) {
     $row = $array_cat[$catid];
     $caption = $lang_module['edit_cat'];
 } else {
-    $row = ['catid' => 0, 'title' => '', 'alias' => '', 'image' => '', 'status' => 1];
+    $row = ['catid' => 0, 'title' => '', 'alias' => '', 'description' => '', 'image' => ''];
     $caption = $lang_module['add_cat'];
 }
-
-$xtpl->assign('CAPTION', $caption);
 $xtpl->assign('ROW', $row);
+$xtpl->assign('CAPTION', $caption);
 
-$num_cats = count($array_cat);
-foreach ($array_cat as $cat) {
-    $cat['status_checked'] = ($cat['status'] == 1) ? 'checked' : '';
-    $cat['link_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat&catid=' . $cat['catid'];
-
-    // Weight Loop
-    for ($i = 1; $i <= $num_cats; $i++) {
-        $xtpl->assign('WEIGHT', [
-            'key' => $i,
-            'title' => $i,
-            'selected' => ($i == $cat['weight']) ? 'selected' : ''
-        ]);
-        $xtpl->parse('main.loop.weight_loop');
-    }
-
-    $xtpl->assign('CAT', $cat);
-    $xtpl->parse('main.loop');
-}
-
+$xtpl->parse('main.auto_get_alias');
 $xtpl->parse('main');
 $contents = $xtpl->text('main');
 

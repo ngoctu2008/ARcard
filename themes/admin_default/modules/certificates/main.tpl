@@ -53,6 +53,13 @@
                 <th width="100" class="text-center">Chức năng</th>
             </tr>
         </thead>
+        <!-- BEGIN: page -->
+        <tfoot>
+            <tr>
+                <td class="text-center" colspan="9">{GENERATE_PAGE}</td>
+            </tr>
+        </tfoot>
+        <!-- END: page -->
         <tbody>
             <!-- BEGIN: loop -->
             <tr>
@@ -64,7 +71,7 @@
                 <td>{ROW.reg_number}</td>
                 <td>{ROW.issue_date_str}</td>
                 <td class="text-center">
-                    <input type="checkbox" name="status" value="1" {ROW.status_checked} onclick="nv_change_status({ROW.id}, this.checked)" />
+                    <input type="checkbox" name="status" id="change_status_{ROW.id}" value="{ROW.id}" {CHECK} onclick="nv_change_status({ROW.id});" />
                 </td>
                 <td class="text-center">
                     <a href="{ROW.link_edit}" class="btn btn-default btn-xs"><i class="fa fa-edit"></i></a>
@@ -75,10 +82,6 @@
         </tbody>
     </table>
 </div>
-
-<!-- BEGIN: page -->
-<div class="text-center">{GENERATE_PAGE}</div>
-<!-- END: page -->
 
 <div class="text-center margin-top">
     <a href="{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}={MODULE_NAME}&{NV_OP_VARIABLE}=content" class="btn btn-success"><i class="fa fa-plus-circle"></i> {LANG.add_content}</a>
@@ -96,14 +99,21 @@
         }
     }
 
-    function nv_change_status(id, checked) {
-        var new_status = checked ? 1 : 0;
-        $.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=change_status', 'id=' + id + '&new_status=' + new_status + '&mod=rows', function(res) {
-            if (res != 'OK') {
-                alert('Error: ' + res);
-                window.location.href = window.location.href;
-            }
-        });
+    function nv_change_status(id) {
+        var new_status = $('#change_status_' + id).is(':checked') ? true : false;
+        if (confirm(nv_is_change_act_confirm[0])) {
+            var nv_timer = nv_settimeout_disable('change_status_' + id, 5000);
+            $.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=main&nocache=' + new Date().getTime(), 'change_status=1&catid='+id, function(res) {
+                var r_split = res.split('_');
+                if (r_split[0] != 'OK') {
+                    alert(nv_is_change_act_confirm[2]);
+                }
+            });
+        }
+        else{
+            $('#change_status_' + id).prop('checked', new_status ? false : true);
+        }
+        return;
     }
 </script>
 <!-- END: main -->

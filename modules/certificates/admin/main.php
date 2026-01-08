@@ -13,6 +13,21 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
 }
 
 $page_title = $lang_module['main_manage'];
+$table_rows = NV_PREFIXLANG . "_" . $module_data . "_rows";
+
+// AJAX: Change Status
+if ($nv_Request->isset_request('change_status', 'post')) {
+    $id = $nv_Request->get_int('catid', 'post', 0); // JS sends catid
+    if ($id > 0) {
+        $sql = "SELECT status FROM " . $table_rows . " WHERE id=" . $id;
+        $status = $db->query($sql)->fetchColumn();
+        $new_status = ($status == 1) ? 0 : 1;
+        $db->query("UPDATE " . $table_rows . " SET status=" . $new_status . " WHERE id=" . $id);
+        $nv_Cache->delMod($module_name);
+        die('OK_' . $new_status);
+    }
+    die('NO');
+}
 
 // Fetch categories for filter
 $sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat ORDER BY weight ASC";
@@ -24,7 +39,7 @@ while ($row = $result->fetch()) {
 
 // Pagination and Filter
 $page = $nv_Request->get_int('page', 'get', 1);
-$per_page = 30;
+$per_page = isset($module_config[$module_name]['per_page']) ? $module_config[$module_name]['per_page'] : 20;
 $base_url = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name;
 
 $catid = $nv_Request->get_int('catid', 'get', 0);
@@ -95,15 +110,16 @@ while ($row = $sth->fetch()) {
     $row['cat_title'] = isset($array_cat[$row['catid']]) ? $array_cat[$row['catid']]['title'] : '';
     $row['issue_date_str'] = ($row['issue_date'] > 0) ? date('d/m/Y', $row['issue_date']) : '';
     $row['link_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=content&id=' . $row['id'];
-    $row['status_checked'] = ($row['status'] == 1) ? 'checked' : '';
+    $row['status_check'] = ($row['status'] == 1) ? 'checked' : '';
     $xtpl->assign('ROW', $row);
+    $xtpl->assign('CHECK', $row['status_check']); // Map to CHECK for consistency with sample
     $xtpl->parse('main.loop');
 }
 
 $generate_page = nv_generate_page($base_url, $num_items, $per_page, $page);
 if (!empty($generate_page)) {
     $xtpl->assign('GENERATE_PAGE', $generate_page);
-    $xtpl->parse('main.page');
+    $xtpl->parse('main.page'); // Note: Sample used 'generate_page' block and NV_GENERATE_PAGE var
 }
 
 $xtpl->parse('main');

@@ -20,4 +20,4 @@ $submenu = [
     'config' => $lang_module['config']
 ];
 
-$allow_func = ['main', 'cat', 'fields', 'import', 'content', 'config', 'del_cat', 'change_status', 'change_weight', 'del_content', 'download_sample'];
+$allow_func = ['main', 'cat', 'fields', 'import', 'content', 'config', 'del_cat', 'del_content', 'download_sample'];
