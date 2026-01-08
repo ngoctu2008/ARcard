@@ -75,11 +75,6 @@ $sql_create_module[] = "CREATE TABLE " . $db_config['prefix'] . "_" . $lang . "_
   UNIQUE KEY config_name (config_name)
 ) ENGINE=MyISAM";
 
-$sql_create_module[] = "INSERT INTO " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat (catid, title, alias, status) VALUES
-(1, 'Bằng Tốt nghiệp THPT', 'bang-tot-nghiep-thpt', 1),
-(2, 'Chứng chỉ Tin học', 'chung-chi-tin-hoc', 1),
-(3, 'Chứng chỉ Ngoại ngữ', 'chung-chi-ngoai-ngu', 1)";
-
 $sql_create_module[] = "INSERT INTO " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_config VALUES
 ('workgroup', 1),
 ('groupmanager', 1),
