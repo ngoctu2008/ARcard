@@ -68,19 +68,21 @@ if ($nv_Request->isset_request('save', 'post')) {
                 $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_rows SET
                     catid=:catid, fullname=:fullname, birthdate=:birthdate, cert_number=:cert_number, reg_number=:reg_number, issue_date=:issue_date, classification=:classification, classification_en=:classification_en" . $sql_extra . "
                     WHERE id=" . $id;
-                $data_insert = [
-                    ':catid' => $row['catid'],
-                    ':fullname' => $row['fullname'],
-                    ':birthdate' => $row['birthdate'],
-                    ':cert_number' => $row['cert_number'],
-                    ':reg_number' => $row['reg_number'],
-                    ':issue_date' => $row['issue_date'],
-                    ':classification' => $row['classification'],
-                    ':classification_en' => $row['classification_en']
-                ];
-                $data_insert = array_merge($data_insert, $params_extra);
+
                 $sth = $db->prepare($sql);
-                $sth->execute($data_insert);
+                $sth->bindValue(':catid', $row['catid']);
+                $sth->bindValue(':fullname', $row['fullname']);
+                $sth->bindValue(':birthdate', $row['birthdate']);
+                $sth->bindValue(':cert_number', $row['cert_number']);
+                $sth->bindValue(':reg_number', $row['reg_number']);
+                $sth->bindValue(':issue_date', $row['issue_date']);
+                $sth->bindValue(':classification', $row['classification']);
+                $sth->bindValue(':classification_en', $row['classification_en']);
+
+                foreach ($params_extra as $k => $v) {
+                    $sth->bindValue($k, $v);
+                }
+                $sth->execute();
             } else {
                 $cols_extra = "";
                 $vals_extra = "";
@@ -94,18 +96,21 @@ if ($nv_Request->isset_request('save', 'post')) {
                 $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_rows
                     (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification, classification_en" . $cols_extra . ") VALUES
                     (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification, :classification_en" . $vals_extra . ")";
-                $data_insert = [
-                    ':catid' => $row['catid'],
-                    ':fullname' => $row['fullname'],
-                    ':birthdate' => $row['birthdate'],
-                    ':cert_number' => $row['cert_number'],
-                    ':reg_number' => $row['reg_number'],
-                    ':issue_date' => $row['issue_date'],
-                    ':classification' => $row['classification'],
-                    ':classification_en' => $row['classification_en']
-                ];
-                $data_insert = array_merge($data_insert, $params_extra);
-                $db->insert_id($sql, 'id', $data_insert);
+
+                $sth = $db->prepare($sql);
+                $sth->bindValue(':catid', $row['catid']);
+                $sth->bindValue(':fullname', $row['fullname']);
+                $sth->bindValue(':birthdate', $row['birthdate']);
+                $sth->bindValue(':cert_number', $row['cert_number']);
+                $sth->bindValue(':reg_number', $row['reg_number']);
+                $sth->bindValue(':issue_date', $row['issue_date']);
+                $sth->bindValue(':classification', $row['classification']);
+                $sth->bindValue(':classification_en', $row['classification_en']);
+
+                foreach ($params_extra as $k => $v) {
+                    $sth->bindValue($k, $v);
+                }
+                $sth->execute();
             }
             $nv_Cache->delMod($module_name);
             Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);

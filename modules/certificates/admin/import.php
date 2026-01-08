@@ -59,19 +59,21 @@ if ($nv_Request->isset_request('import', 'post')) {
                 (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification, classification_en" . $sql_extra_cols . ") VALUES
                 (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification, :classification_en" . $sql_extra_vals . ")";
 
-                $data = [
-                    ':catid' => $catid,
-                    ':fullname' => $row['fullname'],
-                    ':birthdate' => $row['birthdate'],
-                    ':cert_number' => $row['cert_number'],
-                    ':reg_number' => $row['reg_number'],
-                    ':issue_date' => $issue_date,
-                    ':classification' => $row['classification'],
-                    ':classification_en' => isset($row['classification_en']) ? $row['classification_en'] : ''
-                ];
-                $data = array_merge($data, $params_extra);
+                $sth = $db->prepare($sql);
+                $sth->bindValue(':catid', $catid);
+                $sth->bindValue(':fullname', $row['fullname']);
+                $sth->bindValue(':birthdate', $row['birthdate']);
+                $sth->bindValue(':cert_number', $row['cert_number']);
+                $sth->bindValue(':reg_number', $row['reg_number']);
+                $sth->bindValue(':issue_date', $issue_date);
+                $sth->bindValue(':classification', $row['classification']);
+                $sth->bindValue(':classification_en', isset($row['classification_en']) ? $row['classification_en'] : '');
 
-                if($db->insert_id($sql, 'id', $data)) {
+                foreach ($params_extra as $k => $v) {
+                    $sth->bindValue($k, $v);
+                }
+
+                if ($sth->execute()) {
                     $count++;
                 }
             } else {
@@ -88,19 +90,22 @@ if ($nv_Request->isset_request('import', 'post')) {
                  $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_rows SET
                     catid=:catid, fullname=:fullname, birthdate=:birthdate, reg_number=:reg_number, issue_date=:issue_date, classification=:classification, classification_en=:classification_en" . $sql_extra . "
                     WHERE cert_number=:cert_number";
-                 $data = [
-                    ':catid' => $catid,
-                    ':fullname' => $row['fullname'],
-                    ':birthdate' => $row['birthdate'],
-                    ':cert_number' => $row['cert_number'],
-                    ':reg_number' => $row['reg_number'],
-                    ':issue_date' => $issue_date,
-                    ':classification' => $row['classification'],
-                    ':classification_en' => isset($row['classification_en']) ? $row['classification_en'] : ''
-                ];
-                $data = array_merge($data, $params_extra);
+
                 $sth = $db->prepare($sql);
-                $sth->execute($data);
+                $sth->bindValue(':catid', $catid);
+                $sth->bindValue(':fullname', $row['fullname']);
+                $sth->bindValue(':birthdate', $row['birthdate']);
+                $sth->bindValue(':cert_number', $row['cert_number']);
+                $sth->bindValue(':reg_number', $row['reg_number']);
+                $sth->bindValue(':issue_date', $issue_date);
+                $sth->bindValue(':classification', $row['classification']);
+                $sth->bindValue(':classification_en', isset($row['classification_en']) ? $row['classification_en'] : '');
+
+                foreach ($params_extra as $k => $v) {
+                    $sth->bindValue($k, $v);
+                }
+
+                $sth->execute();
                 $count++;
             }
         }
