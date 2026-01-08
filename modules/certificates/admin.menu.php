@@ -12,7 +12,7 @@ if (!defined('NV_ADMIN')) {
     die('Stop!!!');
 }
 
-$menu_top = [
+$submenu = [
     'cat' => $lang_module['cat_manage'],
     'main' => $lang_module['main_manage'],
     'fields' => $lang_module['fields_manage'],
