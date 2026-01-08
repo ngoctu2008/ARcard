@@ -42,6 +42,7 @@ $sql_create_module[] = "CREATE TABLE " . $db_config['prefix'] . "_" . $lang . "_
   issue_date int(11) unsigned NOT NULL DEFAULT '0',
   classification varchar(50) DEFAULT '',
   classification_en varchar(50) DEFAULT '',
+  image varchar(255) DEFAULT '',
   status tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (id),
   UNIQUE KEY cert_number (cert_number),

@@ -27,6 +27,28 @@ if ($nv_Request->isset_request('save', 'post')) {
     $issue_date = $nv_Request->get_title('issue_date', 'post', '');
     $row['classification'] = $nv_Request->get_title('classification', 'post', '');
     $row['classification_en'] = $nv_Request->get_title('classification_en', 'post', '');
+    $row['image'] = $nv_Request->get_string('image', 'post', ''); // Input from text field (browse) or handled upload below
+
+    // Handle File Upload if provided
+    if (isset($_FILES['image_file']) && is_uploaded_file($_FILES['image_file']['tmp_name'])) {
+        $cat_alias = 'uncategorized';
+        if ($row['catid'] > 0) {
+            $cat_alias = $db->query("SELECT alias FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat WHERE catid=" . $row['catid'])->fetchColumn();
+        }
+
+        $upload_dir = NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $cat_alias . '/' . date('Y_m');
+        if (!is_dir($upload_dir)) {
+            nv_mkdir($upload_dir, $cat_alias . '/' . date('Y_m'), true);
+        }
+
+        $filename = $_FILES['image_file']['name'];
+        $filename = nv_string_to_filename(pathinfo($filename, PATHINFO_FILENAME)) . '.' . pathinfo($filename, PATHINFO_EXTENSION);
+        $full_path = $upload_dir . '/' . $filename;
+
+        if (move_uploaded_file($_FILES['image_file']['tmp_name'], $full_path)) {
+            $row['image'] = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $cat_alias . '/' . date('Y_m') . '/' . $filename;
+        }
+    }
 
     // Custom Fields processing
     $custom_fields = [];
@@ -66,7 +88,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                 }
 
                 $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_rows SET
-                    catid=:catid, fullname=:fullname, birthdate=:birthdate, cert_number=:cert_number, reg_number=:reg_number, issue_date=:issue_date, classification=:classification, classification_en=:classification_en" . $sql_extra . "
+                    catid=:catid, fullname=:fullname, birthdate=:birthdate, cert_number=:cert_number, reg_number=:reg_number, issue_date=:issue_date, classification=:classification, classification_en=:classification_en, image=:image" . $sql_extra . "
                     WHERE id=" . $id;
 
                 $sth = $db->prepare($sql);
@@ -78,6 +100,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                 $sth->bindValue(':issue_date', $row['issue_date']);
                 $sth->bindValue(':classification', $row['classification']);
                 $sth->bindValue(':classification_en', $row['classification_en']);
+                $sth->bindValue(':image', $row['image']);
 
                 foreach ($params_extra as $k => $v) {
                     $sth->bindValue($k, $v);
@@ -94,8 +117,8 @@ if ($nv_Request->isset_request('save', 'post')) {
                 }
 
                 $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_rows
-                    (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification, classification_en" . $cols_extra . ") VALUES
-                    (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification, :classification_en" . $vals_extra . ")";
+                    (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification, classification_en, image" . $cols_extra . ") VALUES
+                    (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification, :classification_en, :image" . $vals_extra . ")";
 
                 $sth = $db->prepare($sql);
                 $sth->bindValue(':catid', $row['catid']);
@@ -106,6 +129,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                 $sth->bindValue(':issue_date', $row['issue_date']);
                 $sth->bindValue(':classification', $row['classification']);
                 $sth->bindValue(':classification_en', $row['classification_en']);
+                $sth->bindValue(':image', $row['image']);
 
                 foreach ($params_extra as $k => $v) {
                     $sth->bindValue($k, $v);
@@ -134,13 +158,15 @@ if ($nv_Request->isset_request('save', 'post')) {
             'reg_number' => '',
             'issue_date' => date('d/m/Y'),
             'classification' => '',
-            'classification_en' => ''
+            'classification_en' => '',
+            'image' => ''
         ];
     }
 }
 
 $xtpl = new XTemplate('content.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
 $xtpl->assign('LANG', $lang_module);
+$xtpl->assign('UPLOADS_DIR_USER', NV_UPLOADS_DIR . '/' . $module_upload);
 $xtpl->assign('NV_BASE_ADMINURL', NV_BASE_ADMINURL);
 $xtpl->assign('NV_NAME_VARIABLE', NV_NAME_VARIABLE);
 $xtpl->assign('NV_OP_VARIABLE', NV_OP_VARIABLE);
