@@ -12,6 +12,13 @@ if (!defined('NV_MAINFILE')) {
     die('Stop!!!');
 }
 
+// Load Local Config
+$sql = "SELECT config_name, config_value FROM " . NV_PREFIXLANG . "_" . $module_data . "_config";
+$result = $db->query($sql);
+while ($row = $result->fetch()) {
+    $module_config[$module_name][$row['config_name']] = $row['config_value'];
+}
+
 // Check permission
 $who_view = isset($module_config[$module_name]['who_view']) ? explode(',', $module_config[$module_name]['who_view']) : ['0'];
 $allowed = false;

@@ -13,6 +13,15 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
 }
 
 $page_title = $lang_module['config'];
+$table_config = NV_PREFIXLANG . "_" . $module_data . "_config";
+
+// Load Local Config
+$sql = "SELECT config_name, config_value FROM " . $table_config;
+$result = $db->query($sql);
+$local_config = [];
+while ($row = $result->fetch()) {
+    $local_config[$row['config_name']] = $row['config_value'];
+}
 
 if ($nv_Request->isset_request('save', 'post')) {
     $array_config = [];
@@ -21,18 +30,8 @@ if ($nv_Request->isset_request('save', 'post')) {
     $array_config['who_view'] = $nv_Request->get_array('who_view', 'post', []);
     $array_config['who_view'] = implode(',', $array_config['who_view']);
 
-    $sth = $db->prepare("SELECT config_name FROM " . NV_CONFIG_GLOBALTABLE . " WHERE lang = '" . NV_LANG_DATA . "' AND module = :module_name");
-    $sth->bindValue(':module_name', $module_name, PDO::PARAM_STR);
-    $sth->execute();
-    $existing_configs = $sth->fetchAll(PDO::FETCH_COLUMN);
-
     foreach ($array_config as $config_name => $config_value) {
-        if (in_array($config_name, $existing_configs)) {
-            $sth = $db->prepare("UPDATE " . NV_CONFIG_GLOBALTABLE . " SET config_value = :config_value WHERE lang = '" . NV_LANG_DATA . "' AND module = :module_name AND config_name = :config_name");
-        } else {
-            $sth = $db->prepare("INSERT INTO " . NV_CONFIG_GLOBALTABLE . " (lang, module, config_name, config_value) VALUES ('" . NV_LANG_DATA . "', :module_name, :config_name, :config_value)");
-        }
-        $sth->bindValue(':module_name', $module_name, PDO::PARAM_STR);
+        $sth = $db->prepare("REPLACE INTO " . $table_config . " (config_name, config_value) VALUES (:config_name, :config_value)");
         $sth->bindValue(':config_name', $config_name, PDO::PARAM_STR);
         $sth->bindValue(':config_value', $config_value, PDO::PARAM_STR);
         $sth->execute();
@@ -52,8 +51,8 @@ $xtpl->assign('MODULE_NAME', $module_name);
 $xtpl->assign('OP', 'config');
 
 $xtpl->assign('DATA', [
-    'per_page' => isset($module_config[$module_name]['per_page']) ? $module_config[$module_name]['per_page'] : 20,
-    'active_captcha' => isset($module_config[$module_name]['active_captcha']) ? $module_config[$module_name]['active_captcha'] : 1
+    'per_page' => isset($local_config['per_page']) ? $local_config['per_page'] : 20,
+    'active_captcha' => isset($local_config['active_captcha']) ? $local_config['active_captcha'] : 1
 ]);
 
 $xtpl->assign('CAPTCHA_0', ($xtpl->vars['DATA']['active_captcha'] == 0) ? 'selected="selected"' : '');
@@ -61,7 +60,7 @@ $xtpl->assign('CAPTCHA_1', ($xtpl->vars['DATA']['active_captcha'] == 1) ? 'selec
 
 // Groups
 $groups_list = nv_groups_list();
-$who_view = isset($module_config[$module_name]['who_view']) ? explode(',', $module_config[$module_name]['who_view']) : ['0']; // Default all visitors (0)
+$who_view = isset($local_config['who_view']) ? explode(',', $local_config['who_view']) : ['0']; // Default all visitors (0)
 
 foreach ($groups_list as $group_id => $group_title) {
     $xtpl->assign('GROUP', [
