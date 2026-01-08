@@ -65,6 +65,11 @@
                                 <p><strong>{LANG.reg_number}:</strong> {RESULT.reg_number}</p>
                                 <p><strong>{LANG.issue_date}:</strong> {RESULT.issue_date_str}</p>
                             </div>
+                            <!-- BEGIN: custom_field -->
+                            <div class="col-md-12">
+                                <p><strong>{FIELD.title}:</strong> {FIELD.value}</p>
+                            </div>
+                            <!-- END: custom_field -->
                         </div>
                     </div>
                 </div>

@@ -20,6 +20,7 @@ $lang_translator['langtype'] = 'lang_module';
 
 $lang_module['cat_manage'] = 'Quản lý loại văn bằng';
 $lang_module['main_manage'] = 'Danh sách văn bằng';
+$lang_module['fields_manage'] = 'Tùy biến dữ liệu';
 $lang_module['import_excel'] = 'Import từ Excel';
 $lang_module['config'] = 'Cấu hình';
 $lang_module['save'] = 'Lưu thay đổi';
@@ -34,6 +35,8 @@ $lang_module['error_title'] = 'Lỗi: Tiêu đề không được để trống'
 $lang_module['error_cat_exists'] = 'Lỗi: Loại văn bằng này đã tồn tại';
 $lang_module['add_content'] = 'Thêm văn bằng thủ công';
 $lang_module['edit_content'] = 'Sửa văn bằng';
+$lang_module['add_field'] = 'Thêm trường dữ liệu';
+$lang_module['edit_field'] = 'Sửa trường dữ liệu';
 $lang_module['fullname'] = 'Họ và tên';
 $lang_module['birthdate'] = 'Ngày sinh';
 $lang_module['cert_number'] = 'Số hiệu văn bằng';

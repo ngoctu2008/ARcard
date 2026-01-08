@@ -78,9 +78,41 @@ if (!empty($result_data)) {
         $cats[$row['catid']] = $row['title'];
     }
 
+    // Get Custom Fields
+    $fields_q = $db->query("SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE status=1 ORDER BY weight ASC");
+    $custom_fields_def = [];
+    while($field = $fields_q->fetch()) {
+         $custom_fields_def[] = $field;
+    }
+
     foreach ($result_data as $row) {
         $row['cat_title'] = isset($cats[$row['catid']]) ? $cats[$row['catid']] : '';
         $row['issue_date_str'] = ($row['issue_date'] > 0) ? date('d/m/Y', $row['issue_date']) : '';
+
+        // Render custom fields for this row
+        foreach ($custom_fields_def as $field) {
+            $val = isset($row[$field['field']]) ? $row[$field['field']] : '';
+            if ($val != '') {
+                // If select, get label
+                 if ($field['field_type'] == 'select') {
+                     $choices = explode("\n", $field['field_choices']);
+                     foreach ($choices as $choice) {
+                         $parts = explode('|', trim($choice));
+                         if ($parts[0] == $val) {
+                             $val = isset($parts[1]) ? $parts[1] : $val;
+                             break;
+                         }
+                     }
+                 }
+
+                $xtpl->assign('FIELD', [
+                    'title' => $field['title'],
+                    'value' => $val
+                ]);
+                $xtpl->parse('main.result_box.loop.custom_field');
+            }
+        }
+
         $xtpl->assign('RESULT', $row);
         $xtpl->parse('main.result_box.loop');
     }

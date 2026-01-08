@@ -72,6 +72,25 @@
                         </div>
                     </div>
 
+                    <!-- BEGIN: field -->
+                    <div class="form-group">
+                        <label class="col-sm-5 col-md-4 control-label"><strong>{FIELD.title}</strong></label>
+                        <div class="col-sm-19 col-md-20">
+                            <!-- BEGIN: textbox -->
+                            <input class="form-control" type="text" name="{FIELD.field}" value="{FIELD.value}" {FIELD.required_attr} />
+                            <!-- END: textbox -->
+                            <!-- BEGIN: select -->
+                            <select class="form-control" name="{FIELD.field}">
+                                <!-- BEGIN: option -->
+                                <option value="{OPTION.key}" {OPTION.selected}>{OPTION.title}</option>
+                                <!-- END: option -->
+                            </select>
+                            <!-- END: select -->
+                            <span class="help-block">{FIELD.description}</span>
+                        </div>
+                    </div>
+                    <!-- END: field -->
+
                     <div class="form-group" style="text-align: center">
                         <input class="btn btn-primary" type="submit" value="{LANG.save}" />
                     </div>

@@ -15,8 +15,9 @@ if (!defined('NV_ADMIN')) {
 $menu_top = [
     'cat' => $lang_module['cat_manage'],
     'main' => $lang_module['main_manage'],
+    'fields' => $lang_module['fields_manage'],
     'import' => $lang_module['import_excel'],
     'config' => $lang_module['config']
 ];
 
-$allow_func = ['main', 'cat', 'import', 'content', 'config', 'del_cat', 'change_status', 'del_content'];
+$allow_func = ['main', 'cat', 'fields', 'import', 'content', 'config', 'del_cat', 'change_status', 'del_content'];

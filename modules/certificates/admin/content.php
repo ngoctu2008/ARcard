@@ -27,6 +27,15 @@ if ($nv_Request->isset_request('save', 'post')) {
     $issue_date = $nv_Request->get_title('issue_date', 'post', '');
     $row['classification'] = $nv_Request->get_title('classification', 'post', '');
 
+    // Custom Fields processing
+    $custom_fields = [];
+    $fields_q = $db->query("SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE status=1 ORDER BY weight ASC");
+    $custom_data = [];
+    while($field = $fields_q->fetch()) {
+        $val = $nv_Request->get_string($field['field'], 'post', '');
+        $custom_data[$field['field']] = $val;
+    }
+
     if (preg_match('/^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/', $issue_date, $m)) {
         $row['issue_date'] = mktime(0, 0, 0, $m[2], $m[1], $m[3]);
     } else {
@@ -48,8 +57,15 @@ if ($nv_Request->isset_request('save', 'post')) {
              $error = "Error: Certificate Number exists!";
         } else {
             if ($id > 0) {
+                $sql_extra = "";
+                $params_extra = [];
+                foreach ($custom_data as $fname => $fval) {
+                    $sql_extra .= ", `" . $fname . "`=:" . $fname;
+                    $params_extra[':'.$fname] = $fval;
+                }
+
                 $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_rows SET
-                    catid=:catid, fullname=:fullname, birthdate=:birthdate, cert_number=:cert_number, reg_number=:reg_number, issue_date=:issue_date, classification=:classification
+                    catid=:catid, fullname=:fullname, birthdate=:birthdate, cert_number=:cert_number, reg_number=:reg_number, issue_date=:issue_date, classification=:classification" . $sql_extra . "
                     WHERE id=" . $id;
                 $data_insert = [
                     ':catid' => $row['catid'],
@@ -60,11 +76,21 @@ if ($nv_Request->isset_request('save', 'post')) {
                     ':issue_date' => $row['issue_date'],
                     ':classification' => $row['classification']
                 ];
+                $data_insert = array_merge($data_insert, $params_extra);
                 $db->query_check($sql, $data_insert);
             } else {
+                $cols_extra = "";
+                $vals_extra = "";
+                $params_extra = [];
+                 foreach ($custom_data as $fname => $fval) {
+                    $cols_extra .= ", `" . $fname . "`";
+                    $vals_extra .= ", :" . $fname;
+                    $params_extra[':'.$fname] = $fval;
+                }
+
                 $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_rows
-                    (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification) VALUES
-                    (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification)";
+                    (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification" . $cols_extra . ") VALUES
+                    (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification" . $vals_extra . ")";
                 $data_insert = [
                     ':catid' => $row['catid'],
                     ':fullname' => $row['fullname'],
@@ -74,6 +100,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                     ':issue_date' => $row['issue_date'],
                     ':classification' => $row['classification']
                 ];
+                $data_insert = array_merge($data_insert, $params_extra);
                 $db->insert_id($sql, 'id', $data_insert);
             }
             nv_del_moduleCache($module_name);
@@ -110,6 +137,33 @@ $xtpl->assign('NV_OP_VARIABLE', NV_OP_VARIABLE);
 $xtpl->assign('MODULE_NAME', $module_name);
 $xtpl->assign('OP', 'content');
 $xtpl->assign('ROW', $row);
+
+// Render Custom Fields
+$fields_q = $db->query("SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE status=1 ORDER BY weight ASC");
+while($field = $fields_q->fetch()) {
+    $field['value'] = isset($row[$field['field']]) ? $row[$field['field']] : $field['default_value'];
+
+    if ($field['field_type'] == 'select') {
+        $choices = explode("\n", $field['field_choices']);
+        foreach ($choices as $choice) {
+            $parts = explode('|', trim($choice));
+            $key = $parts[0];
+            $label = isset($parts[1]) ? $parts[1] : $key;
+            $xtpl->assign('OPTION', [
+                'key' => $key,
+                'title' => $label,
+                'selected' => ($key == $field['value']) ? 'selected' : ''
+            ]);
+            $xtpl->parse('main.field.select.option');
+        }
+        $xtpl->parse('main.field.select');
+    } else {
+         $xtpl->parse('main.field.textbox');
+    }
+
+    $xtpl->assign('FIELD', $field);
+    $xtpl->parse('main.field');
+}
 
 if (!empty($error)) {
     $xtpl->assign('ERROR', $error);
