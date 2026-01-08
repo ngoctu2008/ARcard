@@ -142,7 +142,10 @@ if ($nv_Request->isset_request('save', 'post')) {
                     ':field_type' => $row['field_type'],
                     ':field_choices' => $row['field_choices']
                 ];
-                $fid = $db->insert_id($sql, 'fid', $data);
+                $sth = $db->prepare($sql);
+                $sth->execute($data);
+                $fid = $db->lastInsertId();
+
                 if ($fid > 0) {
                     $count = $db->query("SELECT COUNT(*) FROM " . $table_fields)->fetchColumn();
                     $db->query("UPDATE " . $table_fields . " SET weight=" . $count . " WHERE fid=" . $fid);

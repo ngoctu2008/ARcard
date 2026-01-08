@@ -117,7 +117,9 @@ if ($nv_Request->isset_request('submit', 'post')) {
                 ':description' => $description,
                 ':image' => $image
             ];
-            $catid = $db->insert_id($sql, 'catid', $data_insert);
+            $sth = $db->prepare($sql);
+            $sth->execute($data_insert);
+            $catid = $db->lastInsertId();
             if ($catid > 0) {
                 // Set weight to Max + 1 or Count
                 $count = $db->query("SELECT COUNT(*) FROM " . $table_cat)->fetchColumn();
