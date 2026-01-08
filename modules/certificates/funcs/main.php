@@ -21,9 +21,8 @@ if ($nv_Request->isset_request('search', 'post')) {
     $cert_number = $nv_Request->get_title('cert_number', 'post', '');
     $second_factor = $nv_Request->get_title('second_factor', 'post', '');
     $captcha = $nv_Request->get_title('captcha', 'post', '');
-    $nv_seccode = $nv_Request->get_title('nv_seccode', 'post', '');
 
-    if (!nv_capcha_txt($captcha, $nv_seccode)) {
+    if (!nv_capcha_txt($captcha)) {
         $error = $lang_module['captcha_error'];
     } elseif (empty($cert_number) || empty($second_factor)) {
         $error = $lang_module['input_required'];

@@ -33,7 +33,6 @@
                             </div>
                             <div class="col-md-6">
                                 <img class="captchaImg" src="{CAPTCHA_URL}" height="32" width="100" alt="Captcha" onclick="change_captcha(this);" data-src="{CAPTCHA_URL}"/>
-                                <input type="hidden" name="nv_seccode" value="{CAPTCHA_URL}" class="scaptcha_hidden" />
                             </div>
                         </div>
 
