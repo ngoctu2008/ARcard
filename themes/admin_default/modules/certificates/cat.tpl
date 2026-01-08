@@ -89,7 +89,7 @@
             <div class="input-group">
                 <input class="form-control" type="text" name="image" value="{ROW.image}" id="id_image" />
                 <span class="input-group-btn">
-                    <button class="btn btn-default" type="button" onclick="nv_open_browse( '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path={UPLOADS_DIR_USER}&type=image', 'NVImg', 850, 420, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no' ); return false; "><i class="fa fa-folder-open-o"></i> Browse server</button>
+                    <button class="btn btn-default" type="button" onclick="open_browse_image(); return false;"><i class="fa fa-folder-open-o"></i> Browse server</button>
                 </span>
             </div>
         </div>
@@ -157,6 +157,15 @@
     $("[name='title']").change(function() {
         nv_get_alias('id_alias');
     });
+
+    function open_browse_image() {
+        var alias = $('#id_alias').val();
+        if (alias == '') {
+            alias = 'general';
+        }
+        var path = '{UPLOADS_DIR_USER}/' + alias;
+        nv_open_browse( '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path=' + path + '&type=image', 'NVImg', 850, 420, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no' );
+    }
 //]]>
 </script>
 <!-- END: auto_get_alias -->
