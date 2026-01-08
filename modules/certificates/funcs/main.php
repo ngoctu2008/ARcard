@@ -89,6 +89,15 @@ if (!empty($result_data)) {
         $row['cat_title'] = isset($cats[$row['catid']]) ? $cats[$row['catid']] : '';
         $row['issue_date_str'] = ($row['issue_date'] > 0) ? date('d/m/Y', $row['issue_date']) : '';
 
+        if (!empty($row['image']) && file_exists(NV_ROOTDIR . '/' . $row['image'])) {
+            $row['image'] = NV_BASE_SITEURL . $row['image'];
+            $xtpl->parse('main.result_box.loop.image');
+        }
+
+        if (!empty($row['classification_en'])) {
+            $xtpl->parse('main.result_box.loop.class_en');
+        }
+
         // Render custom fields for this row
         foreach ($custom_fields_def as $field) {
             $val = isset($row[$field['field']]) ? $row[$field['field']] : '';

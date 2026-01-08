@@ -40,6 +40,7 @@
                 <thead>
                     <tr>
                         <th class="text-center" width="50">ID</th>
+                        <th width="100" class="text-center">STT</th>
                         <th>{LANG.title}</th>
                         <th>{LANG.alias}</th>
                         <th class="text-center" width="100">{LANG.status}</th>
@@ -50,9 +51,18 @@
                     <!-- BEGIN: loop -->
                     <tr>
                         <td class="text-center">{CAT.catid}</td>
+                        <td class="text-center">
+                            <select class="form-control input-sm" onchange="nv_change_weight({CAT.catid}, this.value)">
+                                <!-- BEGIN: weight_loop -->
+                                <option value="{WEIGHT.key}" {WEIGHT.selected}>{WEIGHT.title}</option>
+                                <!-- END: weight_loop -->
+                            </select>
+                        </td>
                         <td>{CAT.title}</td>
                         <td>{CAT.alias}</td>
-                        <td class="text-center">{CAT.status_str}</td>
+                        <td class="text-center">
+                            <input type="checkbox" name="status" value="1" {CAT.status_checked} onclick="nv_change_status({CAT.catid}, this.checked)" />
+                        </td>
                         <td class="text-center">
                             <a href="{CAT.link_edit}" class="btn btn-default btn-xs"><i class="fa fa-edit"></i></a>
                             <a href="javascript:void(0);" onclick="nv_del_cat({CAT.catid})" class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></a>
@@ -75,6 +85,25 @@
                 }
             });
         }
+    }
+
+    function nv_change_status(id, checked) {
+        var new_status = checked ? 1 : 0;
+        $.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=change_status', 'id=' + id + '&new_status=' + new_status + '&mod=cat', function(res) {
+            if (res != 'OK') {
+                alert('Error: ' + res);
+                window.location.href = window.location.href;
+            }
+        });
+    }
+
+    function nv_change_weight(id, new_weight) {
+        $.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=change_weight', 'id=' + id + '&new_weight=' + new_weight + '&mod=cat', function(res) {
+            if (res != 'OK') {
+                alert('Error: ' + res);
+            }
+            window.location.href = window.location.href;
+        });
     }
 </script>
 <!-- END: main -->

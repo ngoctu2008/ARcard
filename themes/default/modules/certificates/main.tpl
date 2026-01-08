@@ -55,21 +55,40 @@
                     </div>
                     <div class="card-body" style="padding: 20px;">
                         <div class="row">
-                            <div class="col-md-12">
-                                <p><strong>{LANG.birthdate}:</strong> {RESULT.birthdate}</p>
-                                <p><strong>{LANG.cat}:</strong> {RESULT.cat_title}</p>
-                                <p><strong>{LANG.classification}:</strong> {RESULT.classification}</p>
+                            <div class="col-md-8">
+                                <!-- BEGIN: image -->
+                                <div class="text-center mb-3">
+                                    <a href="{RESULT.image}" target="_blank">
+                                        <img src="{RESULT.image}" alt="{RESULT.fullname}" class="img-thumbnail" style="max-height: 200px;" />
+                                    </a>
+                                </div>
+                                <!-- END: image -->
                             </div>
-                            <div class="col-md-12">
-                                <p><strong>{LANG.cert_number}:</strong> <span class="text-danger font-weight-bold">{RESULT.cert_number}</span></p>
-                                <p><strong>{LANG.reg_number}:</strong> {RESULT.reg_number}</p>
-                                <p><strong>{LANG.issue_date}:</strong> {RESULT.issue_date_str}</p>
+                            <div class="col-md-16">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <p><strong>{LANG.birthdate}:</strong> {RESULT.birthdate}</p>
+                                        <p><strong>{LANG.cat}:</strong> {RESULT.cat_title}</p>
+                                        <p>
+                                            <strong>{LANG.classification} / Classification:</strong>
+                                            {RESULT.classification}
+                                            <!-- BEGIN: class_en -->
+                                            / {RESULT.classification_en}
+                                            <!-- END: class_en -->
+                                        </p>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <p><strong>{LANG.cert_number}:</strong> <span class="text-danger font-weight-bold">{RESULT.cert_number}</span></p>
+                                        <p><strong>{LANG.reg_number}:</strong> {RESULT.reg_number}</p>
+                                        <p><strong>{LANG.issue_date}:</strong> {RESULT.issue_date_str}</p>
+                                    </div>
+                                    <!-- BEGIN: custom_field -->
+                                    <div class="col-md-12">
+                                        <p><strong>{FIELD.title}:</strong> {FIELD.value}</p>
+                                    </div>
+                                    <!-- END: custom_field -->
+                                </div>
                             </div>
-                            <!-- BEGIN: custom_field -->
-                            <div class="col-md-12">
-                                <p><strong>{FIELD.title}:</strong> {FIELD.value}</p>
-                            </div>
-                            <!-- END: custom_field -->
                         </div>
                     </div>
                 </div>

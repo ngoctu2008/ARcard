@@ -122,8 +122,26 @@ if (!empty($error)) {
 // List fields
 $sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields ORDER BY weight ASC";
 $result = $db->query($sql);
+$array_fields = [];
 while ($r = $result->fetch()) {
+    $array_fields[] = $r;
+}
+$num_fields = count($array_fields);
+
+foreach ($array_fields as $r) {
     $r['link_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=fields&fid=' . $r['fid'];
+    $r['status_checked'] = ($r['status'] == 1) ? 'checked' : '';
+
+    // Weight Loop
+    for ($i = 1; $i <= $num_fields; $i++) {
+        $xtpl->assign('WEIGHT', [
+            'key' => $i,
+            'title' => $i,
+            'selected' => ($i == $r['weight']) ? 'selected' : ''
+        ]);
+        $xtpl->parse('main.loop.weight_loop');
+    }
+
     $xtpl->assign('ROW', $r);
     $xtpl->parse('main.loop');
 }

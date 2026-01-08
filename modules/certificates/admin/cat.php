@@ -101,9 +101,21 @@ if ($catid > 0 and isset($array_cat[$catid])) {
 $xtpl->assign('CAPTION', $caption);
 $xtpl->assign('ROW', $row);
 
+$num_cats = count($array_cat);
 foreach ($array_cat as $cat) {
-    $cat['status_str'] = ($cat['status'] == 1) ? $lang_module['active'] : $lang_module['inactive'];
+    $cat['status_checked'] = ($cat['status'] == 1) ? 'checked' : '';
     $cat['link_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat&catid=' . $cat['catid'];
+
+    // Weight Loop
+    for ($i = 1; $i <= $num_cats; $i++) {
+        $xtpl->assign('WEIGHT', [
+            'key' => $i,
+            'title' => $i,
+            'selected' => ($i == $cat['weight']) ? 'selected' : ''
+        ]);
+        $xtpl->parse('main.loop.weight_loop');
+    }
+
     $xtpl->assign('CAT', $cat);
     $xtpl->parse('main.loop');
 }

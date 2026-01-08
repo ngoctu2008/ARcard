@@ -20,4 +20,4 @@ $menu_top = [
     'config' => $lang_module['config']
 ];
 
-$allow_func = ['main', 'cat', 'fields', 'import', 'content', 'config', 'del_cat', 'change_status', 'del_content'];
+$allow_func = ['main', 'cat', 'fields', 'import', 'content', 'config', 'del_cat', 'change_status', 'change_weight', 'del_content'];

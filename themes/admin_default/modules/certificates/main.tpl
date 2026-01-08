@@ -22,6 +22,15 @@
             </div>
             <div class="col-xs-12 col-md-3">
                 <div class="form-group">
+                    <select class="form-control" name="status">
+                        <option value="-1">-- {LANG.status} --</option>
+                        <option value="1" {STATUS_1}>{LANG.active}</option>
+                        <option value="0" {STATUS_0}>{LANG.inactive}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-3">
+                <div class="form-group">
                     <input class="btn btn-primary" type="submit" value="{LANG.search}" />
                 </div>
             </div>
@@ -40,6 +49,7 @@
                 <th>{LANG.cert_number}</th>
                 <th>{LANG.reg_number}</th>
                 <th>{LANG.issue_date}</th>
+                <th width="100" class="text-center">{LANG.status}</th>
                 <th width="100" class="text-center">Chức năng</th>
             </tr>
         </thead>
@@ -53,6 +63,9 @@
                 <td>{ROW.cert_number}</td>
                 <td>{ROW.reg_number}</td>
                 <td>{ROW.issue_date_str}</td>
+                <td class="text-center">
+                    <input type="checkbox" name="status" value="1" {ROW.status_checked} onclick="nv_change_status({ROW.id}, this.checked)" />
+                </td>
                 <td class="text-center">
                     <a href="{ROW.link_edit}" class="btn btn-default btn-xs"><i class="fa fa-edit"></i></a>
                     <a href="javascript:void(0);" onclick="nv_del_row({ROW.id})" class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></a>
@@ -81,6 +94,16 @@
                 }
             });
         }
+    }
+
+    function nv_change_status(id, checked) {
+        var new_status = checked ? 1 : 0;
+        $.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=change_status', 'id=' + id + '&new_status=' + new_status + '&mod=rows', function(res) {
+            if (res != 'OK') {
+                alert('Error: ' + res);
+                window.location.href = window.location.href;
+            }
+        });
     }
 </script>
 <!-- END: main -->

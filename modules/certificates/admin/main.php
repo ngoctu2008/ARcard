@@ -29,6 +29,7 @@ $base_url = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_D
 
 $catid = $nv_Request->get_int('catid', 'get', 0);
 $q = $nv_Request->get_string('q', 'get', '');
+$status = $nv_Request->get_int('status', 'get', -1);
 
 $where = [];
 $params = [];
@@ -36,6 +37,10 @@ $params = [];
 if ($catid > 0) {
     $where[] = 'catid=' . $catid;
     $base_url .= '&catid=' . $catid;
+}
+if ($status >= 0) {
+    $where[] = 'status=' . $status;
+    $base_url .= '&status=' . $status;
 }
 if (!empty($q)) {
     $where[] = '(fullname LIKE :q1 OR cert_number LIKE :q2 OR reg_number LIKE :q3)';
@@ -76,6 +81,8 @@ $xtpl->assign('MODULE_NAME', $module_name);
 $xtpl->assign('OP', 'main');
 $xtpl->assign('Q', $q);
 
+$xtpl->assign('STATUS_' . $status, 'selected="selected"');
+
 // Categories select
 foreach ($array_cat as $cat) {
     $cat['selected'] = ($cat['catid'] == $catid) ? 'selected="selected"' : '';
@@ -88,6 +95,7 @@ while ($row = $sth->fetch()) {
     $row['cat_title'] = isset($array_cat[$row['catid']]) ? $array_cat[$row['catid']]['title'] : '';
     $row['issue_date_str'] = ($row['issue_date'] > 0) ? date('d/m/Y', $row['issue_date']) : '';
     $row['link_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=content&id=' . $row['id'];
+    $row['status_checked'] = ($row['status'] == 1) ? 'checked' : '';
     $xtpl->assign('ROW', $row);
     $xtpl->parse('main.loop');
 }

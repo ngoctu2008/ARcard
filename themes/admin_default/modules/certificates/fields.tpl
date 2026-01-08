@@ -71,9 +71,11 @@
                 <thead>
                     <tr>
                         <th width="50">ID</th>
+                        <th width="100" class="text-center">STT</th>
                         <th>Mã trường</th>
                         <th>Tiêu đề</th>
                         <th>Loại</th>
+                        <th width="100" class="text-center">Trạng thái</th>
                         <th width="100" class="text-center">Chức năng</th>
                     </tr>
                 </thead>
@@ -81,9 +83,19 @@
                     <!-- BEGIN: loop -->
                     <tr>
                         <td>{ROW.fid}</td>
+                        <td class="text-center">
+                            <select class="form-control input-sm" onchange="nv_change_weight({ROW.fid}, this.value)">
+                                <!-- BEGIN: weight_loop -->
+                                <option value="{WEIGHT.key}" {WEIGHT.selected}>{WEIGHT.title}</option>
+                                <!-- END: weight_loop -->
+                            </select>
+                        </td>
                         <td>{ROW.field}</td>
                         <td>{ROW.title}</td>
                         <td>{ROW.field_type}</td>
+                        <td class="text-center">
+                             <input type="checkbox" name="status" value="1" {ROW.status_checked} onclick="nv_change_status({ROW.fid}, this.checked)" />
+                        </td>
                         <td class="text-center">
                             <a href="{ROW.link_edit}" class="btn btn-default btn-xs"><i class="fa fa-edit"></i></a>
                             <a href="javascript:void(0);" onclick="nv_del_field({ROW.fid})" class="btn btn-danger btn-xs"><i class="fa fa-trash-o"></i></a>
@@ -106,6 +118,25 @@
                 }
             });
         }
+    }
+
+    function nv_change_status(id, checked) {
+        var new_status = checked ? 1 : 0;
+        $.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=change_status', 'id=' + id + '&new_status=' + new_status + '&mod=fields', function(res) {
+            if (res != 'OK') {
+                alert('Error: ' + res);
+                window.location.href = window.location.href;
+            }
+        });
+    }
+
+    function nv_change_weight(id, new_weight) {
+        $.post(script_name + '?' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=change_weight', 'id=' + id + '&new_weight=' + new_weight + '&mod=fields', function(res) {
+            if (res != 'OK') {
+                alert('Error: ' + res);
+            }
+            window.location.href = window.location.href;
+        });
     }
 </script>
 <!-- END: main -->

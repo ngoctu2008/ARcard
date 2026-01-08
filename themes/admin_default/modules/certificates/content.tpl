@@ -2,6 +2,9 @@
 <link rel="stylesheet" href="{NV_BASE_SITEURL}{NV_ASSETS_DIR}/js/jquery-ui/jquery-ui.min.css">
 <script type="text/javascript" src="{NV_BASE_SITEURL}{NV_ASSETS_DIR}/js/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript" src="{NV_BASE_SITEURL}{NV_ASSETS_DIR}/js/language/jquery.ui.datepicker-{NV_LANG_INTERFACE}.js"></script>
+<script type="text/javascript" src="{NV_BASE_SITEURL}{NV_ASSETS_DIR}/js/select2/select2.min.js"></script>
+<script type="text/javascript" src="{NV_BASE_SITEURL}{NV_ASSETS_DIR}/js/language/select2_{NV_LANG_INTERFACE}.js"></script>
+<link rel="stylesheet" href="{NV_BASE_SITEURL}{NV_ASSETS_DIR}/js/select2/select2.min.css">
 
 <div class="row">
     <div class="col-md-24">
@@ -66,9 +69,28 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="col-sm-5 col-md-4 control-label"><strong>{LANG.classification}</strong></label>
+                        <label class="col-sm-5 col-md-4 control-label"><strong>{LANG.classification} (VN)</strong></label>
                         <div class="col-sm-19 col-md-20">
                             <input class="form-control" type="text" name="classification" value="{ROW.classification}" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-5 col-md-4 control-label"><strong>Classification (EN)</strong></label>
+                        <div class="col-sm-19 col-md-20">
+                            <input class="form-control" type="text" name="classification_en" value="{ROW.classification_en}" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-5 col-md-4 control-label"><strong>Hình ảnh văn bằng</strong></label>
+                        <div class="col-sm-19 col-md-20">
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="image" value="{ROW.image}" id="id_image" />
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" onclick="nv_open_browse( '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path={UPLOADS_DIR_USER}&type=image', 'NVImg', 850, 420, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no' ); return false; "><i class="fa fa-folder-open-o"></i> Browse server</button>
+                                </span>
+                            </div>
                         </div>
                     </div>
 
