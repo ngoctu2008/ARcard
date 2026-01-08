@@ -12,6 +12,26 @@ if (!defined('NV_MAINFILE')) {
     die('Stop!!!');
 }
 
+// Check permission
+$who_view = isset($module_config[$module_name]['who_view']) ? explode(',', $module_config[$module_name]['who_view']) : ['0'];
+$allowed = false;
+if (in_array(0, $who_view)) { // All visitors
+    $allowed = true;
+} elseif (defined('NV_IS_USER')) {
+    // Check user groups
+    if (array_intersect($user_info['in_groups'], $who_view)) {
+        $allowed = true;
+    }
+}
+
+if (!$allowed) {
+    $contents = '<div class="alert alert-danger text-center">Bạn không có quyền truy cập chức năng này! Vui lòng đăng nhập hoặc liên hệ BQT.</div>';
+    include NV_ROOTDIR . '/includes/header.php';
+    echo nv_site_theme($contents);
+    include NV_ROOTDIR . '/includes/footer.php';
+    exit();
+}
+
 $page_title = $lang_module['main'];
 $error = '';
 $result_data = [];
@@ -64,7 +84,7 @@ if (!empty($error)) {
 }
 
 // Display Form
-$xtpl->assign('ACTION', NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name);
+$xtpl->assign('ACTION', NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
 $xtpl->assign('CAPTCHA_URL', NV_BASE_SITEURL . 'index.php?scaptcha=captcha&t=' . NV_CURRENTTIME);
 $xtpl->assign('GFX_NUM', NV_GFX_NUM);
 
@@ -129,6 +149,8 @@ if (!empty($result_data)) {
         $xtpl->parse('main.result_box.loop');
     }
     $xtpl->parse('main.result_box');
+} else {
+    $xtpl->parse('main.form');
 }
 
 $xtpl->parse('main');

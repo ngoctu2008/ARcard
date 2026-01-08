@@ -9,6 +9,20 @@
                     <input class="form-control" type="number" name="per_page" value="{DATA.per_page}" required />
                 </div>
             </div>
+
+            <div class="form-group">
+                <label class="col-sm-5 col-md-4 control-label"><strong>Ai được phép tra cứu</strong></label>
+                <div class="col-sm-19 col-md-20">
+                    <!-- BEGIN: group -->
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="who_view[]" value="{GROUP.id}" {GROUP.checked}> {GROUP.title}
+                        </label>
+                    </div>
+                    <!-- END: group -->
+                </div>
+            </div>
+
             <div class="form-group text-center">
                 <input class="btn btn-primary" type="submit" name="save" value="{LANG.save}" />
             </div>

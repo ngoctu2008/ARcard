@@ -9,6 +9,7 @@
             <div class="alert alert-danger text-center">{ERROR}</div>
             <!-- END: error -->
 
+            <!-- BEGIN: form -->
             <div class="panel panel-primary search-panel">
                 <div class="panel-body">
                     <form action="{ACTION}" method="post" autocomplete="off">
@@ -44,6 +45,7 @@
                     </form>
                 </div>
             </div>
+            <!-- END: form -->
 
             <!-- BEGIN: result_box -->
             <div id="print-area">
