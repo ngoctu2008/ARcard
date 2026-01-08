@@ -104,7 +104,9 @@ if ($nv_Request->isset_request('submit', 'post')) {
                 ':image' => $image
             ];
             $catid = $db->insert_id($sql, 'catid', $data_insert);
-            $db->query("UPDATE " . $table_cat . " SET weight=" . $catid . " WHERE catid=" . $catid);
+            if ($catid > 0) {
+                $db->query("UPDATE " . $table_cat . " SET weight=" . $catid . " WHERE catid=" . $catid);
+            }
         }
         $nv_Cache->delMod($module_name);
         Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat');

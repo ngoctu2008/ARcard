@@ -129,7 +129,9 @@ if ($nv_Request->isset_request('save', 'post')) {
                     ':field_choices' => $row['field_choices']
                 ];
                 $fid = $db->insert_id($sql, 'fid', $data);
-                $db->query("UPDATE " . $table_fields . " SET weight=" . $fid . " WHERE fid=" . $fid);
+                if ($fid > 0) {
+                    $db->query("UPDATE " . $table_fields . " SET weight=" . $fid . " WHERE fid=" . $fid);
+                }
 
                 // Alter table to add column
                 $col_exists = $db->query("SHOW COLUMNS FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows LIKE '" . $row['field'] . "'")->fetchColumn();
