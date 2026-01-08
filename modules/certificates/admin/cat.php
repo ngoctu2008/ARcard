@@ -40,46 +40,26 @@ if ($nv_Request->isset_request('change_status', 'post')) {
 if ($nv_Request->isset_request('ajax_action', 'post')) {
     $catid = $nv_Request->get_int('catid', 'post', 0);
     $new_vid = $nv_Request->get_int('new_vid', 'post', 0);
-    if ($catid > 0 && $new_vid > 0) {
-        $sql = "SELECT weight FROM " . $table_cat . " WHERE catid=" . $catid;
-        $weight = $db->query($sql)->fetchColumn();
-
-        $sql = "SELECT catid, weight FROM " . $table_cat . " WHERE catid!=" . $catid . " ORDER BY weight ASC";
+    $content = 'NO_' . $catid;
+    if ($new_vid > 0) {
+        $sql = 'SELECT catid FROM ' . NV_PREFIXLANG . '_' . $module_data . '_cat WHERE catid!=' . $catid . ' ORDER BY weight ASC';
         $result = $db->query($sql);
-        $weight_list = [];
+        $weight = 0;
         while ($row = $result->fetch()) {
-            $weight_list[$row['catid']] = $row['weight'];
+            ++$weight;
+            if ($weight == $new_vid) ++$weight;
+            $sql = 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . '_cat SET weight=' . $weight . ' WHERE catid=' . $row['catid'];
+            $db->query($sql);
         }
-
-        if ($new_vid > $weight) { // Move down
-            foreach ($weight_list as $id => $w) {
-                if ($w > $weight && $w <= $new_vid) {
-                    $db->query("UPDATE " . $table_cat . " SET weight=" . ($w - 1) . " WHERE catid=" . $id);
-                }
-            }
-        } elseif ($new_vid < $weight) { // Move up
-            foreach ($weight_list as $id => $w) {
-                if ($w >= $new_vid && $w < $weight) {
-                    $db->query("UPDATE " . $table_cat . " SET weight=" . ($w + 1) . " WHERE catid=" . $id);
-                }
-            }
-        }
-
-        $db->query("UPDATE " . $table_cat . " SET weight=" . $new_vid . " WHERE catid=" . $catid);
-
-        // Normalize
-        $sql = "SELECT catid FROM " . $table_cat . " ORDER BY weight ASC";
-        $result = $db->query($sql);
-        $w = 1;
-        while ($row = $result->fetch()) {
-            $db->query("UPDATE " . $table_cat . " SET weight=" . $w . " WHERE catid=" . $row['catid']);
-            $w++;
-        }
-
-        $nv_Cache->delMod($module_name);
-        die('OK');
+        $sql = 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . '_cat SET weight=' . $new_vid . ' WHERE catid=' . $catid;
+        $db->query($sql);
+        $content = 'OK_' . $catid;
     }
-    die('NO');
+    $nv_Cache->delMod($module_name);
+    include NV_ROOTDIR . '/includes/header.php';
+    echo $content;
+    include NV_ROOTDIR . '/includes/footer.php';
+    die();
 }
 
 // Delete

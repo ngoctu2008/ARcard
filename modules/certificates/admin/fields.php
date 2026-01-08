@@ -46,48 +46,28 @@ if ($nv_Request->isset_request('change_status', 'post')) {
 
 // AJAX: Change Weight
 if ($nv_Request->isset_request('ajax_action', 'post')) {
-    $id = $nv_Request->get_int('catid', 'post', 0); // JS sends catid
+    $id = $nv_Request->get_int('catid', 'post', 0);
     $new_vid = $nv_Request->get_int('new_vid', 'post', 0);
-    if ($id > 0 && $new_vid > 0) {
-        $sql = "SELECT weight FROM " . $table_fields . " WHERE fid=" . $id;
-        $weight = $db->query($sql)->fetchColumn();
-
-        $sql = "SELECT fid, weight FROM " . $table_fields . " WHERE fid!=" . $id . " ORDER BY weight ASC";
+    $content = 'NO_' . $id;
+    if ($new_vid > 0) {
+        $sql = 'SELECT fid FROM ' . NV_PREFIXLANG . '_' . $module_data . '_fields WHERE fid!=' . $id . ' ORDER BY weight ASC';
         $result = $db->query($sql);
-        $weight_list = [];
+        $weight = 0;
         while ($row = $result->fetch()) {
-            $weight_list[$row['fid']] = $row['weight'];
+            ++$weight;
+            if ($weight == $new_vid) ++$weight;
+            $sql = 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . '_fields SET weight=' . $weight . ' WHERE fid=' . $row['fid'];
+            $db->query($sql);
         }
-
-        if ($new_vid > $weight) { // Move down
-            foreach ($weight_list as $fid => $w) {
-                if ($w > $weight && $w <= $new_vid) {
-                    $db->query("UPDATE " . $table_fields . " SET weight=" . ($w - 1) . " WHERE fid=" . $fid);
-                }
-            }
-        } elseif ($new_vid < $weight) { // Move up
-            foreach ($weight_list as $fid => $w) {
-                if ($w >= $new_vid && $w < $weight) {
-                    $db->query("UPDATE " . $table_fields . " SET weight=" . ($w + 1) . " WHERE fid=" . $fid);
-                }
-            }
-        }
-
-        $db->query("UPDATE " . $table_fields . " SET weight=" . $new_vid . " WHERE fid=" . $id);
-
-        // Normalize
-        $sql = "SELECT fid FROM " . $table_fields . " ORDER BY weight ASC";
-        $result = $db->query($sql);
-        $w = 1;
-        while ($row = $result->fetch()) {
-            $db->query("UPDATE " . $table_fields . " SET weight=" . $w . " WHERE fid=" . $row['fid']);
-            $w++;
-        }
-
-        $nv_Cache->delMod($module_name);
-        die('OK');
+        $sql = 'UPDATE ' . NV_PREFIXLANG . '_' . $module_data . '_fields SET weight=' . $new_vid . ' WHERE fid=' . $id;
+        $db->query($sql);
+        $content = 'OK_' . $id;
     }
-    die('NO');
+    $nv_Cache->delMod($module_name);
+    include NV_ROOTDIR . '/includes/header.php';
+    echo $content;
+    include NV_ROOTDIR . '/includes/footer.php';
+    die();
 }
 
 $fid = $nv_Request->get_int('fid', 'get,post', 0);
