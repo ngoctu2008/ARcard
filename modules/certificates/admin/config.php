@@ -17,6 +17,7 @@ $page_title = $lang_module['config'];
 if ($nv_Request->isset_request('save', 'post')) {
     $array_config = [];
     $array_config['per_page'] = $nv_Request->get_int('per_page', 'post', 20);
+    $array_config['active_captcha'] = $nv_Request->get_int('active_captcha', 'post', 1);
     $array_config['who_view'] = $nv_Request->get_array('who_view', 'post', []);
     $array_config['who_view'] = implode(',', $array_config['who_view']);
 
@@ -51,8 +52,12 @@ $xtpl->assign('MODULE_NAME', $module_name);
 $xtpl->assign('OP', 'config');
 
 $xtpl->assign('DATA', [
-    'per_page' => isset($module_config[$module_name]['per_page']) ? $module_config[$module_name]['per_page'] : 20
+    'per_page' => isset($module_config[$module_name]['per_page']) ? $module_config[$module_name]['per_page'] : 20,
+    'active_captcha' => isset($module_config[$module_name]['active_captcha']) ? $module_config[$module_name]['active_captcha'] : 1
 ]);
+
+$xtpl->assign('CAPTCHA_0', ($xtpl->vars['DATA']['active_captcha'] == 0) ? 'selected="selected"' : '');
+$xtpl->assign('CAPTCHA_1', ($xtpl->vars['DATA']['active_captcha'] == 1) ? 'selected="selected"' : '');
 
 // Groups
 $groups_list = nv_groups_list();

@@ -11,8 +11,8 @@
             </div>
 
             <div class="form-group">
-                <label class="col-sm-5 col-md-4 control-label"><strong>Ai được phép tra cứu</strong></label>
-                <div class="col-sm-19 col-md-20">
+                <label class="col-sm-5 col-md-4 control-label"><strong>{LANG.config_who_view}</strong></label>
+                <div class="col-sm-19 col-md-20" style="height: 200px; overflow: scroll; border: solid 1px #ddd; padding: 10px;">
                     <!-- BEGIN: group -->
                     <div class="checkbox">
                         <label>
@@ -20,6 +20,16 @@
                         </label>
                     </div>
                     <!-- END: group -->
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-5 col-md-4 control-label"><strong>{LANG.config_active_captcha}</strong></label>
+                <div class="col-sm-19 col-md-20">
+                    <select class="form-control" name="active_captcha">
+                        <option value="0" {CAPTCHA_0}>{LANG.captcha_0}</option>
+                        <option value="1" {CAPTCHA_1}>{LANG.captcha_1}</option>
+                    </select>
                 </div>
             </div>
 

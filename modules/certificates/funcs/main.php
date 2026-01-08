@@ -36,13 +36,16 @@ $page_title = $lang_module['main'];
 $error = '';
 $result_data = [];
 
+// Check captcha config
+$active_captcha = isset($module_config[$module_name]['active_captcha']) ? $module_config[$module_name]['active_captcha'] : 1;
+
 // Handle Search
 if ($nv_Request->isset_request('search', 'post')) {
     $cert_number = $nv_Request->get_title('cert_number', 'post', '');
     $second_factor = $nv_Request->get_title('second_factor', 'post', '');
     $captcha = $nv_Request->get_title('captcha', 'post', '');
 
-    if (!nv_capcha_txt($captcha)) {
+    if ($active_captcha == 1 && !nv_capcha_txt($captcha)) {
         $error = $lang_module['captcha_error'];
     } elseif (empty($cert_number) || empty($second_factor)) {
         $error = $lang_module['input_required'];
@@ -85,8 +88,11 @@ if (!empty($error)) {
 
 // Display Form
 $xtpl->assign('ACTION', NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
-$xtpl->assign('CAPTCHA_URL', NV_BASE_SITEURL . 'index.php?scaptcha=captcha&t=' . NV_CURRENTTIME);
-$xtpl->assign('GFX_NUM', NV_GFX_NUM);
+if ($active_captcha == 1) {
+    $xtpl->assign('CAPTCHA_URL', NV_BASE_SITEURL . 'index.php?scaptcha=captcha&t=' . NV_CURRENTTIME);
+    $xtpl->assign('GFX_NUM', NV_GFX_NUM);
+    $xtpl->parse('main.form.captcha');
+}
 
 if (!empty($result_data)) {
     // Get Categories

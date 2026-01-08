@@ -27,6 +27,7 @@
                             </div>
                         </div>
 
+                        <!-- BEGIN: captcha -->
                         <div class="form-group row">
                             <label class="col-md-6 col-form-label text-md-right">{LANG.captcha} <span class="text-danger">(*)</span></label>
                             <div class="col-md-6">
@@ -36,6 +37,7 @@
                                 <img class="captchaImg" src="{CAPTCHA_URL}" height="32" width="100" alt="Captcha" onclick="change_captcha(this);" data-src="{CAPTCHA_URL}"/>
                             </div>
                         </div>
+                        <!-- END: captcha -->
 
                         <div class="form-group row text-center">
                             <div class="col-md-24">
