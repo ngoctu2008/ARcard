@@ -14,7 +14,7 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
 
 $id = $nv_Request->get_int('id', 'post', 0);
 if ($id > 0) {
-    $db->query("DELETE FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows WHERE id=" . $id);
+    $db->query("DELETE FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE id=" . $id);
     nv_del_moduleCache($module_name);
     die('OK');
 }

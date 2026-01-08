@@ -35,7 +35,7 @@ if ($nv_Request->isset_request('search', 'post')) {
         // For birthdate (string), exact match is best.
         // For name, maybe Case Insensitive.
 
-        $sql = "SELECT * FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows
+        $sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows
                 WHERE cert_number = :cert_number
                 AND (LOWER(fullname) = LOWER(:name) OR birthdate = :birthdate)
                 AND status=1";
@@ -71,7 +71,7 @@ $xtpl->assign('GFX_NUM', NV_GFX_NUM);
 
 if (!empty($result_data)) {
     // Get Categories
-    $sql = "SELECT catid, title FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat";
+    $sql = "SELECT catid, title FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat";
     $result = $db->query($sql);
     $cats = [];
     while ($row = $result->fetch()) {

@@ -28,7 +28,7 @@ if ($nv_Request->isset_request('import', 'post')) {
         $count = 0;
         foreach ($rows as $row) {
             // Check if cert_number exists
-            $check = $db->query("SELECT COUNT(*) FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows WHERE cert_number=" . $db->quote($row['cert_number']))->fetchColumn();
+            $check = $db->query("SELECT COUNT(*) FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE cert_number=" . $db->quote($row['cert_number']))->fetchColumn();
 
             // Format issue date
             $issue_date = 0;
@@ -39,7 +39,7 @@ if ($nv_Request->isset_request('import', 'post')) {
             }
 
             if ($check == 0) {
-                $sql = "INSERT INTO " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows
+                $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_rows
                 (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification) VALUES
                 (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification)";
 
@@ -59,7 +59,7 @@ if ($nv_Request->isset_request('import', 'post')) {
             } else {
                  // Option: Update if exists. For now, we skip or update?
                  // Requirement: "Báo lỗi hoặc Cập nhật (tùy chọn)". I will choose Update.
-                 $sql = "UPDATE " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows SET
+                 $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_rows SET
                     catid=:catid, fullname=:fullname, birthdate=:birthdate, reg_number=:reg_number, issue_date=:issue_date, classification=:classification
                     WHERE cert_number=:cert_number";
                  $data = [
@@ -138,7 +138,7 @@ if (isset($_FILES['import_file']) && is_uploaded_file($_FILES['import_file']['tm
 }
 
 // Categories
-$sql = "SELECT * FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat ORDER BY weight ASC";
+$sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat ORDER BY weight ASC";
 $result = $db->query($sql);
 while ($cat = $result->fetch()) {
     $xtpl->assign('CAT', $cat);

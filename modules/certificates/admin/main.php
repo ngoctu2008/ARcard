@@ -15,7 +15,7 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
 $page_title = $lang_module['main_manage'];
 
 // Fetch categories for filter
-$sql = "SELECT * FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat ORDER BY weight ASC";
+$sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat ORDER BY weight ASC";
 $result = $db->query($sql);
 $array_cat = [];
 while ($row = $result->fetch()) {
@@ -25,7 +25,7 @@ while ($row = $result->fetch()) {
 // Pagination and Filter
 $page = $nv_Request->get_int('page', 'get', 1);
 $per_page = 30;
-$base_url = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name;
+$base_url = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name;
 
 $catid = $nv_Request->get_int('catid', 'get', 0);
 $q = $nv_Request->get_string('q', 'get', '');
@@ -51,7 +51,7 @@ if (!empty($where)) {
 }
 
 // Count total
-$sql = "SELECT COUNT(*) FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows" . $where_sql;
+$sql = "SELECT COUNT(*) FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows" . $where_sql;
 $sth = $db->prepare($sql);
 foreach ($params as $key => $val) {
     $sth->bindValue($key, $val);
@@ -60,7 +60,7 @@ $sth->execute();
 $num_items = $sth->fetchColumn();
 
 // Get data
-$sql = "SELECT * FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows" . $where_sql . " ORDER BY id DESC LIMIT " . ($page - 1) * $per_page . "," . $per_page;
+$sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows" . $where_sql . " ORDER BY id DESC LIMIT " . ($page - 1) * $per_page . "," . $per_page;
 $sth = $db->prepare($sql);
 foreach ($params as $key => $val) {
     $sth->bindValue($key, $val);
@@ -87,7 +87,7 @@ foreach ($array_cat as $cat) {
 while ($row = $sth->fetch()) {
     $row['cat_title'] = isset($array_cat[$row['catid']]) ? $array_cat[$row['catid']]['title'] : '';
     $row['issue_date_str'] = ($row['issue_date'] > 0) ? date('d/m/Y', $row['issue_date']) : '';
-    $row['link_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=content&id=' . $row['id'];
+    $row['link_edit'] = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=content&id=' . $row['id'];
     $xtpl->assign('ROW', $row);
     $xtpl->parse('main.loop');
 }

@@ -37,7 +37,7 @@ if ($nv_Request->isset_request('save', 'post')) {
         $error = $lang_module['error_required'];
     } else {
         // Check duplicate cert_number
-        $sql = "SELECT COUNT(*) FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows WHERE cert_number=:cert_number";
+        $sql = "SELECT COUNT(*) FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE cert_number=:cert_number";
         if ($id > 0) {
             $sql .= " AND id!=" . $id;
         }
@@ -48,7 +48,7 @@ if ($nv_Request->isset_request('save', 'post')) {
              $error = "Error: Certificate Number exists!";
         } else {
             if ($id > 0) {
-                $sql = "UPDATE " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows SET
+                $sql = "UPDATE " . NV_PREFIXLANG . "_" . $module_data . "_rows SET
                     catid=:catid, fullname=:fullname, birthdate=:birthdate, cert_number=:cert_number, reg_number=:reg_number, issue_date=:issue_date, classification=:classification
                     WHERE id=" . $id;
                 $data_insert = [
@@ -62,7 +62,7 @@ if ($nv_Request->isset_request('save', 'post')) {
                 ];
                 $db->query_check($sql, $data_insert);
             } else {
-                $sql = "INSERT INTO " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows
+                $sql = "INSERT INTO " . NV_PREFIXLANG . "_" . $module_data . "_rows
                     (catid, fullname, birthdate, cert_number, reg_number, issue_date, classification) VALUES
                     (:catid, :fullname, :birthdate, :cert_number, :reg_number, :issue_date, :classification)";
                 $data_insert = [
@@ -77,15 +77,15 @@ if ($nv_Request->isset_request('save', 'post')) {
                 $db->insert_id($sql, 'id', $data_insert);
             }
             nv_del_moduleCache($module_name);
-            Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name);
+            Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
             die();
         }
     }
 } else {
     if ($id > 0) {
-        $row = $db->query("SELECT * FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows WHERE id=" . $id)->fetch();
+        $row = $db->query("SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE id=" . $id)->fetch();
         if (empty($row)) {
-             Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $lang . '&' . NV_NAME_VARIABLE . '=' . $module_name);
+             Header('Location: ' . NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name);
              die();
         }
         $row['issue_date'] = ($row['issue_date'] > 0) ? date('d/m/Y', $row['issue_date']) : '';
@@ -117,7 +117,7 @@ if (!empty($error)) {
 }
 
 // Categories select
-$sql = "SELECT * FROM " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat ORDER BY weight ASC";
+$sql = "SELECT * FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat ORDER BY weight ASC";
 $result = $db->query($sql);
 while ($cat = $result->fetch()) {
     $cat['selected'] = ($cat['catid'] == $row['catid']) ? 'selected="selected"' : '';
