@@ -19,6 +19,13 @@ if (!nv_function_exists('nv_block_config_certificates_search')) {
     }
 }
 
+if (!nv_function_exists('nv_block_config_certificates_search_submit')) {
+    function nv_block_config_certificates_search_submit($module, $lang_block)
+    {
+        return [];
+    }
+}
+
 if (!nv_function_exists('nv_block_certificates_search')) {
     function nv_block_certificates_search($block_config)
     {
@@ -29,7 +36,7 @@ if (!nv_function_exists('nv_block_certificates_search')) {
         // Find module link
         $mod_link = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . $global_config['site_lang'] . '&' . NV_NAME_VARIABLE . '=' . $module;
 
-        $xtpl = new XTemplate('block_search_form.tpl', NV_ROOTDIR . '/themes/' . $module_info['template'] . '/modules/' . $module_file);
+        $xtpl = new XTemplate('block_search_form.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/certificates');
         $xtpl->assign('ACTION', $mod_link);
         $xtpl->assign('LANG', \NV_LANG_DATA); // This might not pass the specific module lang.
         // We should load module language if needed, but blocks run in global context.
