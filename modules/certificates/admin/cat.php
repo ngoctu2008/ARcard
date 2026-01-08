@@ -15,6 +15,14 @@ if (!defined('NV_IS_MODADMIN')) {
 $page_title = $lang_module['cat_manage'];
 $table_cat = NV_PREFIXLANG . "_" . $module_data . "_cat";
 
+// Load Local Config
+$sql = "SELECT config_name, config_value FROM " . NV_PREFIXLANG . "_" . $module_data . "_config";
+$result = $db->query($sql);
+$local_config = [];
+while ($row = $result->fetch()) {
+    $local_config[$row['config_name']] = $row['config_value'];
+}
+
 // AJAX: Get Alias
 if ($nv_Request->isset_request('get_alias_title', 'post')) {
     $title = $nv_Request->get_title('get_alias_title', 'post', '');
@@ -134,15 +142,21 @@ if ($nv_Request->isset_request('submit', 'post')) {
 
 // Fetch List
 $q = $nv_Request->get_title('q', 'get', '');
+$page = $nv_Request->get_int('page', 'get', 1);
+$per_page = isset($local_config['per_page_cat']) ? $local_config['per_page_cat'] : 20;
+$base_url = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=cat';
+
 $where = '';
 $params = [];
 
 if (!empty($q)) {
     $where = " WHERE title LIKE :q";
     $params[':q'] = '%' . $q . '%';
+    $base_url .= '&q=' . urlencode($q);
 }
 
-$sql = "SELECT * FROM " . $table_cat . $where . " ORDER BY weight ASC";
+// Count
+$sql = "SELECT COUNT(*) FROM " . $table_cat . $where;
 $sth = $db->prepare($sql);
 if (!empty($params)) {
     foreach ($params as $key => $val) {
@@ -150,9 +164,19 @@ if (!empty($params)) {
     }
 }
 $sth->execute();
-$result = $sth;
+$num_items = $sth->fetchColumn();
+
+// Data
+$sql = "SELECT * FROM " . $table_cat . $where . " ORDER BY weight ASC LIMIT " . ($page - 1) * $per_page . "," . $per_page;
+$sth = $db->prepare($sql);
+if (!empty($params)) {
+    foreach ($params as $key => $val) {
+        $sth->bindValue($key, $val, PDO::PARAM_STR);
+    }
+}
+$sth->execute();
 $array_cat = [];
-while ($row = $result->fetch()) {
+while ($row = $sth->fetch()) {
     $array_cat[$row['catid']] = $row;
 }
 
@@ -191,6 +215,13 @@ foreach ($array_cat as $cat) {
     $xtpl->assign('VIEW', $cat);
     $xtpl->parse('main.view.loop');
 }
+
+$generate_page = nv_generate_page($base_url, $num_items, $per_page, $page);
+if (!empty($generate_page)) {
+    $xtpl->assign('GENERATE_PAGE', $generate_page);
+    $xtpl->parse('main.view.page');
+}
+
 $xtpl->parse('main.view');
 
 // Form

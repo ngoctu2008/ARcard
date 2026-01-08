@@ -34,7 +34,7 @@
             <!-- BEGIN: generate_page -->
             <tfoot>
                 <tr>
-                    <td class="text-center" colspan="5">{NV_GENERATE_PAGE}</td>
+                    <td class="text-center" colspan="5">{GENERATE_PAGE}</td>
                 </tr>
             </tfoot>
             <!-- END: generate_page -->
