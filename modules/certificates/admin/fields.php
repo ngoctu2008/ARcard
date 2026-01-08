@@ -49,7 +49,41 @@ if ($nv_Request->isset_request('ajax_action', 'post')) {
     $id = $nv_Request->get_int('catid', 'post', 0); // JS sends catid
     $new_vid = $nv_Request->get_int('new_vid', 'post', 0);
     if ($id > 0 && $new_vid > 0) {
+        $sql = "SELECT weight FROM " . $table_fields . " WHERE fid=" . $id;
+        $weight = $db->query($sql)->fetchColumn();
+
+        $sql = "SELECT fid, weight FROM " . $table_fields . " WHERE fid!=" . $id . " ORDER BY weight ASC";
+        $result = $db->query($sql);
+        $weight_list = [];
+        while ($row = $result->fetch()) {
+            $weight_list[$row['fid']] = $row['weight'];
+        }
+
+        if ($new_vid > $weight) { // Move down
+            foreach ($weight_list as $fid => $w) {
+                if ($w > $weight && $w <= $new_vid) {
+                    $db->query("UPDATE " . $table_fields . " SET weight=" . ($w - 1) . " WHERE fid=" . $fid);
+                }
+            }
+        } elseif ($new_vid < $weight) { // Move up
+            foreach ($weight_list as $fid => $w) {
+                if ($w >= $new_vid && $w < $weight) {
+                    $db->query("UPDATE " . $table_fields . " SET weight=" . ($w + 1) . " WHERE fid=" . $fid);
+                }
+            }
+        }
+
         $db->query("UPDATE " . $table_fields . " SET weight=" . $new_vid . " WHERE fid=" . $id);
+
+        // Normalize
+        $sql = "SELECT fid FROM " . $table_fields . " ORDER BY weight ASC";
+        $result = $db->query($sql);
+        $w = 1;
+        while ($row = $result->fetch()) {
+            $db->query("UPDATE " . $table_fields . " SET weight=" . $w . " WHERE fid=" . $row['fid']);
+            $w++;
+        }
+
         $nv_Cache->delMod($module_name);
         die('OK');
     }
@@ -130,7 +164,8 @@ if ($nv_Request->isset_request('save', 'post')) {
                 ];
                 $fid = $db->insert_id($sql, 'fid', $data);
                 if ($fid > 0) {
-                    $db->query("UPDATE " . $table_fields . " SET weight=" . $fid . " WHERE fid=" . $fid);
+                    $count = $db->query("SELECT COUNT(*) FROM " . $table_fields)->fetchColumn();
+                    $db->query("UPDATE " . $table_fields . " SET weight=" . $count . " WHERE fid=" . $fid);
                 }
 
                 // Alter table to add column
