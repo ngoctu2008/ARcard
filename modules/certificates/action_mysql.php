@@ -16,6 +16,7 @@ $sql_drop_module = [];
 $sql_drop_module[] = "DROP TABLE IF EXISTS " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_rows";
 $sql_drop_module[] = "DROP TABLE IF EXISTS " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat";
 $sql_drop_module[] = "DROP TABLE IF EXISTS " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_fields";
+$sql_drop_module[] = "DROP TABLE IF EXISTS " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_config";
 
 $sql_create_module = $sql_drop_module;
 
@@ -68,7 +69,23 @@ $sql_create_module[] = "CREATE TABLE " . $db_config['prefix'] . "_" . $lang . "_
   UNIQUE KEY field (field)
 ) ENGINE=MyISAM";
 
+$sql_create_module[] = "CREATE TABLE " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_config (
+  config_name varchar(30) NOT NULL,
+  config_value varchar(255) NOT NULL,
+  UNIQUE KEY config_name (config_name)
+) ENGINE=MyISAM";
+
 $sql_create_module[] = "INSERT INTO " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_cat (catid, title, alias, status) VALUES
 (1, 'Bằng Tốt nghiệp THPT', 'bang-tot-nghiep-thpt', 1),
 (2, 'Chứng chỉ Tin học', 'chung-chi-tin-hoc', 1),
 (3, 'Chứng chỉ Ngoại ngữ', 'chung-chi-ngoai-ngu', 1)";
+
+$sql_create_module[] = "INSERT INTO " . $db_config['prefix'] . "_" . $lang . "_" . $module_data . "_config VALUES
+('workgroup', 1),
+('groupmanager', 1),
+('name_center', 'Trung tâm Giáo dục nghề nghiệp - Giáo dục thường xuyên huyện Đăk Tô'),
+('name_center_en', 'Dak To district vocational and continuing education center'),
+('location_districts', 'Đăk Tô'),
+('location_provincial', 'Kon Tum')";
+
+$sql_create_module[] = "INSERT INTO " . NV_CONFIG_GLOBALTABLE . " (lang, module, config_name, config_value) VALUES ('" . $lang . "', '" . $module_name . "', 'captcha_type', 'captcha')";
