@@ -12,6 +12,22 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
     die('Stop!!!');
 }
 
+// AJAX handler to create/ensure folder exists (for consistency, if import uses nv_open_browse later)
+if ($nv_Request->isset_request('ajax_create_folder', 'post')) {
+    // Ensure module upload dir exists
+    if (!is_dir(NV_UPLOADS_REAL_DIR . '/' . $module_upload)) {
+        nv_mkdir(NV_UPLOADS_REAL_DIR . '/' . $module_upload, $module_upload, true);
+    }
+
+    if (is_dir(NV_UPLOADS_REAL_DIR . '/' . $module_upload)) {
+        // Return path to module upload root (uploads/certificates)
+        echo NV_UPLOADS_DIR . '/' . $module_upload;
+    } else {
+        echo 'ERROR';
+    }
+    die();
+}
+
 require_once NV_ROOTDIR . '/modules/' . $module_file . '/lib/SimpleXLSX.php';
 
 use Shuchkin\SimpleXLSX;

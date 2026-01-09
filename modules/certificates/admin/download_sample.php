@@ -14,6 +14,8 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
 
 require_once NV_ROOTDIR . '/modules/' . $module_file . '/lib/SimpleXLSXGen.php';
 
+use Shuchkin\SimpleXLSXGen;
+
 $catid = $nv_Request->get_int('catid', 'get', 0);
 
 // Headers
@@ -51,6 +53,11 @@ $data = [
     ['1', 'Nguyen Van A', '01/01/2000', 'B12345', 'S001', '01/06/2022', 'Gioi', 'Excellent'] // Example row
 ];
 
-$xlsx = Shuchkin\SimpleXLSXGen::fromArray($data);
+// Clear buffer
+if (ob_get_level()) {
+    ob_end_clean();
+}
+
+$xlsx = SimpleXLSXGen::fromArray($data);
 $xlsx->downloadAs('Mau_Nhap_Lieu_Van_Bang.xlsx');
 exit();
