@@ -159,12 +159,32 @@
     });
 
     function open_browse_image() {
-        var alias = $('#id_alias').val();
-        if (alias == '') {
-            alias = 'general';
+        // Open window immediately
+        var w = 850;
+        var h = 420;
+        var left = (screen.width/2)-(w/2);
+        var top = (screen.height/2)-(h/2);
+        var win = window.open('about:blank', 'NVImg', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+
+        if (win) {
+            win.document.write('Loading folder...');
         }
-        var path = '{UPLOADS_DIR_USER}/' + alias;
-        nv_open_browse( '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path=' + path + '&type=image', 'NVImg', 850, 420, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no' );
+
+        // Call AJAX to create folder if needed and get path
+        $.post(
+            '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}={MODULE_NAME}&{NV_OP_VARIABLE}={OP}&ajax_create_folder=1',
+            function(full_path) {
+                var url = '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path=' + full_path + '&type=image';
+                if (win) {
+                    win.location.href = url;
+                }
+            }
+        ).fail(function() {
+             if (win) {
+                 win.close();
+             }
+             alert("Error creating upload folder.");
+        });
     }
 //]]>
 </script>

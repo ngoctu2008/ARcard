@@ -12,6 +12,17 @@ if (!defined('NV_IS_MODADMIN')) {
     die('Stop!!!');
 }
 
+// AJAX handler to create/ensure folder exists for Category
+if ($nv_Request->isset_request('ajax_create_folder', 'post')) {
+    // Ensure module upload dir exists
+    if (!is_dir(NV_UPLOADS_REAL_DIR . '/' . $module_upload)) {
+        nv_mkdir(NV_UPLOADS_REAL_DIR . '/' . $module_upload, $module_upload, true);
+    }
+    // Return path to module upload root (uploads/certificates)
+    echo NV_UPLOADS_DIR . '/' . $module_upload;
+    die();
+}
+
 $page_title = $lang_module['cat_manage'];
 $table_cat = NV_PREFIXLANG . "_" . $module_data . "_cat";
 
@@ -219,7 +230,7 @@ foreach ($array_cat as $cat) {
 $generate_page = nv_generate_page($base_url, $num_items, $per_page, $page);
 if (!empty($generate_page)) {
     $xtpl->assign('GENERATE_PAGE', $generate_page);
-    $xtpl->parse('main.view.page');
+    $xtpl->parse('main.view.generate_page');
 }
 
 $xtpl->parse('main.view');
