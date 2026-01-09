@@ -30,7 +30,7 @@ if ($nv_Request->isset_request('ajax_create_folder', 'post')) {
 
     // Return the path relative to uploads dir for nv_open_browse
     // nv_open_browse expects path from uploads root, e.g. certificates/alias/2024_05
-    echo $module_upload . '/' . $cat_alias . '/' . $current_ym;
+    echo NV_UPLOADS_DIR . '/' . $module_upload . '/' . $cat_alias . '/' . $current_ym;
     die();
 }
 

@@ -149,29 +149,34 @@
     function open_browse_image() {
         var catid = $('#id_catid').val();
 
+        // Open window immediately to avoid popup blocker issues with async calls
+        var w = 850;
+        var h = 420;
+        var left = (screen.width/2)-(w/2);
+        var top = (screen.height/2)-(h/2);
+        var win = window.open('about:blank', 'NVImg', 'toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+
+        if (win) {
+            win.document.write('Loading folder...');
+        }
+
         // Call AJAX to create folder if needed and get path
         $.post(
             '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}={MODULE_NAME}&{NV_OP_VARIABLE}={OP}&ajax_create_folder=1',
             { catid: catid },
-            function(rel_path) {
-                // rel_path comes back as 'certificates/cat_alias/YYYY_MM'
-                // nv_open_browse path arg should be relative to uploads dir root?
-                // Actually looking at nv_open_browse calls in other modules, it often uses {UPLOADS_DIR_USER} which is full path?
-                // No, usually it's relative or full depending on context.
-                // In my PHP code I echoed "$module_upload/$cat_alias/$current_ym".
-                // Let's use NV_UPLOADS_DIR + rel_path just to be safe if nv_open_browse expects full relative path.
-
-                // Wait, the previous code used {UPLOADS_DIR_USER} which is NV_UPLOADS_DIR . '/' . $module_upload
-                // So if rel_path is "certificates/alias/date", that duplicates "certificates".
-                // PHP returned: $module_upload . '/' . $cat_alias . '/' . $current_ym
-                // So it is "certificates/alias/date".
-                // We need to prepend NV_UPLOADS_DIR.
-
-                var path = '{NV_UPLOADS_DIR}/' + rel_path;
-                var url = '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path=' + path + '&type=image';
-                nv_open_browse(url, 'NVImg', 850, 420, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no');
+            function(full_path) {
+                // full_path now includes NV_UPLOADS_DIR (e.g. uploads/certificates/alias/2024_05)
+                var url = '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path=' + full_path + '&type=image';
+                if (win) {
+                    win.location.href = url;
+                }
             }
-        );
+        ).fail(function() {
+             if (win) {
+                 win.close();
+             }
+             alert("Error creating upload folder.");
+        });
     }
 
     // Run on load
