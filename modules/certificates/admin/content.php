@@ -24,8 +24,18 @@ if ($nv_Request->isset_request('ajax_create_folder', 'post')) {
     $current_ym = date('Y_m');
     $upload_dir = NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $cat_alias . '/' . $current_ym;
 
+    // Ensure module upload dir exists
+    if (!is_dir(NV_UPLOADS_REAL_DIR . '/' . $module_upload)) {
+        nv_mkdir(NV_UPLOADS_REAL_DIR . '/' . $module_upload, $module_upload, true);
+    }
+
+    // Ensure category dir exists
+    if (!is_dir(NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $cat_alias)) {
+        nv_mkdir(NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $cat_alias, $module_upload . '/' . $cat_alias, true);
+    }
+
     if (!is_dir($upload_dir)) {
-        nv_mkdir($upload_dir, $cat_alias . '/' . $current_ym, true);
+        nv_mkdir($upload_dir, $module_upload . '/' . $cat_alias . '/' . $current_ym, true);
     }
 
     // Return the path relative to uploads dir for nv_open_browse
