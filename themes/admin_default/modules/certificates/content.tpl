@@ -14,7 +14,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">{LANG.edit_content}</div>
             <div class="panel-body">
-                <form class="form-horizontal" action="{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}={MODULE_NAME}&{NV_OP_VARIABLE}={OP}&id={ROW.id}" method="post" enctype="multipart/form-data">
+                <form class="form-horizontal" action="{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}={MODULE_NAME}&{NV_OP_VARIABLE}={OP}&id={ROW.id}" method="post">
                     <input type="hidden" name="save" value="1" />
 
                     <div class="form-group">
@@ -22,7 +22,7 @@
                         <div class="col-sm-19 col-md-20">
                             <select class="form-control" name="catid" id="id_catid" onchange="filter_custom_fields();">
                                 <!-- BEGIN: cat -->
-                                <option value="{CAT.catid}" {CAT.selected}>{CAT.title}</option>
+                                <option value="{CAT.catid}" {CAT.selected} data-alias="{CAT.alias}">{CAT.title}</option>
                                 <!-- END: cat -->
                             </select>
                         </div>
@@ -88,11 +88,9 @@
                             <div class="input-group">
                                 <input class="form-control" type="text" name="image" value="{ROW.image}" id="id_image" />
                                 <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button" onclick="nv_open_browse( '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path={UPLOADS_DIR_USER}&type=image', 'NVImg', 850, 420, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no' ); return false; "><i class="fa fa-folder-open-o"></i> Browse...</button>
+                                    <button class="btn btn-default" type="button" onclick="open_browse_image(); return false;"><i class="fa fa-folder-open-o"></i> Browse...</button>
                                 </span>
                             </div>
-                            <div class="help-block">Hoặc upload file trực tiếp:</div>
-                            <input type="file" name="image_file" class="form-control" accept="image/*" />
                         </div>
                     </div>
 
@@ -146,6 +144,34 @@
                 }
             }
         });
+    }
+
+    function open_browse_image() {
+        var catid = $('#id_catid').val();
+
+        // Call AJAX to create folder if needed and get path
+        $.post(
+            '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}={MODULE_NAME}&{NV_OP_VARIABLE}={OP}&ajax_create_folder=1',
+            { catid: catid },
+            function(rel_path) {
+                // rel_path comes back as 'certificates/cat_alias/YYYY_MM'
+                // nv_open_browse path arg should be relative to uploads dir root?
+                // Actually looking at nv_open_browse calls in other modules, it often uses {UPLOADS_DIR_USER} which is full path?
+                // No, usually it's relative or full depending on context.
+                // In my PHP code I echoed "$module_upload/$cat_alias/$current_ym".
+                // Let's use NV_UPLOADS_DIR + rel_path just to be safe if nv_open_browse expects full relative path.
+
+                // Wait, the previous code used {UPLOADS_DIR_USER} which is NV_UPLOADS_DIR . '/' . $module_upload
+                // So if rel_path is "certificates/alias/date", that duplicates "certificates".
+                // PHP returned: $module_upload . '/' . $cat_alias . '/' . $current_ym
+                // So it is "certificates/alias/date".
+                // We need to prepend NV_UPLOADS_DIR.
+
+                var path = '{NV_UPLOADS_DIR}/' + rel_path;
+                var url = '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path=' + path + '&type=image';
+                nv_open_browse(url, 'NVImg', 850, 420, 'resizable=no,scrollbars=no,toolbar=no,location=no,status=no');
+            }
+        );
     }
 
     // Run on load

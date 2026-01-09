@@ -12,6 +12,28 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
     die('Stop!!!');
 }
 
+// AJAX handler to create/ensure folder exists
+if ($nv_Request->isset_request('ajax_create_folder', 'post')) {
+    $catid = $nv_Request->get_int('catid', 'post', 0);
+    $cat_alias = 'uncategorized';
+    if ($catid > 0) {
+        $cat_alias = $db->query("SELECT alias FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat WHERE catid=" . $catid)->fetchColumn();
+        if (empty($cat_alias)) $cat_alias = 'uncategorized';
+    }
+
+    $current_ym = date('Y_m');
+    $upload_dir = NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $cat_alias . '/' . $current_ym;
+
+    if (!is_dir($upload_dir)) {
+        nv_mkdir($upload_dir, $cat_alias . '/' . $current_ym, true);
+    }
+
+    // Return the path relative to uploads dir for nv_open_browse
+    // nv_open_browse expects path from uploads root, e.g. certificates/alias/2024_05
+    echo $module_upload . '/' . $cat_alias . '/' . $current_ym;
+    die();
+}
+
 $page_title = $lang_module['main_manage'];
 
 $id = $nv_Request->get_int('id', 'get,post', 0);
@@ -27,28 +49,7 @@ if ($nv_Request->isset_request('save', 'post')) {
     $issue_date = $nv_Request->get_title('issue_date', 'post', '');
     $row['classification'] = $nv_Request->get_title('classification', 'post', '');
     $row['classification_en'] = $nv_Request->get_title('classification_en', 'post', '');
-    $row['image'] = $nv_Request->get_string('image', 'post', ''); // Input from text field (browse) or handled upload below
-
-    // Handle File Upload if provided
-    if (isset($_FILES['image_file']) && is_uploaded_file($_FILES['image_file']['tmp_name'])) {
-        $cat_alias = 'uncategorized';
-        if ($row['catid'] > 0) {
-            $cat_alias = $db->query("SELECT alias FROM " . NV_PREFIXLANG . "_" . $module_data . "_cat WHERE catid=" . $row['catid'])->fetchColumn();
-        }
-
-        $upload_dir = NV_UPLOADS_REAL_DIR . '/' . $module_upload . '/' . $cat_alias . '/' . date('Y_m');
-        if (!is_dir($upload_dir)) {
-            nv_mkdir($upload_dir, $cat_alias . '/' . date('Y_m'), true);
-        }
-
-        $filename = $_FILES['image_file']['name'];
-        $filename = nv_string_to_filename(pathinfo($filename, PATHINFO_FILENAME)) . '.' . pathinfo($filename, PATHINFO_EXTENSION);
-        $full_path = $upload_dir . '/' . $filename;
-
-        if (move_uploaded_file($_FILES['image_file']['tmp_name'], $full_path)) {
-            $row['image'] = NV_BASE_SITEURL . NV_UPLOADS_DIR . '/' . $module_upload . '/' . $cat_alias . '/' . date('Y_m') . '/' . $filename;
-        }
-    }
+    $row['image'] = $nv_Request->get_string('image', 'post', '');
 
     // Custom Fields processing
     $custom_fields = [];
@@ -167,6 +168,7 @@ if ($nv_Request->isset_request('save', 'post')) {
 $xtpl = new XTemplate('content.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
 $xtpl->assign('LANG', $lang_module);
 $xtpl->assign('UPLOADS_DIR_USER', NV_UPLOADS_DIR . '/' . $module_upload);
+$xtpl->assign('CURRENT_DATE_YM', date('Y_m'));
 $xtpl->assign('NV_BASE_ADMINURL', NV_BASE_ADMINURL);
 $xtpl->assign('NV_NAME_VARIABLE', NV_NAME_VARIABLE);
 $xtpl->assign('NV_OP_VARIABLE', NV_OP_VARIABLE);
