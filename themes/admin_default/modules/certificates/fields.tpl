@@ -92,13 +92,13 @@
         <label class="col-sm-5 col-md-4 control-label"><strong>Áp dụng cho loại văn bằng</strong></label>
         <div class="col-sm-19 col-md-20">
             <div class="checkbox">
-                <label><input type="checkbox" name="catids[]" value="0" {ALL_CHECKED}> <strong>Tất cả</strong></label>
+                <label><input type="checkbox" name="catids[]" value="0" {ALL_CHECKED} onclick="nv_check_all_cats(this);"> <strong>Tất cả</strong></label>
             </div>
             <div class="row" style="max-height: 150px; overflow-y: scroll; border: 1px solid #ddd; padding: 5px; margin: 0;">
                 <!-- BEGIN: cat_list -->
                 <div class="col-sm-12">
                     <label class="checkbox-inline">
-                        <input type="checkbox" name="catids[]" value="{CAT.catid}" {CAT.checked}> {CAT.title}
+                        <input class="cat-checkbox" type="checkbox" name="catids[]" value="{CAT.catid}" {CAT.checked} onclick="nv_check_cat();"> {CAT.title}
                     </label>
                 </div>
                 <!-- END: cat_list -->
@@ -175,4 +175,16 @@
 //]]>
 </script>
 <!-- END: auto_get_alias -->
+<script>
+    function nv_check_all_cats(el) {
+        $('.cat-checkbox').prop('checked', el.checked);
+    }
+    function nv_check_cat() {
+        if ($('.cat-checkbox:checked').length == $('.cat-checkbox').length) {
+            $('input[name="catids[]"][value="0"]').prop('checked', true);
+        } else {
+            $('input[name="catids[]"][value="0"]').prop('checked', false);
+        }
+    }
+</script>
 <!-- END: main -->

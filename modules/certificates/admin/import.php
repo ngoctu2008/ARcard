@@ -160,6 +160,19 @@ if (isset($_FILES['import_file']) && is_uploaded_file($_FILES['import_file']['tm
         }
 
         $i = 0;
+
+        // Pre-scan for internal duplicates
+        $cert_count_map = [];
+        foreach ($rows as $r) {
+            $cn = isset($r[3]) ? trim($r[3]) : '';
+            if ($cn !== '') {
+                if (!isset($cert_count_map[$cn])) {
+                    $cert_count_map[$cn] = 0;
+                }
+                $cert_count_map[$cn]++;
+            }
+        }
+
         foreach ($rows as $r) {
             // Structure: STT (0), Fullname (1), Birthdate (2), CertNum (3), RegNum (4), IssueDate (5), Class (6), ClassEN (7)
             if (empty($r[1]) && empty($r[3])) continue;
@@ -185,21 +198,31 @@ if (isset($_FILES['import_file']) && is_uploaded_file($_FILES['import_file']['tm
                  $item['status_text'] = $lang_module['error_missing_required'];
                  $item['checked'] = '';
             } else {
-                 // Check Duplicate Cert Number (Update warning)
-                 // Or Check Duplicate Person (Fullname + Birthdate + Catid)
-                 $check_dup = $db->query("SELECT cert_number FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE catid=" . $catid . " AND fullname=" . $db->quote($item['fullname']) . " AND birthdate=" . $db->quote($item['birthdate']))->fetchColumn();
-
-                 if ($check_dup) {
-                      $item['status_class'] = 'warning';
-                      $item['status_text'] = sprintf($lang_module['warning_duplicate'], $check_dup);
-                      $item['warning'] = $item['status_text'];
-                      // Keep checked or unchecked? User requested "tick to still import". Default maybe unchecked to force user review?
-                      // Prompt says "dấu tick để người dùng tick vẫn nhập". So default unchecked is safer if duplicate found.
-                      $item['checked'] = '';
+                 // 1. Check Duplicate Cert Number in DB (Update warning)
+                 $db_dup = $db->query("SELECT COUNT(*) FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE cert_number=" . $db->quote($item['cert_number']))->fetchColumn();
+                 if ($db_dup > 0) {
+                     $item['status_class'] = 'warning';
+                     $item['status_text'] = 'Duplicate Cert Number in DB (Will Update)'; // Or use lang variable
+                     $item['warning'] = $item['status_text'];
+                     $item['checked'] = '';
                  }
 
-                 // If cert_number exists, it's an update. We might warn about that too or consider it standard.
-                 // Current logic handles update silently. Let's focus on the "duplicate person" warning requested.
+                 // 2. Check Duplicate Cert Number in File (Error)
+                 if (isset($cert_count_map[$item['cert_number']]) && $cert_count_map[$item['cert_number']] > 1) {
+                     $item['status_class'] = 'danger';
+                     $item['status_text'] .= ($item['status_text'] ? '<br>' : '') . 'Duplicate Cert Number in File';
+                     $item['checked'] = '';
+                 }
+
+                 // 3. Check Duplicate Person (Fullname + Birthdate + Catid) - Secondary check
+                 $check_dup_person = $db->query("SELECT cert_number FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE catid=" . $catid . " AND fullname=" . $db->quote($item['fullname']) . " AND birthdate=" . $db->quote($item['birthdate']))->fetchColumn();
+
+                 if ($check_dup_person && $check_dup_person != $item['cert_number']) {
+                      // Only warn if it's a DIFFERENT cert number for same person
+                      $item['status_class'] = 'warning';
+                      $item['status_text'] .= ($item['status_text'] ? '<br>' : '') . sprintf($lang_module['warning_duplicate'], $check_dup_person);
+                      $item['checked'] = '';
+                 }
             }
 
              // Handle Custom Fields
