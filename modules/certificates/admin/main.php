@@ -15,6 +15,14 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
 $page_title = $lang_module['main_manage'];
 $table_rows = NV_PREFIXLANG . "_" . $module_data . "_rows";
 
+// Load Local Config
+$sql = "SELECT config_name, config_value FROM " . NV_PREFIXLANG . "_" . $module_data . "_config";
+$result = $db->query($sql);
+$local_config = [];
+while ($row = $result->fetch()) {
+    $local_config[$row['config_name']] = $row['config_value'];
+}
+
 // AJAX: Change Status
 if ($nv_Request->isset_request('change_status', 'post')) {
     $id = $nv_Request->get_int('catid', 'post', 0); // JS sends catid
@@ -39,7 +47,7 @@ while ($row = $result->fetch()) {
 
 // Pagination and Filter
 $page = $nv_Request->get_int('page', 'get', 1);
-$per_page = isset($module_config[$module_name]['per_page']) ? $module_config[$module_name]['per_page'] : 20;
+$per_page = isset($local_config['per_page']) ? $local_config['per_page'] : 20;
 $base_url = NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name;
 
 $catid = $nv_Request->get_int('catid', 'get', 0);
