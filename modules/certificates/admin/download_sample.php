@@ -14,6 +14,8 @@ if (!defined('NV_ADMIN') or !defined('NV_MAINFILE') or !defined('NV_IS_MODADMIN'
 
 require_once NV_ROOTDIR . '/modules/' . $module_file . '/lib/SimpleXLSXGen.php';
 
+$catid = $nv_Request->get_int('catid', 'get', 0);
+
 // Headers
 $headers = [
     'STT',
@@ -27,9 +29,21 @@ $headers = [
 ];
 
 // Custom fields
-$fields_q = $db->query("SELECT title FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE status=1 ORDER BY weight ASC");
+$fields_q = $db->query("SELECT title, catids FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE status=1 ORDER BY weight ASC");
 while ($field = $fields_q->fetch()) {
-    $headers[] = $field['title'];
+    $show = false;
+    if ($field['catids'] == '0' || empty($field['catids'])) {
+        $show = true;
+    } else {
+        $arr = explode(',', $field['catids']);
+        if (in_array($catid, $arr)) {
+            $show = true;
+        }
+    }
+
+    if ($show) {
+        $headers[] = $field['title'];
+    }
 }
 
 $data = [

@@ -151,12 +151,24 @@ if (isset($_FILES['import_file']) && is_uploaded_file($_FILES['import_file']['tm
         $xtpl->assign('CATID', $catid);
 
         // Custom fields map
-        $fields_q = $db->query("SELECT field FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE status=1 ORDER BY weight ASC");
+        $fields_q = $db->query("SELECT field, catids FROM " . NV_PREFIXLANG . "_" . $module_data . "_fields WHERE status=1 ORDER BY weight ASC");
         $custom_map = [];
         $idx = 8;
         while ($f = $fields_q->fetch()) {
-            $custom_map[$idx] = $f['field'];
-            $idx++;
+            $show = false;
+            if ($f['catids'] == '0' || empty($f['catids'])) {
+                $show = true;
+            } else {
+                $arr = explode(',', $f['catids']);
+                if (in_array($catid, $arr)) {
+                    $show = true;
+                }
+            }
+
+            if ($show) {
+                $custom_map[$idx] = $f['field'];
+                $idx++;
+            }
         }
 
         $i = 0;
