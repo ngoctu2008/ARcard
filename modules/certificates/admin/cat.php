@@ -18,8 +18,13 @@ if ($nv_Request->isset_request('ajax_create_folder', 'post')) {
     if (!is_dir(NV_UPLOADS_REAL_DIR . '/' . $module_upload)) {
         nv_mkdir(NV_UPLOADS_REAL_DIR . '/' . $module_upload, $module_upload, true);
     }
-    // Return path to module upload root (uploads/certificates)
-    echo NV_UPLOADS_DIR . '/' . $module_upload;
+
+    if (is_dir(NV_UPLOADS_REAL_DIR . '/' . $module_upload)) {
+        // Return path to module upload root (uploads/certificates)
+        echo NV_UPLOADS_DIR . '/' . $module_upload;
+    } else {
+        echo 'ERROR';
+    }
     die();
 }
 
