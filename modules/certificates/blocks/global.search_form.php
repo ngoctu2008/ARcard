@@ -13,7 +13,7 @@ if (!defined('NV_MAINFILE')) {
 }
 
 if (!nv_function_exists('nv_block_config_certificates_search')) {
-    function nv_block_config_certificates_search($module, $data_block, $lang_block, $file_tpl, $array_cat, $func_name)
+    function nv_block_config_certificates_search($module, $data_block, $lang_block, $file_tpl = '', $array_cat = '', $func_name = '')
     {
         return '';
     }
