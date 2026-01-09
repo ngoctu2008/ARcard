@@ -77,3 +77,5 @@ $lang_module['error_date_format'] = 'Lỗi định dạng ngày tháng';
 $lang_module['export_excel'] = 'Xuất ra Excel';
 $lang_module['select_cat_to_export'] = 'Chọn loại văn bằng cần xuất';
 $lang_module['export_all'] = 'Tất cả văn bằng';
+$lang_module['error_duplicate_file'] = 'Lỗi: Trùng số hiệu trong file Excel';
+$lang_module['warning_duplicate_db'] = 'Cảnh báo: Đã tồn tại trong CSDL (Sẽ cập nhật)';

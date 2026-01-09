@@ -202,7 +202,7 @@ if (isset($_FILES['import_file']) && is_uploaded_file($_FILES['import_file']['tm
                  $db_dup = $db->query("SELECT COUNT(*) FROM " . NV_PREFIXLANG . "_" . $module_data . "_rows WHERE cert_number=" . $db->quote($item['cert_number']))->fetchColumn();
                  if ($db_dup > 0) {
                      $item['status_class'] = 'warning';
-                     $item['status_text'] = 'Duplicate Cert Number in DB (Will Update)'; // Or use lang variable
+                     $item['status_text'] = $lang_module['warning_duplicate_db'];
                      $item['warning'] = $item['status_text'];
                      $item['checked'] = '';
                  }
@@ -210,7 +210,14 @@ if (isset($_FILES['import_file']) && is_uploaded_file($_FILES['import_file']['tm
                  // 2. Check Duplicate Cert Number in File (Error)
                  if (isset($cert_count_map[$item['cert_number']]) && $cert_count_map[$item['cert_number']] > 1) {
                      $item['status_class'] = 'danger';
-                     $item['status_text'] .= ($item['status_text'] ? '<br>' : '') . 'Duplicate Cert Number in File';
+                     // If previously valid or warning, overwrite or append? The user said "not Valid but Error".
+                     // If it was "Valid", it should now be just "Error".
+                     // If it was "Warning (DB dup)", it is now ALSO "Error (File dup)".
+                     if ($item['status_text'] == $lang_module['status_valid']) {
+                         $item['status_text'] = $lang_module['error_duplicate_file'];
+                     } else {
+                         $item['status_text'] .= '<br>' . $lang_module['error_duplicate_file'];
+                     }
                      $item['checked'] = '';
                  }
 
