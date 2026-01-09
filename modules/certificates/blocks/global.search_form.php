@@ -51,6 +51,22 @@ if (!nv_function_exists('nv_block_certificates_search')) {
 
         $xtpl->assign('LANG', $lang_module);
 
+        // Load Config
+        $sql = "SELECT config_name, config_value FROM " . NV_PREFIXLANG . "_" . $module . "_config";
+        $result = $db->query($sql);
+        $module_config = [];
+        while ($row = $result->fetch()) {
+            $module_config[$row['config_name']] = $row['config_value'];
+        }
+
+        $active_captcha = isset($module_config['active_captcha']) ? $module_config['active_captcha'] : 1;
+
+        if ($active_captcha == 1) {
+            $xtpl->assign('CAPTCHA_URL', NV_BASE_SITEURL . 'index.php?scaptcha=captcha&t=' . NV_CURRENTTIME);
+            $xtpl->assign('GFX_NUM', NV_GFX_NUM);
+            $xtpl->parse('main.captcha');
+        }
+
         $xtpl->parse('main');
         return $xtpl->text('main');
     }
