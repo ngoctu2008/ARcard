@@ -38,9 +38,13 @@ if ($nv_Request->isset_request('ajax_create_folder', 'post')) {
         nv_mkdir($upload_dir, $module_upload . '/' . $cat_alias . '/' . $current_ym, true);
     }
 
-    // Return the path relative to uploads dir for nv_open_browse
-    // nv_open_browse expects path from uploads root, e.g. certificates/alias/2024_05
-    echo NV_UPLOADS_DIR . '/' . $module_upload . '/' . $cat_alias . '/' . $current_ym;
+    if (is_dir($upload_dir)) {
+        // Return the path relative to uploads dir for nv_open_browse
+        // nv_open_browse expects path from uploads root, e.g. certificates/alias/2024_05
+        echo NV_UPLOADS_DIR . '/' . $module_upload . '/' . $cat_alias . '/' . $current_ym;
+    } else {
+        echo 'ERROR';
+    }
     die();
 }
 

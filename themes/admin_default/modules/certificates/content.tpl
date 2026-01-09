@@ -165,17 +165,23 @@
             '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}={MODULE_NAME}&{NV_OP_VARIABLE}={OP}&ajax_create_folder=1',
             { catid: catid },
             function(full_path) {
+                if (full_path == 'ERROR') {
+                    if (win) win.close();
+                    alert("Error: Could not create upload directory. Check permissions.");
+                    return;
+                }
                 // full_path now includes NV_UPLOADS_DIR (e.g. uploads/certificates/alias/2024_05)
                 var url = '{NV_BASE_ADMINURL}index.php?{NV_LANG_VARIABLE}={NV_LANG_DATA}&{NV_NAME_VARIABLE}=upload&popup=1&area=id_image&path=' + full_path + '&type=image';
                 if (win) {
                     win.location.href = url;
+                    win.focus();
                 }
             }
         ).fail(function() {
              if (win) {
                  win.close();
              }
-             alert("Error creating upload folder.");
+             alert("Error connection.");
         });
     }
 
