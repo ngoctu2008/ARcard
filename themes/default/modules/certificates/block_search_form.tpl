@@ -11,8 +11,8 @@
             <!-- BEGIN: captcha -->
             <div class="form-group">
                 <div class="middle text-center clearfix">
-                    <img class="captchaImg display-inline-block" src="{CAPTCHA_URL}" height="40" aria-label="{LANG.captcha}" width="{GFX_NUM}" />
-                    <em class="fa fa-refresh fa-lg fa-pointer display-inline-block" title="{LANG.captcha_refresh}" onclick="change_captcha('.captchaImg');"></em>
+                    <img class="captchaImg display-inline-block" src="{CAPTCHA_URL}" height="40" aria-label="{LANG.captcha}" width="{GFX_WIDTH}" data-src="{CAPTCHA_URL}" />
+                    <em class="fa fa-refresh fa-lg fa-pointer display-inline-block" title="{LANG.captcha_refresh}" onclick="change_captcha_block(this);"></em>
                 </div>
                 <input type="text" placeholder="{LANG.captcha}" maxlength="{GFX_NUM}" value="" name="captcha" class="form-control pull-left" style="margin-top: 5px" required="required" />
             </div>
@@ -21,4 +21,11 @@
         </form>
     </div>
 </div>
+<script>
+    function change_captcha_block(obj) {
+        var img = $(obj).parent().find('img');
+        var src = img.attr('data-src');
+        img.attr('src', src + '&t=' + new Date().getTime());
+    }
+</script>
 <!-- END: main -->

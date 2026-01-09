@@ -64,6 +64,7 @@ if (!nv_function_exists('nv_block_certificates_search')) {
         if ($active_captcha == 1) {
             $xtpl->assign('CAPTCHA_URL', NV_BASE_SITEURL . 'index.php?scaptcha=captcha&t=' . NV_CURRENTTIME);
             $xtpl->assign('GFX_NUM', NV_GFX_NUM);
+            $xtpl->assign('GFX_WIDTH', NV_GFX_WIDTH);
             $xtpl->parse('main.captcha');
         }
 
