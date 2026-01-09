@@ -74,3 +74,6 @@ $lang_module['status_invalid'] = 'Cảnh báo';
 $lang_module['config_per_page_cat'] = 'Số lượng loại văn bằng hiển thị trên 1 trang';
 $lang_module['config_per_page'] = 'Số lượng hồ sơ hiển thị trên 1 trang';
 $lang_module['error_date_format'] = 'Lỗi định dạng ngày tháng';
+$lang_module['export_excel'] = 'Xuất ra Excel';
+$lang_module['select_cat_to_export'] = 'Chọn loại văn bằng cần xuất';
+$lang_module['export_all'] = 'Tất cả văn bằng';

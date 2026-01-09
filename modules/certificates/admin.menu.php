@@ -17,7 +17,8 @@ $submenu = [
     'main' => $lang_module['main_manage'],
     'fields' => $lang_module['fields_manage'],
     'import' => $lang_module['import_excel'],
+    'export' => $lang_module['export_excel'],
     'config' => $lang_module['config']
 ];
 
-$allow_func = ['main', 'cat', 'fields', 'import', 'content', 'config', 'del_cat', 'del_content', 'download_sample'];
+$allow_func = ['main', 'cat', 'fields', 'import', 'export', 'content', 'config', 'del_cat', 'del_content', 'download_sample'];
