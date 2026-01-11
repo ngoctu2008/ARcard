@@ -37,11 +37,26 @@ class WebPush
         // Prepare Encryption
         $salt = random_bytes(16);
         // Generate local keys
-        $localKeyPair = openssl_pkey_new([
+        $configArgs = [
             'private_key_type' => OPENSSL_KEYTYPE_EC,
             'curve_name' => 'prime256v1'
-        ]);
-        openssl_pkey_export($localKeyPair, $localPrivateKeyPem);
+        ];
+
+        $bundledConfig = str_replace('\\', '/', __DIR__ . '/openssl.cnf');
+        if (file_exists($bundledConfig)) {
+            $configArgs['config'] = $bundledConfig;
+        }
+
+        $localKeyPair = openssl_pkey_new($configArgs);
+
+        if ($localKeyPair === false) {
+             // Failed to generate ephemeral key.
+             // Cannot perform encryption.
+             // Return error or fallback to no payload?
+             return ['success' => false, 'message' => 'Failed to generate ephemeral key for encryption. OpenSSL Config issue?'];
+        }
+
+        openssl_pkey_export($localKeyPair, $localPrivateKeyPem, null, $configArgs);
         $keyDetails = openssl_pkey_get_details($localKeyPair);
         $localPublicKey = $this->pemToRaw($keyDetails['key']); // Uncompressed point
         $localPrivateKey = $this->pemToRawPrivate($localPrivateKeyPem);
