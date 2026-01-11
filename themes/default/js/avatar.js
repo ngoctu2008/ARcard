@@ -74,9 +74,9 @@ function loadFrame() {
 }
 
 // Navigation Logic
-function setStep(step) {
+function setStep(step, force) {
     // Validation for step 3 (must have image)
-    if(step === 3 && !appState.userImg) {
+    if(step === 3 && !appState.userImg && !force) {
         alert(typeof nv_lang_please_upload_photo !== 'undefined' ? nv_lang_please_upload_photo : 'Please upload a photo first');
         return;
     }
@@ -128,7 +128,8 @@ function handleFileUpload(input) {
             imgObj.src = e.target.result;
             imgObj.onload = function() {
                 // Ensure we switch to step 3 first so canvas is created/visible
-                setStep(3);
+                // Pass true to skip validation because we are about to load the image
+                setStep(3, true);
                 // Then load image (give a small delay for initCanvas inside setStep to fire if needed)
                 setTimeout(function(){
                     loadImageToCanvas(imgObj);
