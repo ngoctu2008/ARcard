@@ -291,9 +291,9 @@
         }
     }
 
-    function setStep(step) {
+    function setStep(step, force) {
         // Validation for step 3 (must have image)
-        if(step === 3 && !appState.userImg) {
+        if(step === 3 && !appState.userImg && !force) {
             alert('{LANG.please_upload_photo}');
             return;
         }
@@ -334,8 +334,8 @@
             var imgObj = new Image();
             imgObj.src = e.target.result;
             imgObj.onload = function() {
-                loadImageToCanvas(imgObj);
-                setStep(3);
+                setStep(3, true);
+                setTimeout(function() { loadImageToCanvas(imgObj); }, 100);
             };
         };
         reader.readAsDataURL(file);
