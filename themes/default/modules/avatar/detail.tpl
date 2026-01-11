@@ -2,47 +2,46 @@
 <link rel="stylesheet" href="{NV_BASE_SITEURL}themes/default/css/avatar.css">
 
 <div class="avatar-app" id="avatar-app">
-    <!-- Steps Navigation -->
-    <div class="step-nav-container">
-        <ul class="step-nav">
-            <!-- Step 1 (Choose) is skipped visually or marked done -->
-            <li class="completed" id="step-nav-2" onclick="setStep(2)">
-                <span class="step-icon"><i class="fa fa-upload"></i></span>
-                <span class="step-text">{LANG.step_upload_photo}</span>
-            </li>
-            <li id="step-nav-3" onclick="setStep(3)">
-                <span class="step-icon"><i class="fa fa-paint-brush"></i></span>
-                <span class="step-text">{LANG.step_edit}</span>
-            </li>
-            <li id="step-nav-4" onclick="setStep(4)">
-                <span class="step-icon"><i class="fa fa-eye"></i></span>
-                <span class="step-text">{LANG.step_preview}</span>
-            </li>
-            <li id="step-nav-5" onclick="setStep(5)">
-                <span class="step-icon"><i class="fa fa-download"></i></span>
-                <span class="step-text">{LANG.step_download}</span>
-            </li>
-        </ul>
+    <!-- Steps Navigation (Updated to match CSS) -->
+    <div class="wizard-steps">
+        <div class="step-item completed" id="step-nav-2" onclick="setStep(2)">
+            <div class="step-circle"><i class="fa fa-upload"></i></div>
+            <div class="step-text">{LANG.step_upload_photo}</div>
+        </div>
+        <div class="step-item" id="step-nav-3" onclick="setStep(3)">
+            <div class="step-circle"><i class="fa fa-paint-brush"></i></div>
+            <div class="step-text">{LANG.step_edit}</div>
+        </div>
+        <div class="step-item" id="step-nav-4" onclick="setStep(4)">
+            <div class="step-circle"><i class="fa fa-eye"></i></div>
+            <div class="step-text">{LANG.step_preview}</div>
+        </div>
+        <div class="step-item" id="step-nav-5" onclick="setStep(5)">
+            <div class="step-circle"><i class="fa fa-download"></i></div>
+            <div class="step-text">{LANG.step_download}</div>
+        </div>
     </div>
 
     <!-- Step 2: Upload Photo -->
     <div class="step-content" id="step-2">
-        <div class="text-center" style="margin-bottom: 20px;">
-             <img src="{ROW.image}" alt="{ROW.title}" class="img-responsive" style="margin: 0 auto; max-width: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
-        </div>
-        <div class="upload-zone" id="upload-zone">
-            <div class="upload-placeholder">
-                <i class="fa fa-cloud-upload fa-4x"></i>
-                <h3>{LANG.upload_your_photo}</h3>
-                <p>{LANG.drag_drop_support}</p>
-                <button class="btn btn-primary btn-lg" onclick="document.getElementById('file-upload').click()">{LANG.click_to_upload}</button>
-                <input type="file" id="file-upload" accept="image/*" style="display:none" onchange="handleFileUpload(this)">
+        <div id="drop-area-step-2" style="border: 2px dashed transparent; border-radius: 15px; transition: all 0.2s;">
+            <div class="text-center" style="margin-bottom: 20px;">
+                <img src="{ROW.image}" alt="{ROW.title}" class="img-responsive" style="margin: 0 auto; max-width: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
             </div>
-        </div>
-        <div class="row" style="margin-top:20px;">
-             <div class="col-xs-12 text-center">
-                 <button class="btn btn-default" onclick="history.back()"><i class="fa fa-arrow-left"></i> {LANG.back}</button>
-             </div>
+            <div class="upload-zone" id="upload-zone">
+                <div class="upload-placeholder">
+                    <i class="fa fa-cloud-upload fa-4x"></i>
+                    <h3>{LANG.upload_your_photo}</h3>
+                    <p>{LANG.drag_drop_support}</p>
+                    <button class="btn btn-primary btn-lg" onclick="document.getElementById('file-upload').click()">{LANG.click_to_upload}</button>
+                    <input type="file" id="file-upload" accept="image/*" style="display:none" onchange="handleFileUpload(this)">
+                </div>
+            </div>
+            <div class="row" style="margin-top:20px;">
+                <div class="col-xs-12 text-center">
+                    <button class="btn btn-default" onclick="history.back()"><i class="fa fa-arrow-left"></i> {LANG.back}</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -50,16 +49,16 @@
     <div class="step-content" id="step-3" style="display:none;">
         <div class="editor-container">
 
-            <!-- Canvas Area (Moved Top) -->
+            <!-- Canvas Area (Top) -->
             <div class="editor-workspace">
                  <div class="canvas-wrapper" id="canvas-wrapper">
                      <canvas id="c"></canvas>
                  </div>
             </div>
 
-            <!-- Sidebar Tools (Moved Bottom) -->
+            <!-- Sidebar Tools (Bottom) -->
             <div class="editor-sidebar">
-                <ul class="sidebar-tabs">
+                <ul class="sidebar-tabs main-tabs">
                     <li class="main-tab active" onclick="switchMainTab('image')"><i class="fa fa-picture-o"></i> {LANG.tab_image}</li>
                     <li class="main-tab" onclick="switchMainTab('text')"><i class="fa fa-font"></i> {LANG.tab_text}</li>
                 </ul>
@@ -67,13 +66,13 @@
                 <!-- Image Panel -->
                 <div class="editor-panel active" id="panel-image">
                     <div class="control-group">
-                        <button class="btn btn-warning btn-block btn-sm" onclick="document.getElementById('file-upload').click()">{LANG.change_photo}</button>
+                        <button class="btn btn-warning btn-block btn-sm" onclick="setStep(2, true)">{LANG.change_photo}</button>
                         <hr />
                         <label>{LANG.zoom}</label>
-                        <input type="range" id="ctrl-zoom" min="0.1" max="3" step="0.1" value="1" oninput="updateUserImage('scale', parseFloat(this.value))">
+                        <input type="range" class="custom-range" id="ctrl-zoom" min="0.1" max="3" step="0.1" value="1" oninput="updateUserImage('scale', parseFloat(this.value))">
 
                         <label style="margin-top:10px">{LANG.rotate}</label>
-                        <input type="range" id="ctrl-rotate" min="-180" max="180" step="1" value="0" oninput="updateUserImage('angle', parseInt(this.value))">
+                        <input type="range" class="custom-range" id="ctrl-rotate" min="-180" max="180" step="1" value="0" oninput="updateUserImage('angle', parseInt(this.value))">
 
                         <button class="btn btn-default btn-sm btn-block" style="margin-top:10px" onclick="resetImage()"><i class="fa fa-refresh"></i> Reset</button>
                     </div>
@@ -90,7 +89,7 @@
                     <div id="text-edit-area" style="display:none; margin-top:15px;">
                         <textarea id="ctrl-text-content" class="form-control" rows="2" oninput="updateActiveText('text', this.value)"></textarea>
 
-                        <div class="sub-tabs-nav">
+                        <div class="sub-tabs-scroll">
                             <span class="sub-tab active" onclick="switchSubTab('pos')" title="{LANG.tab_position}"><i class="fa fa-arrows"></i></span>
                             <span class="sub-tab" onclick="switchSubTab('format')" title="{LANG.tab_format}"><i class="fa fa-bold"></i></span>
                             <span class="sub-tab" onclick="switchSubTab('font')" title="{LANG.tab_font}"><i class="fa fa-font"></i></span>
@@ -106,11 +105,11 @@
                                 <div class="btn-group"><button class="btn btn-default btn-sm" onclick="alignText('center')"><i class="fa fa-align-center"></i></button></div>
                                 <div class="btn-group"><button class="btn btn-default btn-sm" onclick="alignText('right')"><i class="fa fa-align-right"></i></button></div>
                             </div>
-                             <div class="control-pad">
-                                <button onclick="moveText('up')"><i class="fa fa-arrow-up"></i></button>
-                                <button onclick="moveText('left')"><i class="fa fa-arrow-left"></i></button>
-                                <button onclick="moveText('down')"><i class="fa fa-arrow-down"></i></button>
-                                <button onclick="moveText('right')"><i class="fa fa-arrow-right"></i></button>
+                             <div class="text-center">
+                                <button class="btn btn-default btn-sm" onclick="moveText('up')"><i class="fa fa-arrow-up"></i></button><br>
+                                <button class="btn btn-default btn-sm" onclick="moveText('left')"><i class="fa fa-arrow-left"></i></button>
+                                <button class="btn btn-default btn-sm" onclick="moveText('down')"><i class="fa fa-arrow-down"></i></button>
+                                <button class="btn btn-default btn-sm" onclick="moveText('right')"><i class="fa fa-arrow-right"></i></button>
                             </div>
                             <button class="btn btn-danger btn-sm btn-block" style="margin-top:10px" onclick="deleteActiveObj()"><i class="fa fa-trash"></i> {LANG.delete}</button>
                         </div>
@@ -122,9 +121,9 @@
                                 <div class="btn-group"><button class="btn btn-default btn-sm" id="btn-underline" onclick="toggleStyle('underline', true)"><u>U</u></button></div>
                             </div>
                             <label style="margin-top:5px">Line Height</label>
-                            <input type="range" id="ctrl-lineHeight" min="0.5" max="3" step="0.1" oninput="updateActiveText('lineHeight', parseFloat(this.value))">
+                            <input type="range" class="custom-range" id="ctrl-lineHeight" min="0.5" max="3" step="0.1" oninput="updateActiveText('lineHeight', parseFloat(this.value))">
                              <label>Char Spacing</label>
-                            <input type="range" id="ctrl-charSpacing" min="-100" max="500" step="10" oninput="updateActiveText('charSpacing', parseInt(this.value))">
+                            <input type="range" class="custom-range" id="ctrl-charSpacing" min="-100" max="500" step="10" oninput="updateActiveText('charSpacing', parseInt(this.value))">
                         </div>
 
                         <div class="sub-panel" id="sub-font">
@@ -155,11 +154,11 @@
                             <label>Color</label>
                             <input type="color" id="ctrl-shadowColor" class="form-control" onchange="updateShadow()">
                             <label>Blur</label>
-                            <input type="range" id="ctrl-shadowBlur" min="0" max="50" oninput="updateShadow()">
+                            <input type="range" class="custom-range" id="ctrl-shadowBlur" min="0" max="50" oninput="updateShadow()">
                             <label>X Offset</label>
-                            <input type="range" id="ctrl-shadowX" min="-50" max="50" oninput="updateShadow()">
+                            <input type="range" class="custom-range" id="ctrl-shadowX" min="-50" max="50" oninput="updateShadow()">
                             <label>Y Offset</label>
-                            <input type="range" id="ctrl-shadowY" min="-50" max="50" oninput="updateShadow()">
+                            <input type="range" class="custom-range" id="ctrl-shadowY" min="-50" max="50" oninput="updateShadow()">
                         </div>
                     </div>
                 </div>
@@ -197,9 +196,10 @@
     var appState = {
         step: 1,
         canvas: null,
-        frameImg: '{ROW.image}',
+        frameImgSrc: '{ROW.image}',
+        frameObj: null,
         userImg: null,
-        canvasWidth: 800,
+        canvasWidth: 800, // Will be responsive
         canvasHeight: 800,
         tplId: {ROW.id},
         tplTitle: '{ROW.title}',
@@ -208,51 +208,128 @@
     };
 
     // Initialize Fabric Canvas
-    function initCanvas() {
-        if(appState.canvas) return;
-
-        var wrapper = document.getElementById('canvas-wrapper');
-        var w = wrapper.clientWidth;
-        // Make it square or fit aspect ratio of frame (assuming square for now or load frame to check)
-        // Let's default to 800x800 internal, scaled via CSS
-
-        appState.canvas = new fabric.Canvas('c', {
-            width: appState.canvasWidth,
-            height: appState.canvasHeight,
-            preserveObjectStacking: true
-        });
-
-        // Event Listeners
-        appState.canvas.on('selection:created', onObjSelect);
-        appState.canvas.on('selection:updated', onObjSelect);
-        appState.canvas.on('selection:cleared', onObjClear);
-
-        // Load Frame Overlay
-        if(appState.frameImg) {
-            fabric.Image.fromURL(appState.frameImg, function(img) {
-                // Scale frame to fit canvas
-                img.scaleToWidth(appState.canvasWidth);
-                img.scaleToHeight(appState.canvasHeight);
-                img.selectable = false;
-                img.evented = false;
-
-                appState.frameObj = img;
-                appState.canvas.add(img);
-                img.bringToFront();
-            }, { crossOrigin: 'anonymous' });
+    function initCanvas(callback) {
+        if(appState.canvas) {
+            if(callback) callback();
+            return;
         }
+
+        // 1. Load Frame Image first to get aspect ratio
+        var tempImg = new Image();
+        tempImg.crossOrigin = "Anonymous";
+        tempImg.src = appState.frameImgSrc;
+
+        tempImg.onload = function() {
+            var naturalWidth = tempImg.width || 800;
+            var naturalHeight = tempImg.height || 800;
+            var aspectRatio = naturalHeight / naturalWidth;
+
+            // 2. Get Container Width
+            var wrapper = document.getElementById('canvas-wrapper');
+            var containerWidth = wrapper.clientWidth;
+            if(containerWidth < 100) containerWidth = window.innerWidth > 600 ? 600 : window.innerWidth - 40;
+
+            // 3. Set Canvas Dimensions
+            appState.canvasWidth = containerWidth;
+            appState.canvasHeight = containerWidth * aspectRatio;
+
+            // 4. Create Canvas
+            appState.canvas = new fabric.Canvas('c', {
+                width: appState.canvasWidth,
+                height: appState.canvasHeight,
+                preserveObjectStacking: true,
+                selection: true
+            });
+
+            // Event Listeners
+            appState.canvas.on('selection:created', onObjSelect);
+            appState.canvas.on('selection:updated', onObjSelect);
+            appState.canvas.on('selection:cleared', onObjClear);
+
+            // 5. Add Frame Image
+            var frameInstance = new fabric.Image(tempImg, {
+                selectable: false,
+                evented: false,
+                left: 0,
+                top: 0
+            });
+            // Scale to fit canvas exactly
+            frameInstance.scaleToWidth(appState.canvasWidth);
+            frameInstance.scaleToHeight(appState.canvasHeight);
+
+            appState.frameObj = frameInstance;
+            appState.canvas.add(frameInstance);
+            frameInstance.bringToFront();
+
+            if(callback) callback();
+        };
+
+        tempImg.onerror = function() {
+            console.error("Could not load frame image");
+            // Fallback
+            appState.canvas = new fabric.Canvas('c', { width: 800, height: 800 });
+            if(callback) callback();
+        };
     }
 
     // Skip directly to upload step
     window.addEventListener('load', function() {
         setStep(2);
         initDragDrop();
+
+        // Handle Resize
+        window.addEventListener('resize', debounce(function() {
+            if(appState.step === 3 && appState.canvas) {
+                 resizeCanvas();
+            }
+        }, 200));
     });
+
+    function resizeCanvas() {
+        if(!appState.canvas || !appState.frameObj) return;
+
+        var wrapper = document.getElementById('canvas-wrapper');
+        var newWidth = wrapper.clientWidth;
+        if(newWidth === appState.canvasWidth) return;
+
+        var scaleMultiplier = newWidth / appState.canvasWidth;
+
+        appState.canvasWidth = newWidth;
+        appState.canvasHeight = appState.canvasHeight * scaleMultiplier;
+
+        appState.canvas.setDimensions({
+            width: appState.canvasWidth,
+            height: appState.canvasHeight
+        });
+
+        // Scale all objects
+        appState.canvas.getObjects().forEach(function(obj) {
+             obj.scaleX = obj.scaleX * scaleMultiplier;
+             obj.scaleY = obj.scaleY * scaleMultiplier;
+             obj.left = obj.left * scaleMultiplier;
+             obj.top = obj.top * scaleMultiplier;
+             obj.setCoords();
+        });
+
+        appState.canvas.requestRenderAll();
+    }
+
+    function debounce(func, wait) {
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                func.apply(context, args);
+            }, wait);
+        };
+    }
 
     // --- Application Logic Functions ---
 
     function initDragDrop() {
-        var dropZone = document.getElementById('upload-zone');
+        // We make the whole step-2 area a drop zone for better UX
+        var dropZone = document.getElementById('drop-area-step-2');
         if(!dropZone) return;
 
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
@@ -273,11 +350,13 @@
         });
 
         function highlight(e) {
-            dropZone.classList.add('drag-over');
+            dropZone.style.borderColor = '#007bff';
+            dropZone.style.backgroundColor = 'rgba(0,123,255,0.05)';
         }
 
         function unhighlight(e) {
-            dropZone.classList.remove('drag-over');
+            dropZone.style.borderColor = 'transparent';
+             dropZone.style.backgroundColor = 'transparent';
         }
 
         dropZone.addEventListener('drop', handleDrop, false);
@@ -294,6 +373,8 @@
     function setStep(step, force) {
         // Validation for step 3 (must have image)
         if(step === 3 && !appState.userImg && !force) {
+            // Check if we are coming from Step 2 with a file selection?
+            // If user just clicks "Edit" tab without uploading, show alert
             alert('{LANG.please_upload_photo}');
             return;
         }
@@ -301,7 +382,7 @@
         appState.step = step;
 
         // Update nav UI
-        document.querySelectorAll('.step-nav li').forEach(li => {
+        document.querySelectorAll('.step-item').forEach(li => {
             li.classList.remove('active');
         });
         var currentNav = document.getElementById('step-nav-' + step);
@@ -318,7 +399,12 @@
         document.getElementById('step-' + step).style.display = 'block';
 
         if(step === 3) {
-            initCanvas();
+            // Need to ensure canvas is initialized visible
+            if(!appState.canvas) {
+                initCanvas();
+            } else {
+                appState.canvas.requestRenderAll();
+            }
         }
     }
 
@@ -334,21 +420,30 @@
             var imgObj = new Image();
             imgObj.src = e.target.result;
             imgObj.onload = function() {
+                // We go to step 3
                 setStep(3, true);
-                setTimeout(function() { loadImageToCanvas(imgObj); }, 100);
+
+                // Initialize canvas with the new image
+                initCanvas(function() {
+                    loadImageToCanvas(imgObj);
+                });
             };
         };
         reader.readAsDataURL(file);
     }
 
     function loadImageToCanvas(imgElem) {
-        if(!appState.canvas) initCanvas();
         if(appState.userImg) appState.canvas.remove(appState.userImg);
 
         var imgInstance = new fabric.Image(imgElem);
         appState.userImg = imgInstance;
 
-        var scale = Math.max(appState.canvasWidth / imgInstance.width, appState.canvasHeight / imgInstance.height);
+        // Scale user image to cover at least 50% of canvas or fit logic
+        // Let's try to fit it nicely
+        var scale = Math.min(appState.canvasWidth / imgInstance.width, appState.canvasHeight / imgInstance.height);
+
+        // If image is too small, make it bigger
+        if(scale < 0.5) scale = 0.5;
 
         imgInstance.set({
             left: appState.canvasWidth/2, top: appState.canvasHeight/2,
@@ -357,7 +452,7 @@
         });
 
         appState.canvas.add(imgInstance);
-        imgInstance.sendToBack();
+        imgInstance.sendToBack(); // Behind frame
         appState.canvas.setActiveObject(imgInstance);
 
         // Reset controls
@@ -422,7 +517,7 @@
 
     // Text Ops
     function addText() {
-        var text = new fabric.IText('New Text', {
+        var text = new fabric.IText('Text', {
             left: appState.canvasWidth/2, top: appState.canvasHeight/2,
             fontFamily: 'Arial', fontSize: 30, fill: '#333333',
             originX: 'center', originY: 'center'
@@ -502,9 +597,6 @@
     }
 
     function alignText(align) {
-         // This aligns the text within its bounding box, or moves object if we want.
-         // Usually for single line text, this doesn't do much visually unless multiline.
-         // Or we can move the object to canvas center/left/right
          updateActiveText('textAlign', align);
     }
 

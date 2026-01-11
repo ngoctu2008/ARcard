@@ -147,7 +147,9 @@
     .canvas-wrapper .canvas-container,
     .canvas-wrapper canvas {
         max-width: 100%;
-        height: auto !important;
+    }
+    .editor-workspace {
+        width: 100%;
     }
     .editor-sidebar {
         width: 100%;
