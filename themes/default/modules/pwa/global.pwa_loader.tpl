@@ -100,9 +100,11 @@ function pwaSubscribeUser() {
             }).then(res => res.json())
               .then(data => {
                   console.log('Server response', data);
-                  if (data.status === 'ok') {
+                  if (data.status === 'success') {
                       document.getElementById('pwa-subscribe-btn').style.display = 'none';
-                      alert('Subscribed successfully!');
+                      alert('{LANG.subscribe_success}');
+                  } else {
+                      alert('{LANG.subscribe_fail}');
                   }
               });
         });

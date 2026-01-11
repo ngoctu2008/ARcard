@@ -8,19 +8,18 @@ distinguished_name = req_distinguished_name
 attributes = req_attributes
 x509_extensions = v3_ca
 string_mask = utf8only
+prompt = no
 
 [ req_distinguished_name ]
-countryName = Country Name (2 letter code)
-countryName_default = VN
-countryName_min = 2
-countryName_max = 2
-commonName = Common Name (e.g. server FQDN or YOUR name)
-commonName_max = 64
+C = VN
+ST = Hanoi
+L = Hanoi
+O = PWA
+OU = PWA Unit
+CN = PWA VAPID
 
 [ req_attributes ]
-challengePassword = A challenge password
-challengePassword_min = 4
-challengePassword_max = 20
+challengePassword = password
 
 [ v3_ca ]
 subjectKeyIdentifier=hash
