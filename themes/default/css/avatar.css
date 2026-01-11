@@ -118,7 +118,7 @@
         max-width: 600px;
         margin: 0 auto;
     }
-    .upload-zone:hover { background: #eef6ff; }
+    .upload-zone:hover, .upload-zone.drag-over { background: #eef6ff; border-color: #007bff; box-shadow: 0 0 10px rgba(0,123,255,0.2); }
     .upload-zone i { font-size: 48px; color: #007bff; margin-bottom: 15px; }
     .upload-zone h4 { margin: 10px 0; color: #333; }
     .upload-zone p { color: #666; font-size: 13px; }

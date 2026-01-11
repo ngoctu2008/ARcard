@@ -30,7 +30,7 @@
         <div class="text-center" style="margin-bottom: 20px;">
              <img src="{ROW.image}" alt="{ROW.title}" class="img-responsive" style="margin: 0 auto; max-width: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
         </div>
-        <div class="upload-area" id="upload-area">
+        <div class="upload-zone" id="upload-zone">
             <div class="upload-placeholder">
                 <i class="fa fa-cloud-upload fa-4x"></i>
                 <h3>{LANG.upload_your_photo}</h3>
@@ -246,9 +246,50 @@
     // Skip directly to upload step
     window.addEventListener('load', function() {
         setStep(2);
+        initDragDrop();
     });
 
     // --- Application Logic Functions ---
+
+    function initDragDrop() {
+        var dropZone = document.getElementById('upload-zone');
+        if(!dropZone) return;
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('drag-over');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('drag-over');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+    }
+
+    function handleDrop(e) {
+        var dt = e.dataTransfer;
+        var files = dt.files;
+        if(files && files[0]) {
+            processFile(files[0]);
+        }
+    }
 
     function setStep(step) {
         // Validation for step 3 (must have image)
@@ -283,17 +324,21 @@
 
     function handleFileUpload(input) {
         if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var imgObj = new Image();
-                imgObj.src = e.target.result;
-                imgObj.onload = function() {
-                    loadImageToCanvas(imgObj);
-                    setStep(3);
-                };
-            };
-            reader.readAsDataURL(input.files[0]);
+            processFile(input.files[0]);
         }
+    }
+
+    function processFile(file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var imgObj = new Image();
+            imgObj.src = e.target.result;
+            imgObj.onload = function() {
+                loadImageToCanvas(imgObj);
+                setStep(3);
+            };
+        };
+        reader.readAsDataURL(file);
     }
 
     function loadImageToCanvas(imgElem) {
