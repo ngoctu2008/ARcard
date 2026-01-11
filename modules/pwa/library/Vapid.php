@@ -39,15 +39,28 @@ class Vapid
         // Suppress warning "Unsupported private key type" if EC is missing in lib
         $res = @\openssl_pkey_new($configArgs);
 
-        // Attempt 2: Fallback to bundled config using explicit config arg (preferred over putenv)
+        // Attempt 2: Fallback to bundled config using putenv + config arg (aggressive override)
         if (!$res) {
              // Clear errors from first attempt
              while (\openssl_error_string());
 
              $bundledConfig = str_replace('\\', '/', __DIR__ . '/openssl.cnf');
              if (file_exists($bundledConfig)) {
+                 // Save old env var
+                 $oldEnv = getenv('OPENSSL_CONF');
+
+                 // Force OpenSSL to use our config by setting env var AND passing config arg
+                 putenv("OPENSSL_CONF={$bundledConfig}");
                  $configArgs['config'] = $bundledConfig;
+
                  $res = @\openssl_pkey_new($configArgs);
+
+                 // Restore old env var (best effort)
+                 if ($oldEnv !== false) {
+                     putenv("OPENSSL_CONF={$oldEnv}");
+                 } else {
+                     putenv("OPENSSL_CONF"); // Unset
+                 }
              }
         }
 
