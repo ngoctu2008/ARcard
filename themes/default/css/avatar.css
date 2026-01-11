@@ -1,0 +1,248 @@
+ .avatar-app { margin: 20px 0; user-select: none; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #fdfdfd; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+
+    /* Wizard Steps */
+    .wizard-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 40px;
+        position: relative;
+        padding: 0 10px;
+    }
+    .wizard-steps::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        left: 30px;
+        right: 30px;
+        height: 2px;
+        background: #e9ecef;
+        z-index: 1;
+    }
+    .step-item {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        width: 20%;
+    }
+    .step-circle {
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid #e9ecef;
+        color: #adb5bd;
+        font-weight: bold;
+        margin: 0 auto 5px;
+        transition: all 0.3s;
+    }
+    .step-text {
+        font-size: 12px;
+        color: #adb5bd;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+
+    .step-item.active .step-circle {
+        border-color: #007bff;
+        background: #007bff;
+        color: #fff;
+        box-shadow: 0 0 0 4px rgba(0,123,255,0.2);
+    }
+    .step-item.active .step-text { color: #007bff; font-weight: bold; }
+
+    .step-item.completed .step-circle {
+        background: #28a745;
+        border-color: #28a745;
+        color: #fff;
+    }
+    .step-item.completed .step-text { color: #28a745; }
+
+    /* Step 1: Template Grid */
+    #step-1-content { display: block; animation: fadeIn 0.5s; }
+    .template-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+    .template-card {
+        width: 180px;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .template-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        border-color: #007bff;
+    }
+    .template-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: contain;
+        background: #f8f9fa;
+        border-bottom: 1px solid #eee;
+    }
+    .template-card .title {
+        padding: 10px 10px 5px;
+        text-align: center;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #333;
+    }
+    .template-card .meta {
+        padding: 5px 10px 10px;
+        font-size: 11px;
+        color: #777;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Step 2: Upload */
+    #step-2-content { display: none; text-align: center; animation: fadeIn 0.5s; }
+    .upload-zone {
+        border: 2px dashed #007bff;
+        border-radius: 15px;
+        padding: 60px 20px;
+        background: #f8fbff;
+        cursor: pointer;
+        transition: all 0.3s;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .upload-zone:hover { background: #eef6ff; }
+    .upload-zone i { font-size: 48px; color: #007bff; margin-bottom: 15px; }
+    .upload-zone h4 { margin: 10px 0; color: #333; }
+    .upload-zone p { color: #666; font-size: 13px; }
+
+    /* Step 3: Editor */
+    #step-3-content { display: none; animation: fadeIn 0.5s; }
+    .editor-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+    }
+    .canvas-wrapper {
+        border: 1px solid #ddd;
+        background: #e0e0e0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%; /* Full width */
+        max-width: 100%;
+        margin: 0 auto;
+        overflow: hidden;
+    }
+    .canvas-wrapper .canvas-container,
+    .canvas-wrapper canvas {
+        max-width: 100%;
+        height: auto !important;
+    }
+    .editor-sidebar {
+        width: 100%;
+        max-width: 100%;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 400px;
+    }
+
+    /* Top Tabs (Image / Text) */
+    .main-tabs { display: flex; border-bottom: 2px solid #eee; margin-bottom: 10px; }
+    .main-tab {
+        flex: 1;
+        text-align: center;
+        padding: 15px;
+        cursor: pointer;
+        font-weight: 600;
+        color: #777;
+        background: #f9f9f9;
+        transition: all 0.2s;
+    }
+    .main-tab.active { background: #fff; color: #007bff; border-bottom: 2px solid #007bff; }
+
+    /* Sub Tabs (Text Properties) */
+    .sub-tabs-scroll { overflow-x: auto; white-space: nowrap; border-bottom: 1px solid #eee; padding: 0 5px; }
+    .sub-tab {
+        display: inline-block;
+        padding: 10px 15px;
+        font-size: 13px;
+        cursor: pointer;
+        color: #555;
+        border-bottom: 2px solid transparent;
+    }
+    .sub-tab.active { color: #333; font-weight: bold; border-bottom-color: #333; }
+
+    .editor-panel { padding: 20px; display: none; overflow-y: auto; height: 100%; }
+    .editor-panel.active { display: block; }
+    .sub-panel { display: none; padding-top: 15px; }
+    .sub-panel.active { display: block; animation: fadeIn 0.3s; }
+
+    .control-row { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+    .control-label { flex: 0 0 80px; font-size: 13px; color: #666; font-weight: 500; }
+    .control-input { flex: 1; }
+
+    .btn-icon {
+        width: 36px; height: 36px; line-height: 34px;
+        text-align: center; border: 1px solid #ddd;
+        background: #fff; border-radius: 4px;
+        cursor: pointer; color: #555;
+        transition: all 0.2s;
+    }
+    .btn-icon:hover { background: #f0f0f0; border-color: #ccc; }
+    .btn-icon.active { background: #e6f0ff; border-color: #007bff; color: #007bff; }
+
+    .font-preview {
+        padding: 10px; border: 1px solid #eee; margin-bottom: 5px;
+        cursor: pointer; border-radius: 4px; text-align: center;
+    }
+    .font-preview:hover, .font-preview.active { border-color: #007bff; background: #f8fbff; }
+
+    /* Step 4: Preview */
+    #step-4-content { display: none; text-align: center; animation: fadeIn 0.5s; padding-bottom: 40px; }
+    .preview-header h2 { font-size: 24px; color: #2c3e50; margin-bottom: 10px; font-weight: 700; }
+    .preview-stats { color: #555; font-size: 14px; margin-bottom: 30px; }
+    .preview-box {
+        position: relative; display: inline-block; margin-bottom: 20px;
+    }
+    .preview-image-container {
+        padding: 10px; background: #fff;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        border-radius: 10px; transform: rotate(-2deg);
+        display: inline-block; transition: transform 0.3s;
+    }
+    .preview-image-container:hover { transform: rotate(0); }
+    .preview-image-container img { display: block; max-width: 100%; border-radius: 4px; }
+    .action-buttons { margin-top: 30px; display: flex; justify-content: center; gap: 20px; }
+    .btn-create-again, .btn-download-final {
+        background: #fff; color: #555; border: 1px solid #ddd;
+        padding: 10px 30px; border-radius: 30px; font-weight: 500;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer;
+    }
+    .btn-create-again:hover, .btn-download-final:hover { background: #f8f9fa; }
+
+    /* General Utils */
+    .custom-range { width: 100%; }
+    .d-flex { display: flex; }
+    .gap-10 { gap: 10px; }
+    .w-100 { width: 100%; }
+    .mb-3 { margin-bottom: 15px; }
+
+    /* Fonts */
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Open+Sans:wght@400;700&family=Dancing+Script:wght@700&display=swap');
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
