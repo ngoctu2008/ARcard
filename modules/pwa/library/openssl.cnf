@@ -1,3 +1,6 @@
+HOME = .
+RANDFILE = $ENV::HOME/.rnd
+
 [ req ]
 default_bits = 2048
 default_keyfile = privkey.pem

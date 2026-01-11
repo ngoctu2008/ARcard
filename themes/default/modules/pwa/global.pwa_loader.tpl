@@ -43,12 +43,20 @@ if ('serviceWorker' in navigator) {
 
 // Handle Install Prompt
 window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('PWA: beforeinstallprompt fired');
   // Prevent the mini-infobar from appearing on mobile
   e.preventDefault();
   // Stash the event so it can be triggered later.
   deferredPrompt = e;
   // Update UI notify the user they can install the PWA
   document.getElementById('pwa-install-btn').style.display = 'block';
+});
+
+// Check if app is already installed
+window.addEventListener('appinstalled', () => {
+  console.log('PWA: App installed');
+  document.getElementById('pwa-install-btn').style.display = 'none';
+  deferredPrompt = null;
 });
 
 function pwaInstallApp() {
