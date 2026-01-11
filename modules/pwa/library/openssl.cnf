@@ -1,6 +1,3 @@
-HOME = .
-RANDFILE = $ENV::HOME/.rnd
-
 [req]
 distinguished_name = req_distinguished_name
 x509_extensions = v3_ca
