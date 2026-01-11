@@ -1,27 +1,19 @@
 HOME = .
 RANDFILE = $ENV::HOME/.rnd
 
-[ req ]
-default_bits = 2048
-default_keyfile = privkey.pem
+[req]
 distinguished_name = req_distinguished_name
-attributes = req_attributes
 x509_extensions = v3_ca
-string_mask = utf8only
 prompt = no
 
-[ req_distinguished_name ]
+[req_distinguished_name]
 C = VN
 ST = Hanoi
 L = Hanoi
 O = PWA
 OU = PWA Unit
 CN = PWA VAPID
+emailAddress = admin@localhost
 
-[ req_attributes ]
-challengePassword = password
-
-[ v3_ca ]
-subjectKeyIdentifier=hash
-authorityKeyIdentifier=keyid:always,issuer
-basicConstraints = CA:true
+[v3_ca]
+basicConstraints = CA:TRUE

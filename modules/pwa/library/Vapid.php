@@ -31,7 +31,6 @@ class Vapid
 
         $configArgs = array(
             "digest_alg" => "sha256",
-            "private_key_bits" => 4096,
             "private_key_type" => OPENSSL_KEYTYPE_EC,
             "curve_name" => "prime256v1",
         );
