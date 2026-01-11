@@ -236,7 +236,7 @@
     // We defer the execution to allow avatar.js to load
     window.addEventListener('load', function() {
         if(typeof appState !== 'undefined') {
-            appState.frameImg = '{ROW.image}';
+            appState.frameImg = '{NV_BASE_SITEURL}{ROW.image}'; // Prepend Base URL
             appState.tplId = {ROW.id};
             appState.tplTitle = '{ROW.title}';
             appState.tplViews = {ROW.views};

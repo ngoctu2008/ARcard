@@ -4,6 +4,7 @@ var appState = {
     canvas: null,
     frameImg: '', // Will be set from TPL
     userImg: null,
+    frameObj: null,
     canvasWidth: 800,
     canvasHeight: 800,
     tplId: 0,
@@ -14,17 +15,27 @@ var appState = {
 
 // Initialize Fabric Canvas
 function initCanvas() {
-    if(appState.canvas) return;
+    if(appState.canvas) {
+         // If canvas exists, just ensure it's sized correctly in case it was hidden
+         appState.canvas.calcOffset();
+         appState.canvas.requestRenderAll();
+         return;
+    }
 
     var wrapper = document.getElementById('canvas-wrapper');
     if (!wrapper) return;
 
-    // Use a fixed logical size, CSS handles the display size
+    // Use a fixed logical size, CSS handles the display size via scaling if needed
+    // But for Fabric, the width/height property controls the drawing buffer.
+    // If the wrapper is hidden, clientWidth might be 0.
+    // We should force dimensions if we know them (appState.canvasWidth).
+
     appState.canvas = new fabric.Canvas('c', {
         width: appState.canvasWidth,
         height: appState.canvasHeight,
         preserveObjectStacking: true,
-        selection: true
+        selection: true,
+        backgroundColor: '#fff' // Set white background to see canvas clearly
     });
 
     // Event Listeners
@@ -32,9 +43,22 @@ function initCanvas() {
     appState.canvas.on('selection:updated', onObjSelect);
     appState.canvas.on('selection:cleared', onObjClear);
 
+    loadFrame();
+}
+
+function loadFrame() {
     // Load Frame Overlay
-    if(appState.frameImg) {
+    if(appState.frameImg && appState.canvas) {
+        // Check if frame is already there
+        if(appState.frameObj) {
+            appState.canvas.remove(appState.frameObj);
+        }
+
         fabric.Image.fromURL(appState.frameImg, function(img) {
+            if(!img) {
+                console.error('Failed to load frame image: ' + appState.frameImg);
+                return;
+            }
             // Scale frame to fit canvas
             img.scaleToWidth(appState.canvasWidth);
             img.scaleToHeight(appState.canvasHeight);
@@ -43,7 +67,8 @@ function initCanvas() {
 
             appState.frameObj = img;
             appState.canvas.add(img);
-            img.bringToFront();
+            img.bringToFront(); // Ensure frame is on top
+            appState.canvas.requestRenderAll();
         }, { crossOrigin: 'anonymous' });
     }
 }
@@ -52,7 +77,7 @@ function initCanvas() {
 function setStep(step) {
     // Validation for step 3 (must have image)
     if(step === 3 && !appState.userImg) {
-        alert(nv_lang_please_upload_photo || 'Please upload a photo first'); // Use localized var if available
+        alert(typeof nv_lang_please_upload_photo !== 'undefined' ? nv_lang_please_upload_photo : 'Please upload a photo first');
         return;
     }
 
@@ -75,12 +100,23 @@ function setStep(step) {
     document.querySelectorAll('.step-content').forEach(function(d) {
         d.style.display = 'none';
     });
-    var content = document.getElementById('step-' + step);
-    if(content) content.style.display = 'block';
 
+    var content = document.getElementById('step-' + step);
+    if(content) {
+        content.style.display = 'block';
+    }
+
+    // If entering Editor step, ensure canvas is ready
     if(step === 3) {
-        // slight delay to ensure container is visible for size calc if needed
-        setTimeout(initCanvas, 100);
+        // Use timeout to allow DOM to render block display so offsets are calculated
+        setTimeout(function() {
+             initCanvas();
+             // Force refresh logic
+             if(appState.canvas) {
+                 appState.canvas.calcOffset();
+                 appState.canvas.requestRenderAll();
+             }
+        }, 200);
     }
 }
 
@@ -91,8 +127,12 @@ function handleFileUpload(input) {
             var imgObj = new Image();
             imgObj.src = e.target.result;
             imgObj.onload = function() {
-                loadImageToCanvas(imgObj);
+                // Ensure we switch to step 3 first so canvas is created/visible
                 setStep(3);
+                // Then load image (give a small delay for initCanvas inside setStep to fire if needed)
+                setTimeout(function(){
+                    loadImageToCanvas(imgObj);
+                }, 300);
             };
         };
         reader.readAsDataURL(input.files[0]);
@@ -106,10 +146,8 @@ function loadImageToCanvas(imgElem) {
     var imgInstance = new fabric.Image(imgElem);
     appState.userImg = imgInstance;
 
-    // Scale image to cover at least one dimension fully, or fit
+    // Scale image to cover the canvas (like object-fit: cover)
     var scale = Math.max(appState.canvasWidth / imgInstance.width, appState.canvasHeight / imgInstance.height);
-    // Or maybe just fit it initially? Let's fit it.
-    // var scale = Math.min(appState.canvasWidth / imgInstance.width, appState.canvasHeight / imgInstance.height) * 0.8;
 
     imgInstance.set({
         left: appState.canvasWidth/2, top: appState.canvasHeight/2,
@@ -118,8 +156,17 @@ function loadImageToCanvas(imgElem) {
     });
 
     appState.canvas.add(imgInstance);
-    imgInstance.sendToBack(); // Important: Behind the frame
+    imgInstance.sendToBack(); // User image goes to back
+
+    // IMPORTANT: Bring frame to front again in case it got covered
+    if(appState.frameObj) {
+        appState.frameObj.bringToFront();
+    } else {
+        loadFrame(); // Reload if missing
+    }
+
     appState.canvas.setActiveObject(imgInstance);
+    appState.canvas.requestRenderAll();
 
     // Reset controls
     var inputZoom = document.getElementById('ctrl-zoom');
@@ -203,7 +250,13 @@ function addText() {
         originX: 'center', originY: 'center'
     });
     appState.canvas.add(text);
+
+    // Ensure text is on top of user image but maybe below/above frame?
+    // Usually text is ON TOP of frame for avatars? Or below?
+    // User requirement: "User upload photo... goes BEHIND frame".
+    // Text usually goes ON TOP of everything.
     text.bringToFront();
+
     appState.canvas.setActiveObject(text);
     switchMainTab('text');
 }
