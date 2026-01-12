@@ -27,6 +27,7 @@ if ($nv_Request->isset_request('save', 'post')) {
         'theme_color' => $nv_Request->get_title('theme_color', 'post', '#000000'),
         'background_color' => $nv_Request->get_title('background_color', 'post', '#ffffff'),
         'icon_path' => $nv_Request->get_string('icon_path', 'post', ''),
+        'subscribe_note' => $nv_Request->get_string('subscribe_note', 'post', ''),
         'vapid_public_key' => $nv_Request->get_string('vapid_public_key', 'post', ''),
         'vapid_private_key' => $nv_Request->get_string('vapid_private_key', 'post', ''),
     ];
@@ -95,6 +96,7 @@ $xtpl->assign('DATA', [
     'theme_color' => isset($module_config['theme_color']) ? $module_config['theme_color'] : '#3b82f6',
     'background_color' => isset($module_config['background_color']) ? $module_config['background_color'] : '#ffffff',
     'icon_path' => isset($module_config['icon_path']) ? $module_config['icon_path'] : '',
+    'subscribe_note' => isset($module_config['subscribe_note']) ? $module_config['subscribe_note'] : '',
     'vapid_public_key' => isset($module_config['vapid_public_key']) ? $module_config['vapid_public_key'] : '',
     'vapid_private_key' => isset($module_config['vapid_private_key']) ? $module_config['vapid_private_key'] : ''
 ]);

@@ -3,12 +3,12 @@
 
 <div id="pwa-container" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; gap: 10px;">
     <div id="pwa-install-btn" style="display: none;">
-        <button onclick="pwaInstallApp()" class="btn btn-success btn-sm" style="border-radius: 50%; width: 50px; height: 50px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+        <button onclick="pwaInstallApp()" class="btn btn-success btn-sm" title="Cài đặt ứng dụng" style="border-radius: 50%; width: 50px; height: 50px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
             <i class="fa fa-download" aria-hidden="true" style="font-size: 20px;"></i>
         </button>
     </div>
     <div id="pwa-subscribe-btn" style="display: none;">
-        <button onclick="pwaSubscribeUser()" class="btn btn-primary btn-sm" style="border-radius: 50%; width: 50px; height: 50px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
+        <button onclick="pwaSubscribeUser()" class="btn btn-primary btn-sm" title="Đăng ký nhận thông báo" style="border-radius: 50%; width: 50px; height: 50px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);">
             <i class="fa fa-bell" aria-hidden="true" style="font-size: 20px;"></i>
         </button>
     </div>
@@ -103,6 +103,9 @@ function pwaSubscribeUser() {
                   if (data.status === 'success') {
                       document.getElementById('pwa-subscribe-btn').style.display = 'none';
                       alert('{LANG.subscribe_success}');
+                      if('{SUBSCRIBE_NOTE}' !== '') {
+                          alert('{SUBSCRIBE_NOTE}');
+                      }
                   } else {
                       alert('{LANG.subscribe_fail}');
                   }

@@ -29,13 +29,16 @@ function nv_global_pwa_loader($block_config)
     $manifestUrl = NV_BASE_SITEURL . 'index.php?nv=' . $pwa_module_name . '&op=manifest';
     $swUrl = NV_BASE_SITEURL . 'index.php?nv=' . $pwa_module_name . '&op=sw';
 
-    // VAPID Public Key for subscription
-    $sql = "SELECT config_value FROM " . NV_CONFIG_GLOBALTABLE . " WHERE lang='" . NV_LANG_DATA . "' AND module='" . $pwa_module_name . "' AND config_name='vapid_public_key'";
+    // Load module config (VAPID Key and Subscribe Note)
+    $sql = "SELECT config_name, config_value FROM " . NV_CONFIG_GLOBALTABLE . " WHERE lang='" . NV_LANG_DATA . "' AND module='" . $pwa_module_name . "'";
     $result = $db->query($sql);
-    $vapidPublicKey = '';
-    if ($row = $result->fetch()) {
-        $vapidPublicKey = $row['config_value'];
+    $module_config = [];
+    while ($row = $result->fetch()) {
+        $module_config[$row['config_name']] = $row['config_value'];
     }
+
+    $vapidPublicKey = isset($module_config['vapid_public_key']) ? $module_config['vapid_public_key'] : '';
+    $subscribeNote = isset($module_config['subscribe_note']) ? $module_config['subscribe_note'] : '';
 
     // Determine template path
     $block_theme = $global_config['module_theme'];
@@ -57,6 +60,7 @@ function nv_global_pwa_loader($block_config)
     $xtpl->assign('MANIFEST_URL', $manifestUrl);
     $xtpl->assign('SW_URL', $swUrl);
     $xtpl->assign('VAPID_PUBLIC_KEY', $vapidPublicKey);
+    $xtpl->assign('SUBSCRIBE_NOTE', $subscribeNote);
     $xtpl->assign('MODULE_NAME', $pwa_module_name);
     $xtpl->assign('NV_BASE_SITEURL', NV_BASE_SITEURL);
 

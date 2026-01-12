@@ -37,3 +37,5 @@ $lang_module['noti_url'] = 'URL';
 $lang_module['send'] = 'Send Now';
 $lang_module['send_success'] = 'Notification sent successfully to %d devices.';
 $lang_module['error_vapid'] = 'VAPID keys not configured.';
+$lang_module['subscribe_note'] = 'Subscription Notification';
+$lang_module['subscribe_note_help'] = 'Message displayed when user clicks the subscribe button.';

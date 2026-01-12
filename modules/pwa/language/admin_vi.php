@@ -37,3 +37,5 @@ $lang_module['noti_url'] = 'Đường dẫn (URL)';
 $lang_module['send'] = 'Gửi ngay';
 $lang_module['send_success'] = 'Đã gửi thông báo thành công đến %d thiết bị.';
 $lang_module['error_vapid'] = 'Chưa cấu hình VAPID keys.';
+$lang_module['subscribe_note'] = 'Thông báo khi đăng ký';
+$lang_module['subscribe_note_help'] = 'Nội dung thông báo sẽ hiển thị khi người dùng nhấn vào nút chuông đăng ký.';

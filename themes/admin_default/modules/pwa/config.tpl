@@ -50,6 +50,12 @@
                     </div>
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label">{LANG.subscribe_note}</label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" name="subscribe_note" value="{DATA.subscribe_note}" placeholder="{LANG.subscribe_note_help}" />
+                </div>
+            </div>
         </div>
     </div>
 
