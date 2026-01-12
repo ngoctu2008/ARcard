@@ -2,7 +2,7 @@
 <div class="avatar-main">
     <div class="row">
         <!-- BEGIN: cat -->
-        <div class="col-md-4 col-sm-6">
+        <div class="col-md-8 col-sm-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title"><a href="{CAT.link}">{CAT.title}</a></h3>

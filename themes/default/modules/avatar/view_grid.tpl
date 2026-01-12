@@ -10,7 +10,7 @@
 
     <div class="row">
         <!-- BEGIN: row -->
-        <div class="col-md-3 col-sm-4 col-xs-6">
+        <div class="col-md-6 col-sm-8 col-xs-12">
             <div class="thumbnail">
                 <a href="{ROW.link}" title="{ROW.title}">
                     <img src="{ROW.image}" alt="{ROW.title}" class="img-responsive" />

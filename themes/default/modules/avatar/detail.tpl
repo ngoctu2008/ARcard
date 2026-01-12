@@ -26,7 +26,7 @@
     <div class="step-content" id="step-2">
         <div id="drop-area-step-2" style="border: 2px dashed transparent; border-radius: 15px; transition: all 0.2s;">
             <div class="text-center" style="margin-bottom: 20px;">
-                <img src="{ROW.image}" alt="{ROW.title}" class="img-responsive" style="margin: 0 auto; max-width: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                <img src="{ROW.image}" alt="{ROW.title}" class="img-responsive" style="margin: 0 auto; width: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
             </div>
             <div class="upload-zone" id="upload-zone" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
                 <div class="upload-placeholder">
@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="row" style="margin-top:20px;">
-                <div class="col-xs-12 text-center">
+                <div class="col-xs-24 text-center">
                     <button class="btn btn-default" onclick="history.back()"><i class="fa fa-arrow-left"></i> {LANG.back}</button>
                 </div>
             </div>
@@ -70,21 +70,11 @@
                         <hr />
                         <label>{LANG.zoom}</label>
                         <input type="range" class="custom-range" id="ctrl-zoom" min="0.1" max="3" step="0.1" value="1"
-                            onmousedown="setFrameOpacity(0.5)"
-                            ontouchstart="setFrameOpacity(0.5)"
-                            oninput="updateUserImage('scale', parseFloat(this.value))"
-                            onchange="setFrameOpacity(1)"
-                            onmouseup="setFrameOpacity(1)"
-                            ontouchend="setFrameOpacity(1)">
+                            oninput="updateUserImage('scale', parseFloat(this.value))">
 
                         <label style="margin-top:10px">{LANG.rotate}</label>
                         <input type="range" class="custom-range" id="ctrl-rotate" min="-180" max="180" step="1" value="0"
-                            onmousedown="setFrameOpacity(0.5)"
-                            ontouchstart="setFrameOpacity(0.5)"
-                            oninput="updateUserImage('angle', parseInt(this.value))"
-                            onchange="setFrameOpacity(1)"
-                            onmouseup="setFrameOpacity(1)"
-                            ontouchend="setFrameOpacity(1)">
+                            oninput="updateUserImage('angle', parseInt(this.value))">
 
                         <button class="btn btn-default btn-sm btn-block" style="margin-top:10px" onclick="resetImage()"><i class="fa fa-refresh"></i> Reset</button>
                     </div>
@@ -186,8 +176,8 @@
     <!-- Step 4: Preview -->
     <div class="step-content text-center" id="step-4" style="display:none;">
         <h3 id="preview-title">{ROW.title}</h3>
-        <div class="preview-box">
-            <img id="final-result-img" class="img-thumbnail" style="max-height:500px">
+        <div class="preview-box" style="width: 100%">
+            <img id="final-result-img" class="img-thumbnail" style="width:100%">
         </div>
         <div style="margin-top:20px">
             <button class="btn btn-default" onclick="setStep(3)"><i class="fa fa-pencil"></i> {LANG.step_edit}</button>
@@ -257,10 +247,6 @@
             appState.canvas.on('selection:created', onObjSelect);
             appState.canvas.on('selection:updated', onObjSelect);
             appState.canvas.on('selection:cleared', onObjClear);
-
-            // Mouse events for transparency
-            appState.canvas.on('mouse:down', function() { setFrameOpacity(0.5); });
-            appState.canvas.on('mouse:up', function() { setFrameOpacity(1); });
 
             // 5. Add Frame Image Object (Transparent Overlay)
             // Use setOverlayImage to ensure it sits on top but doesn't block events
@@ -523,14 +509,6 @@
         if(tabIndex >= 0) {
             document.querySelectorAll('.sub-tab')[tabIndex].classList.add('active');
             document.getElementById('sub-'+tab).classList.add('active');
-        }
-    }
-
-    // Image Ops
-    function setFrameOpacity(val) {
-        if(appState.canvas && appState.canvas.overlayImage) {
-            appState.canvas.overlayImage.set('opacity', val);
-            appState.canvas.requestRenderAll();
         }
     }
 
