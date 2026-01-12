@@ -240,7 +240,8 @@
                 width: appState.canvasWidth,
                 height: appState.canvasHeight,
                 preserveObjectStacking: true,
-                selection: true
+                selection: true,
+                controlsAboveOverlay: true
             });
 
             // Event Listeners
