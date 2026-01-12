@@ -32,8 +32,11 @@ $background_color = !empty($module_config['background_color']) ? $module_config[
 $icons = [];
 $iconSrc = '';
 
-if (!empty($module_config['icon_path']) && file_exists(NV_ROOTDIR . '/' . $module_config['icon_path'])) {
-    $iconSrc = $module_config['icon_path'];
+// Helper to normalize path
+$checkPath = isset($module_config['icon_path']) ? trim($module_config['icon_path'], '/') : '';
+
+if (!empty($checkPath) && file_exists(NV_ROOTDIR . '/' . $checkPath)) {
+    $iconSrc = $checkPath;
 } else {
     // Fallback to site logo
     $logo = isset($global_config['site_logo']) ? $global_config['site_logo'] : '';
@@ -52,18 +55,19 @@ if (!empty($iconSrc)) {
     if ($ext == 'svg') $mime = 'image/svg+xml';
 
     // PWA requires 192 and 512.
-    // We add "purpose: any maskable" to satisfy newer Android requirements for adaptive icons
+    // We use "purpose: any" as default because most user uploaded logos have transparency and are not "maskable".
+    // "maskable" requires solid background.
     $icons[] = [
         'src' => $iconUrl,
         'sizes' => '192x192',
         'type' => $mime,
-        'purpose' => 'any maskable'
+        'purpose' => 'any'
     ];
     $icons[] = [
         'src' => $iconUrl,
         'sizes' => '512x512',
         'type' => $mime,
-        'purpose' => 'any maskable'
+        'purpose' => 'any'
     ];
 }
 

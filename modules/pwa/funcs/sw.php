@@ -16,6 +16,19 @@ header('Content-Type: application/javascript; charset=utf-8');
 // Get offline page URL if any
 $offlineUrl = NV_BASE_SITEURL . 'index.php?nv=' . $module_name . '&op=offline';
 
+// Load module config for icon
+$sql = "SELECT config_value FROM " . NV_CONFIG_GLOBALTABLE . " WHERE lang='" . $lang . "' AND module='" . $module_name . "' AND config_name='icon_path'";
+$result = $db->query($sql);
+$icon_path = $result->fetchColumn();
+$notification_icon = NV_BASE_SITEURL . $global_config['site_logo'];
+
+if (!empty($icon_path)) {
+    $checkPath = trim($icon_path, '/');
+    if (file_exists(NV_ROOTDIR . '/' . $checkPath)) {
+        $notification_icon = NV_BASE_SITEURL . $checkPath;
+    }
+}
+
 ?>
 const CACHE_NAME = 'pwa-cache-v1';
 const OFFLINE_URL = '<?php echo $offlineUrl; ?>';
@@ -87,8 +100,8 @@ self.addEventListener('push', function(event) {
         const title = data.title || '<?php echo $global_config['site_name']; ?>';
         const options = {
             body: data.body || '',
-            icon: data.icon || '<?php echo NV_BASE_SITEURL . $global_config['site_logo']; ?>',
-            badge: data.badge || '<?php echo NV_BASE_SITEURL . $global_config['site_logo']; ?>',
+            icon: data.icon || '<?php echo $notification_icon; ?>',
+            badge: data.badge || '<?php echo $notification_icon; ?>',
             data: {
                 url: data.url || '<?php echo NV_BASE_SITEURL; ?>'
             }
