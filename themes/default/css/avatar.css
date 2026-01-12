@@ -144,6 +144,12 @@
         margin: 0 auto;
         overflow: hidden;
     }
+    .canvas-wrapper .canvas-container {
+        position: relative !important;
+    }
+    .canvas-wrapper .canvas-container .upper-canvas {
+        position: relative !important;
+    }
     .canvas-wrapper .canvas-container,
     .canvas-wrapper canvas {
         max-width: 100%;
