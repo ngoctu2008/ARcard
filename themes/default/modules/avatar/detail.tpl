@@ -263,19 +263,23 @@
             appState.canvas.on('mouse:up', function() { setFrameOpacity(1); });
 
             // 5. Add Frame Image Object (Transparent Overlay)
-            var frameInstance = new fabric.Image(tempImg, {
+            // Use setOverlayImage to ensure it sits on top but doesn't block events
+            var frameOverlay = new fabric.Image(tempImg, {
                 selectable: false,
-                evented: false, // Critical: Allows clicks to pass through to user image
+                evented: false,
+                originX: 'left',
+                originY: 'top',
                 left: 0,
                 top: 0
             });
 
-            frameInstance.scaleToWidth(appState.canvasWidth);
-            frameInstance.scaleToHeight(appState.canvasHeight);
+            // Scale frame overlay to fit canvas
+            frameOverlay.scaleX = appState.canvasWidth / tempImg.width;
+            frameOverlay.scaleY = appState.canvasHeight / tempImg.height;
 
-            appState.frameObj = frameInstance;
-            appState.canvas.add(frameInstance);
-            frameInstance.bringToFront(); // Ensure frame is visually on top
+            appState.canvas.setOverlayImage(frameOverlay, appState.canvas.renderAll.bind(appState.canvas));
+
+            appState.frameObj = null; // No longer a standard object, accessed via canvas.overlayImage
 
             if(callback) callback();
         };
@@ -318,7 +322,7 @@
             height: appState.canvasHeight
         });
 
-        // Scale all objects (including Frame)
+        // Scale all objects
         appState.canvas.getObjects().forEach(function(obj) {
              obj.scaleX = obj.scaleX * scaleMultiplier;
              obj.scaleY = obj.scaleY * scaleMultiplier;
@@ -326,6 +330,14 @@
              obj.top = obj.top * scaleMultiplier;
              obj.setCoords();
         });
+
+        // Scale Overlay
+        if(appState.canvas.overlayImage) {
+            var overlay = appState.canvas.overlayImage;
+            overlay.scaleX = overlay.scaleX * scaleMultiplier;
+            overlay.scaleY = overlay.scaleY * scaleMultiplier;
+            // overlay left/top should remain 0
+        }
 
         appState.canvas.requestRenderAll();
     }
@@ -469,12 +481,7 @@
 
         appState.canvas.add(imgInstance);
 
-        // Ensure User Image is behind the Frame
-        imgInstance.sendToBack();
-
-        if(appState.frameObj) {
-            appState.frameObj.bringToFront();
-        }
+        // Overlay is always on top, so we don't need sendToBack or bringToFront for the frame
 
         appState.canvas.setActiveObject(imgInstance);
 
@@ -521,8 +528,8 @@
 
     // Image Ops
     function setFrameOpacity(val) {
-        if(appState.frameObj) {
-            appState.frameObj.set('opacity', val);
+        if(appState.canvas && appState.canvas.overlayImage) {
+            appState.canvas.overlayImage.set('opacity', val);
             appState.canvas.requestRenderAll();
         }
     }
