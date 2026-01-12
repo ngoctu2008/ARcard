@@ -36,8 +36,7 @@ if ($row['catid'] > 0) {
 // Check permissions
 if (!defined('NV_IS_ADMIN') && !empty($cat_info)) {
     if (!empty($cat_info['groups_view'])) {
-        $groups_view = explode(',', $cat_info['groups_view']);
-        if (!nv_user_in_groups($groups_view)) {
+        if (!nv_user_in_groups($cat_info['groups_view'])) {
              nv_info_die($lang_global['error_403_title'], $lang_global['error_403_title'], $lang_global['error_403_content']);
         }
     }
@@ -47,8 +46,7 @@ if (!defined('NV_IS_ADMIN') && !empty($cat_info)) {
 $allow_use = true;
 if (!defined('NV_IS_ADMIN') && !empty($cat_info)) {
     if (!empty($cat_info['groups_use'])) {
-        $groups_use = explode(',', $cat_info['groups_use']);
-        if (!nv_user_in_groups($groups_use)) {
+        if (!nv_user_in_groups($cat_info['groups_use'])) {
              $allow_use = false;
         }
     }
