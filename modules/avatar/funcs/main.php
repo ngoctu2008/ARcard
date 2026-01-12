@@ -31,8 +31,7 @@ while ($row = $result->fetch()) {
     $check_perm = true;
     if (!defined('NV_IS_ADMIN')) {
         if (!empty($row['groups_view'])) {
-            $groups_view = explode(',', $row['groups_view']);
-            if (!nv_user_in_groups($groups_view)) {
+            if (!nv_user_in_groups($row['groups_view'])) {
                  $check_perm = false;
             }
         }
