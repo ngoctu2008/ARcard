@@ -241,6 +241,11 @@
                 selection: true
             });
 
+            // FIX: Allow selecting objects behind the transparent frame
+            appState.canvas.preserveObjectStacking = true;
+            // appState.canvas.perPixelTargetFind = true; // High performance cost, but needed if frame covers everything.
+            // Instead, we ensure Frame is unselectable and evented=false.
+
             // Event Listeners
             appState.canvas.on('selection:created', onObjSelect);
             appState.canvas.on('selection:updated', onObjSelect);
@@ -249,7 +254,7 @@
             // 5. Add Frame Image
             var frameInstance = new fabric.Image(tempImg, {
                 selectable: false,
-                evented: false,
+                evented: false, // Important: Events pass through to underlying objects
                 left: 0,
                 top: 0
             });
@@ -259,6 +264,8 @@
 
             appState.frameObj = frameInstance;
             appState.canvas.add(frameInstance);
+
+            // Ensure frame stays on top but lets events through
             frameInstance.bringToFront();
 
             if(callback) callback();
