@@ -39,23 +39,32 @@ class Vapid
         // Suppress warning "Unsupported private key type" if EC is missing in lib
         $res = @\openssl_pkey_new($configArgs);
 
-        // Attempt 2: Fallback to bundled config using putenv + config arg (aggressive override)
+        // Attempt 2: Fallback to minimal temp config using putenv + config arg
         if (!$res) {
              // Clear errors from first attempt
              while (\openssl_error_string());
 
-             $bundledConfig = str_replace('\\', '/', __DIR__ . '/openssl.cnf');
-             if (file_exists($bundledConfig)) {
+             // Create a temporary minimal config file
+             $tempConfigPath = tempnam(sys_get_temp_dir(), 'openssl_cnf');
+             if ($tempConfigPath) {
+                 $configContent = "[req]\ndistinguished_name=dn\nprompt=no\n[dn]\nCN=PWA\n";
+                 file_put_contents($tempConfigPath, $configContent);
+
                  // Save old env var
                  $oldEnv = getenv('OPENSSL_CONF');
 
-                 // Force OpenSSL to use our config by setting env var AND passing config arg
-                 putenv("OPENSSL_CONF={$bundledConfig}");
-                 $configArgs['config'] = $bundledConfig;
+                 // Force OpenSSL to use our temp config
+                 putenv("OPENSSL_CONF={$tempConfigPath}");
+                 $configArgs['config'] = $tempConfigPath;
 
                  $res = @\openssl_pkey_new($configArgs);
 
-                 // Restore old env var (best effort)
+                 // Clean up
+                 if (file_exists($tempConfigPath)) {
+                     @unlink($tempConfigPath);
+                 }
+
+                 // Restore old env var
                  if ($oldEnv !== false) {
                      putenv("OPENSSL_CONF={$oldEnv}");
                  } else {
