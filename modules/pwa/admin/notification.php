@@ -104,11 +104,11 @@ if (empty($module_config['vapid_public_key']) || empty($module_config['vapid_pri
 
             // Send empty payload (signal)
             $res = $webPush->sendNotification($sub, null);
-            if ($res['success']) {
+            if (isset($res['success']) && $res['success']) {
                 $count++;
             } else {
                 // Handle 410 Gone (remove subscription)
-                if ($res['code'] == 410) {
+                if (isset($res['code']) && $res['code'] == 410) {
                      $db->query("DELETE FROM " . $db_config['prefix'] . "_" . NV_LANG_DATA . "_" . $module_data . "_subscriptions WHERE endpoint=" . $db->quote($row['endpoint']));
                 }
             }
