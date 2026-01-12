@@ -56,23 +56,25 @@
     <div class="panel panel-info">
         <div class="panel-heading">VAPID Keys (Push Notifications)</div>
         <div class="panel-body">
+            <p class="text-info">{LANG.vapid_manual_guide}</p>
             <div class="form-group">
                 <label class="col-sm-4 control-label">{LANG.vapid_public_key}</label>
                 <div class="col-sm-8">
-                    <input type="text" name="vapid_public_key" value="{DATA.vapid_public_key}" class="form-control" readonly />
+                    <input type="text" name="vapid_public_key" value="{DATA.vapid_public_key}" class="form-control" />
                 </div>
             </div>
              <div class="form-group">
                 <label class="col-sm-4 control-label">{LANG.vapid_private_key}</label>
                 <div class="col-sm-8">
-                    <input type="text" name="vapid_private_key" value="{DATA.vapid_private_key}" class="form-control" readonly />
+                    <input type="text" name="vapid_private_key" value="{DATA.vapid_private_key}" class="form-control" />
                 </div>
             </div>
 
             <!-- BEGIN: generate_keys -->
             <div class="form-group">
                 <div class="col-sm-offset-4 col-sm-8">
-                    <button type="submit" name="generate_keys" value="1" class="btn btn-warning">Generate VAPID Keys</button>
+                    <button type="submit" name="generate_keys" value="1" class="btn btn-warning">Auto-Generate VAPID Keys</button>
+                    <span class="help-block">Use this if OpenSSL is correctly configured. If it fails, use the Manual method.</span>
                 </div>
             </div>
             <!-- END: generate_keys -->

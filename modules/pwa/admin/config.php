@@ -61,6 +61,11 @@ if ($nv_Request->isset_request('generate_keys', 'post')) {
         }
     }
     // If we are here, there was an error, so we fall through to display the page with $error set.
+    if (!empty($error)) {
+        $xtpl = new XTemplate('config.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
+        $xtpl->assign('LANG', $lang_module);
+        // We will assign this later when we parse
+    }
 }
 
 // Load config
