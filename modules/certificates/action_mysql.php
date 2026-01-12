@@ -86,3 +86,8 @@ $sql_create_module[] = "INSERT INTO " . $db_config['prefix'] . "_" . $lang . "_"
 ('location_provincial', 'Kon Tum')";
 
 $sql_create_module[] = "INSERT INTO " . NV_CONFIG_GLOBALTABLE . " (lang, module, config_name, config_value) VALUES ('" . $lang . "', '" . $module_name . "', 'captcha_type', 'captcha')";
+
+// Create upload folder
+if (!is_dir(NV_UPLOADS_REAL_DIR . '/' . $module_name)) {
+    nv_mkdir(NV_UPLOADS_REAL_DIR . '/' . $module_name, $module_name, true);
+}
