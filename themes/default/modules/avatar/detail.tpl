@@ -28,7 +28,7 @@
             <div class="text-center" style="margin-bottom: 20px;">
                 <img src="{ROW.image}" alt="{ROW.title}" class="img-responsive" style="margin: 0 auto; max-width: 100%; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
             </div>
-            <div class="upload-zone" id="upload-zone">
+            <div class="upload-zone" id="upload-zone" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
                 <div class="upload-placeholder">
                     <i class="fa fa-cloud-upload fa-4x"></i>
                     <h3>{LANG.upload_your_photo}</h3>
@@ -238,8 +238,7 @@
                 width: appState.canvasWidth,
                 height: appState.canvasHeight,
                 preserveObjectStacking: true,
-                selection: true,
-                controlsAboveOverlay: true // Ensure controls are visible above the frame
+                selection: true
             });
 
             // Event Listeners
@@ -247,21 +246,22 @@
             appState.canvas.on('selection:updated', onObjSelect);
             appState.canvas.on('selection:cleared', onObjClear);
 
-            // 5. Set Frame as Overlay
-            // We use setOverlayImage instead of adding an object so controls appear on top
-            // and we don't have event routing issues.
-            appState.canvas.setOverlayImage(tempImg.src, function() {
-                appState.canvas.renderAll();
-                if(callback) callback();
-            }, {
-                originX: 'left',
-                originY: 'top',
+            // 5. Add Frame Image Object (Transparent Overlay)
+            var frameInstance = new fabric.Image(tempImg, {
+                selectable: false,
+                evented: false, // Critical: Allows clicks to pass through to user image
                 left: 0,
-                top: 0,
-                scaleX: appState.canvasWidth / naturalWidth,
-                scaleY: appState.canvasHeight / naturalHeight,
-                crossOrigin: 'anonymous'
+                top: 0
             });
+
+            frameInstance.scaleToWidth(appState.canvasWidth);
+            frameInstance.scaleToHeight(appState.canvasHeight);
+
+            appState.frameObj = frameInstance;
+            appState.canvas.add(frameInstance);
+            frameInstance.bringToFront(); // Ensure frame is visually on top
+
+            if(callback) callback();
         };
 
         tempImg.onerror = function() {
@@ -302,13 +302,7 @@
             height: appState.canvasHeight
         });
 
-        // Scale Overlay
-        if(appState.canvas.overlayImage) {
-            appState.canvas.overlayImage.scaleX = appState.canvas.overlayImage.scaleX * scaleMultiplier;
-            appState.canvas.overlayImage.scaleY = appState.canvas.overlayImage.scaleY * scaleMultiplier;
-        }
-
-        // Scale all objects
+        // Scale all objects (including Frame)
         appState.canvas.getObjects().forEach(function(obj) {
              obj.scaleX = obj.scaleX * scaleMultiplier;
              obj.scaleY = obj.scaleY * scaleMultiplier;
@@ -458,10 +452,14 @@
         });
 
         appState.canvas.add(imgInstance);
-        // No need to sendToBack, overlay is always on top.
-        // But if there are texts, we might want image at bottom?
-        // Yes, typically image is background.
+
+        // Ensure User Image is behind the Frame
         imgInstance.sendToBack();
+
+        if(appState.frameObj) {
+            appState.frameObj.bringToFront();
+        }
+
         appState.canvas.setActiveObject(imgInstance);
 
         // Reset controls
