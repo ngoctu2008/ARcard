@@ -244,6 +244,9 @@
                 controlsAboveOverlay: true
             });
 
+            // Force position: relative on upper canvas to satisfy custom layout requirement
+            appState.canvas.upperCanvasEl.style.position = 'relative';
+
             // Event Listeners
             appState.canvas.on('selection:created', onObjSelect);
             appState.canvas.on('selection:updated', onObjSelect);
@@ -325,6 +328,9 @@
             overlay.scaleY = overlay.scaleY * scaleMultiplier;
             // overlay left/top should remain 0
         }
+
+        // Re-enforce position: relative if Fabric resets it
+        appState.canvas.upperCanvasEl.style.position = 'relative';
 
         appState.canvas.requestRenderAll();
     }
