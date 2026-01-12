@@ -74,7 +74,11 @@ if (empty($module_config['vapid_public_key']) || empty($module_config['vapid_pri
             'url' => $url,
             'timestamp' => time()
         ];
-        $db->query("REPLACE INTO " . NV_CONFIG_GLOBALTABLE . " (lang, module, config_name, config_value) VALUES ('" . NV_LANG_DATA . "', '" . $module_name . "', 'last_push_payload', " . $db->quote(json_encode($pushData)) . ")");
+
+        // Save to ALL languages to ensure retrieval regardless of user's current lang
+        foreach ($global_config['allow_sitelangs'] as $site_lang) {
+             $db->query("REPLACE INTO " . NV_CONFIG_GLOBALTABLE . " (lang, module, config_name, config_value) VALUES ('" . $site_lang . "', '" . $module_name . "', 'last_push_payload', " . $db->quote(json_encode($pushData)) . ")");
+        }
 
         // Now send the signal to all subscribers
         require_once NV_ROOTDIR . '/modules/' . $module_file . '/library/Vapid.php';

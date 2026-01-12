@@ -30,43 +30,41 @@ $background_color = !empty($module_config['background_color']) ? $module_config[
 
 // Icon handling
 $icons = [];
+$iconSrc = '';
+
 if (!empty($module_config['icon_path']) && file_exists(NV_ROOTDIR . '/' . $module_config['icon_path'])) {
-    $iconUrl = NV_BASE_SITEURL . $module_config['icon_path'];
-    // We assume the user uploads a high res icon. PWA usually wants 192 and 512.
-    // Since we don't have dynamic resizing on the fly easily without creating cache files,
-    // we will just serve the same image for both sizes or check if resizing is possible.
-    // For simplicity/reliability in "One Click", we point both to the uploaded image.
-    // Ideally, we would have resized it in Admin Config.
+    $iconSrc = $module_config['icon_path'];
+} else {
+    // Fallback to site logo
+    $logo = isset($global_config['site_logo']) ? $global_config['site_logo'] : '';
+    if ($logo && file_exists(NV_ROOTDIR . '/' . $logo)) {
+        $iconSrc = $logo;
+    }
+}
+
+if (!empty($iconSrc)) {
+    $iconUrl = NV_BASE_SITEURL . $iconSrc;
+    $ext = strtolower(pathinfo($iconSrc, PATHINFO_EXTENSION));
+    $mime = 'image/png';
+    if ($ext == 'jpg' || $ext == 'jpeg') $mime = 'image/jpeg';
+    if ($ext == 'webp') $mime = 'image/webp';
+    if ($ext == 'gif') $mime = 'image/gif';
+    if ($ext == 'svg') $mime = 'image/svg+xml';
+
+    // PWA requires 192 and 512.
+    // We add "purpose: any maskable" to satisfy newer Android requirements for adaptive icons
     $icons[] = [
         'src' => $iconUrl,
         'sizes' => '192x192',
-        'type' => 'image/png' // Assuming PNG, or we detect mime
+        'type' => $mime,
+        'purpose' => 'any maskable'
     ];
     $icons[] = [
         'src' => $iconUrl,
         'sizes' => '512x512',
-        'type' => 'image/png'
+        'type' => $mime,
+        'purpose' => 'any maskable'
     ];
-} else {
-    // Fallback to site logo if possible, or a default placeholder
-    // NukeViet stores site logo in $global_config['site_logo'] usually
-    $logo = isset($global_config['site_logo']) ? $global_config['site_logo'] : '';
-    if ($logo && file_exists(NV_ROOTDIR . '/' . $logo)) {
-         $iconUrl = NV_BASE_SITEURL . $logo;
-         $icons[] = [
-            'src' => $iconUrl,
-            'sizes' => '192x192',
-            'type' => 'image/png'
-        ];
-        $icons[] = [
-            'src' => $iconUrl,
-            'sizes' => '512x512',
-            'type' => 'image/png'
-        ];
-    } else {
-        // Absolute fallback (1x1 pixel or similar, to avoid 404 in console)
-        // We will create a default asset in assets/ folder later if needed
-    }
 }
 
 $manifest = [
