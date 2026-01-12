@@ -35,12 +35,15 @@ $iconSrc = '';
 // Helper to normalize path
 $checkPath = isset($module_config['icon_path']) ? trim($module_config['icon_path'], '/') : '';
 
-if (!empty($checkPath) && file_exists(NV_ROOTDIR . '/' . $checkPath)) {
+if (!empty($checkPath)) {
+    // We assume the user-provided path is correct relative to the site root.
+    // We skip strict file_exists checking to avoid issues with restrictive hosting environments (open_basedir)
+    // or complex path structures where NV_ROOTDIR resolution might fail.
     $iconSrc = $checkPath;
 } else {
     // Fallback to site logo
     $logo = isset($global_config['site_logo']) ? $global_config['site_logo'] : '';
-    if ($logo && file_exists(NV_ROOTDIR . '/' . $logo)) {
+    if (!empty($logo)) {
         $iconSrc = $logo;
     }
 }
