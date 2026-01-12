@@ -238,37 +238,30 @@
                 width: appState.canvasWidth,
                 height: appState.canvasHeight,
                 preserveObjectStacking: true,
-                selection: true
+                selection: true,
+                controlsAboveOverlay: true // Ensure controls are visible above the frame
             });
-
-            // FIX: Allow selecting objects behind the transparent frame
-            appState.canvas.preserveObjectStacking = true;
-            // appState.canvas.perPixelTargetFind = true; // High performance cost, but needed if frame covers everything.
-            // Instead, we ensure Frame is unselectable and evented=false.
 
             // Event Listeners
             appState.canvas.on('selection:created', onObjSelect);
             appState.canvas.on('selection:updated', onObjSelect);
             appState.canvas.on('selection:cleared', onObjClear);
 
-            // 5. Add Frame Image
-            var frameInstance = new fabric.Image(tempImg, {
-                selectable: false,
-                evented: false, // Important: Events pass through to underlying objects
+            // 5. Set Frame as Overlay
+            // We use setOverlayImage instead of adding an object so controls appear on top
+            // and we don't have event routing issues.
+            appState.canvas.setOverlayImage(tempImg.src, function() {
+                appState.canvas.renderAll();
+                if(callback) callback();
+            }, {
+                originX: 'left',
+                originY: 'top',
                 left: 0,
-                top: 0
+                top: 0,
+                scaleX: appState.canvasWidth / naturalWidth,
+                scaleY: appState.canvasHeight / naturalHeight,
+                crossOrigin: 'anonymous'
             });
-            // Scale to fit canvas exactly
-            frameInstance.scaleToWidth(appState.canvasWidth);
-            frameInstance.scaleToHeight(appState.canvasHeight);
-
-            appState.frameObj = frameInstance;
-            appState.canvas.add(frameInstance);
-
-            // Ensure frame stays on top but lets events through
-            frameInstance.bringToFront();
-
-            if(callback) callback();
         };
 
         tempImg.onerror = function() {
@@ -293,7 +286,7 @@
     });
 
     function resizeCanvas() {
-        if(!appState.canvas || !appState.frameObj) return;
+        if(!appState.canvas) return;
 
         var wrapper = document.getElementById('canvas-wrapper');
         var newWidth = wrapper.clientWidth;
@@ -308,6 +301,12 @@
             width: appState.canvasWidth,
             height: appState.canvasHeight
         });
+
+        // Scale Overlay
+        if(appState.canvas.overlayImage) {
+            appState.canvas.overlayImage.scaleX = appState.canvas.overlayImage.scaleX * scaleMultiplier;
+            appState.canvas.overlayImage.scaleY = appState.canvas.overlayImage.scaleY * scaleMultiplier;
+        }
 
         // Scale all objects
         appState.canvas.getObjects().forEach(function(obj) {
@@ -459,7 +458,10 @@
         });
 
         appState.canvas.add(imgInstance);
-        imgInstance.sendToBack(); // Behind frame
+        // No need to sendToBack, overlay is always on top.
+        // But if there are texts, we might want image at bottom?
+        // Yes, typically image is background.
+        imgInstance.sendToBack();
         appState.canvas.setActiveObject(imgInstance);
 
         // Reset controls
