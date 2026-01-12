@@ -43,83 +43,18 @@ if (empty($module_config['vapid_public_key']) || empty($module_config['vapid_pri
         $message = $nv_Request->get_string('message', 'post', '');
         $url = $nv_Request->get_string('url', 'post', '');
 
-        // Prepare payload
-        // NOTE: Since our WebPush.php currently only sends the "wake up" signal (empty payload) because we didn't implement full AES128GCM,
-        // the Service Worker `push` event handler in `sw.php` needs to be smart.
-        // Wait, the `sw.php` I wrote expects JSON:
-        // `try { data = event.data.json(); } ...`
-        // If I send empty body, `event.data` is null or empty.
-        // So the `sw.php` will default to: `title = 'Notification', body = event.data.text()`.
+        require_once NV_ROOTDIR . '/modules/' . $module_file . '/library/PushHelper.php';
+        $pushHelper = new \NukeViet\Module\Pwa\Library\PushHelper($db, $module_config);
 
-        // LIMITATION: Without AES128GCM, we CANNOT send data securely to the browser.
-        // The browser will receive a push event, but no data.
-        // It must show a generic notification or fetch the data from the server.
+        $result = $pushHelper->sendPush($title, $message, $url);
 
-        // Workaround for "One Click" without external deps:
-        // 1. Save this notification to a DB table `pwa_latest_notification`.
-        // 2. In SW, when `push` event fires (and data is empty), perform `fetch('/index.php?nv=pwa&op=get_latest_notification')`.
-        // 3. Show that data.
-        // This effectively bypasses the complex encryption requirement by using a pull-on-push mechanism.
-        // It is slightly slower but works 100% without encryption libs.
-
-        // Let's implement this "Pull-on-Push" strategy to ensure the user gets the custom title/message.
-
-        // Save to DB (We need a table for this? Or just a config value? A config value is enough for "Latest global message")
-        // But if multiple messages are sent?
-        // Let's use a config value for simplicity for now, or a file.
-        // "pwa_last_push"
-        $pushData = [
-            'title' => $title,
-            'body' => $message,
-            'url' => $url,
-            'timestamp' => time()
-        ];
-
-        // Save to ALL languages to ensure retrieval regardless of user's current lang
-        foreach ($global_config['allow_sitelangs'] as $site_lang) {
-             $db->query("REPLACE INTO " . NV_CONFIG_GLOBALTABLE . " (lang, module, config_name, config_value) VALUES ('" . $site_lang . "', '" . $module_name . "', 'last_push_payload', " . $db->quote(json_encode($pushData)) . ")");
+        if ($result['status'] == 'success') {
+             $xtpl->assign('SUCCESS_MSG', sprintf($lang_module['send_success'], $result['count']));
+             $xtpl->parse('main.success_msg');
+        } else {
+             $xtpl->assign('ERROR', $result['message']);
+             $xtpl->parse('main.error_msg');
         }
-
-        // Now send the signal to all subscribers
-        require_once NV_ROOTDIR . '/modules/' . $module_file . '/library/Vapid.php';
-        require_once NV_ROOTDIR . '/modules/' . $module_file . '/library/WebPush.php';
-
-        $auth = [
-            'VAPID' => [
-                'subject' => NV_BASE_SITEURL, // Should be mailto: or URL
-                'publicKey' => $module_config['vapid_public_key'],
-                'privateKey' => $module_config['vapid_private_key']
-            ]
-        ];
-
-        $webPush = new \NukeViet\Module\Pwa\Library\WebPush($auth);
-
-        // Fetch all subscriptions
-        $sql = "SELECT endpoint, auth_keys FROM " . $db_config['prefix'] . "_" . NV_LANG_DATA . "_" . $module_data . "_subscriptions";
-        $result = $db->query($sql);
-
-        $count = 0;
-        while ($row = $result->fetch()) {
-            $keys = json_decode($row['auth_keys'], true);
-            $sub = [
-                'endpoint' => $row['endpoint'],
-                'keys' => $keys
-            ];
-
-            // Send empty payload (signal)
-            $res = $webPush->sendNotification($sub, null);
-            if (isset($res['success']) && $res['success']) {
-                $count++;
-            } else {
-                // Handle 410 Gone (remove subscription)
-                if (isset($res['code']) && $res['code'] == 410) {
-                     $db->query("DELETE FROM " . $db_config['prefix'] . "_" . NV_LANG_DATA . "_" . $module_data . "_subscriptions WHERE endpoint=" . $db->quote($row['endpoint']));
-                }
-            }
-        }
-
-        $xtpl->assign('SUCCESS_MSG', sprintf($lang_module['send_success'], $count));
-        $xtpl->parse('main.success_msg');
     }
 
     $xtpl->parse('main');
