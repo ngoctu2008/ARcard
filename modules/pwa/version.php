@@ -2,8 +2,8 @@
 
 /**
  * @version 4.x
- * @author VINADES.,JSC <contact@vinades.vn>
- * @copyright (C) 2009-2021 VINADES.,JSC. All rights reserved
+ * @author Phạm Ngọc Tú <ngoctu.dnkd@gmail.com>
+ * @copyright (C) 2009-2021 Phạm Ngọc Tú. All rights reserved
  * @license GNU/GPL version 2 or any later version
  */
 
@@ -20,7 +20,7 @@ $module_version = [
     'virtual' => 1,
     'version' => '4.5.07',
     'date' => 'Fri, 25 Oct 2024 16:00:00 GMT',
-    'author' => 'Jules (AI)',
+    'author' => 'Phạm Ngọc Tú',
     'note' => 'Progressive Web App Module for NukeViet',
     'uploads_dir' => [
         $module_upload

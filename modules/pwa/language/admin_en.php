@@ -2,8 +2,8 @@
 
 /**
  * @version 4.x
- * @author VINADES.,JSC <contact@vinades.vn>
- * @copyright (C) 2009-2021 VINADES.,JSC. All rights reserved
+ * @author Phạm Ngọc Tú <ngoctu.dnkd@gmail.com>
+ * @copyright (C) 2009-2021 Phạm Ngọc Tú. All rights reserved
  * @license GNU/GPL version 2 or any later version
  */
 
@@ -11,7 +11,7 @@ if (!defined('NV_MAINFILE')) {
     exit('Stop!!!');
 }
 
-$lang_translator['author'] = 'Jules (AI)';
+$lang_translator['author'] = 'Phạm Ngọc Tú';
 $lang_translator['createdate'] = '25/10/2024, 16:00';
 $lang_translator['copyright'] = '@Copyright (C) 2024';
 $lang_translator['info'] = '';

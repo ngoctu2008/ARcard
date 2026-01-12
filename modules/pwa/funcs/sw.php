@@ -2,8 +2,8 @@
 
 /**
  * @version 4.x
- * @author VINADES.,JSC <contact@vinades.vn>
- * @copyright (C) 2009-2021 VINADES.,JSC. All rights reserved
+ * @author Phạm Ngọc Tú <ngoctu.dnkd@gmail.com>
+ * @copyright (C) 2009-2021 Phạm Ngọc Tú. All rights reserved
  * @license GNU/GPL version 2 or any later version
  */
 
