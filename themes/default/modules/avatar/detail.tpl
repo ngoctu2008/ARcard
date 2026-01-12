@@ -69,10 +69,22 @@
                         <button class="btn btn-warning btn-block btn-sm" onclick="setStep(2, true)">{LANG.change_photo}</button>
                         <hr />
                         <label>{LANG.zoom}</label>
-                        <input type="range" class="custom-range" id="ctrl-zoom" min="0.1" max="3" step="0.1" value="1" oninput="updateUserImage('scale', parseFloat(this.value))">
+                        <input type="range" class="custom-range" id="ctrl-zoom" min="0.1" max="3" step="0.1" value="1"
+                            onmousedown="setFrameOpacity(0.5)"
+                            ontouchstart="setFrameOpacity(0.5)"
+                            oninput="updateUserImage('scale', parseFloat(this.value))"
+                            onchange="setFrameOpacity(1)"
+                            onmouseup="setFrameOpacity(1)"
+                            ontouchend="setFrameOpacity(1)">
 
                         <label style="margin-top:10px">{LANG.rotate}</label>
-                        <input type="range" class="custom-range" id="ctrl-rotate" min="-180" max="180" step="1" value="0" oninput="updateUserImage('angle', parseInt(this.value))">
+                        <input type="range" class="custom-range" id="ctrl-rotate" min="-180" max="180" step="1" value="0"
+                            onmousedown="setFrameOpacity(0.5)"
+                            ontouchstart="setFrameOpacity(0.5)"
+                            oninput="updateUserImage('angle', parseInt(this.value))"
+                            onchange="setFrameOpacity(1)"
+                            onmouseup="setFrameOpacity(1)"
+                            ontouchend="setFrameOpacity(1)">
 
                         <button class="btn btn-default btn-sm btn-block" style="margin-top:10px" onclick="resetImage()"><i class="fa fa-refresh"></i> Reset</button>
                     </div>
@@ -245,6 +257,10 @@
             appState.canvas.on('selection:created', onObjSelect);
             appState.canvas.on('selection:updated', onObjSelect);
             appState.canvas.on('selection:cleared', onObjClear);
+
+            // Mouse events for transparency
+            appState.canvas.on('mouse:down', function() { setFrameOpacity(0.5); });
+            appState.canvas.on('mouse:up', function() { setFrameOpacity(1); });
 
             // 5. Add Frame Image Object (Transparent Overlay)
             var frameInstance = new fabric.Image(tempImg, {
@@ -504,6 +520,13 @@
     }
 
     // Image Ops
+    function setFrameOpacity(val) {
+        if(appState.frameObj) {
+            appState.frameObj.set('opacity', val);
+            appState.canvas.requestRenderAll();
+        }
+    }
+
     function updateUserImage(prop, val) {
         if(appState.userImg) {
             if (prop === 'scale') {
