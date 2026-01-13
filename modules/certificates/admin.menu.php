@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @Project NUKEVIET 4.x
+ * @Author Phạm Ngọc Tú <ngoctu.dnkd@gmail.com>
+ * @Copyright (C) 2024 Phạm Ngọc Tú. All rights reserved
+ * @License: Not free source, more information contact ngoctu.dnkd@gmail.com
+ * @Createdate Thu, 01 Jan 2024 00:00:00 GMT
+ */
+
+if (!defined('NV_ADMIN')) {
+    die('Stop!!!');
+}
+
+$submenu = [
+    'cat' => $lang_module['cat_manage'],
+    'main' => $lang_module['main_manage'],
+    'fields' => $lang_module['fields_manage'],
+    'import' => $lang_module['import_excel'],
+    'export' => $lang_module['export_excel'],
+    'config' => $lang_module['config']
+];
+
+$allow_func = ['main', 'cat', 'fields', 'import', 'export', 'content', 'config', 'del_cat', 'del_content', 'download_sample'];
