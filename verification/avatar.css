@@ -1,0 +1,482 @@
+/* Avatar Module - Modern App Theme */
+:root {
+    --primary-color: #009688; /* Teal */
+    --primary-dark: #00796b;
+    --accent-color: #e91e63; /* Red/Pink */
+    --bg-color: #f5f7fa;
+    --text-color: #333;
+    --border-radius: 16px;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.mobile-app-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px 0;
+    font-family: 'Be Vietnam Pro', Arial, sans-serif;
+}
+
+@media (min-width: 992px) {
+    .mobile-app-container {
+        padding: 40px;
+    }
+}
+
+.avatar-app {
+    background: #fff;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    min-height: 600px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Steps Navigation */
+.step-nav-container {
+    background: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 15px 20px;
+}
+
+.step-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+}
+
+.step-nav li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #bbb;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.step-nav li.active {
+    color: var(--primary-color);
+}
+.step-nav li.completed {
+    color: var(--primary-color);
+    opacity: 0.7;
+}
+
+.step-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.step-nav li.active .step-icon {
+    background: var(--primary-color);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 150, 136, 0.3);
+}
+.step-nav li.completed .step-icon {
+    background: #e0f2f1;
+    color: var(--primary-color);
+}
+
+/* Common Layout */
+.step-content {
+    flex: 1;
+    padding: 20px;
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* Step 2: Upload */
+.upload-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+    border: 2px dashed #ddd;
+    border-radius: var(--border-radius);
+    margin: 20px;
+    background: #fafafa;
+    transition: all 0.3s;
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+    background: #e0f2f1;
+}
+
+.upload-placeholder {
+    text-align: center;
+}
+
+.upload-icon-circle {
+    width: 80px;
+    height: 80px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: var(--primary-color);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin: 0 auto 20px;
+}
+
+.upload-placeholder h3 {
+    margin: 0 0 10px;
+    color: #444;
+}
+.upload-placeholder p {
+    color: #888;
+    margin-bottom: 25px;
+}
+
+.btn-upload {
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 30px;
+    background: var(--primary-color);
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 150, 136, 0.3);
+}
+.btn-upload:hover {
+    background: var(--primary-dark);
+}
+
+/* Step 3: Editor Layout */
+.editor-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+@media (min-width: 992px) {
+    .editor-layout {
+        flex-direction: row;
+        gap: 30px;
+        align-items: flex-start;
+        padding: 20px;
+    }
+}
+
+/* Canvas Wrapper */
+.editor-workspace {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    background: #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    min-height: 300px;
+    /* On desktop, this takes the left/center space */
+}
+
+.canvas-wrapper {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    /* Dimensions are controlled by JS/Fabric mostly, but we constrain max width */
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Editor Tools Sidebar */
+.editor-tools {
+    background: #fff;
+    width: 100%;
+    border-top: 1px solid #eee;
+}
+
+@media (min-width: 992px) {
+    .editor-tools {
+        width: 350px;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        height: 600px; /* Fixed height sidebar */
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.editor-tabs {
+    display: flex;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.main-tab {
+    flex: 1;
+    text-align: center;
+    padding: 15px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #777;
+    transition: all 0.2s;
+}
+
+.main-tab.active {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    background: #fdfdfd;
+}
+
+.editor-panel {
+    display: none;
+    padding: 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+.editor-panel.active {
+    display: block;
+}
+
+/* Controls */
+.control-group {
+    margin-bottom: 20px;
+}
+
+.control-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.range-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #aaa;
+}
+
+/* Custom Range Slider */
+input[type=range].custom-range {
+    -webkit-appearance: none;
+    width: 100%;
+    background: transparent;
+}
+input[type=range].custom-range:focus { outline: none; }
+
+input[type=range].custom-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 18px;
+    width: 18px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    cursor: pointer;
+    margin-top: -7px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+input[type=range].custom-range::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+}
+
+/* Text Tools */
+.btn-add-text {
+    width: 100%;
+    padding: 12px;
+    border: 2px dashed #ccc;
+    background: transparent;
+    color: #666;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    transition: all 0.2s;
+}
+.btn-add-text:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    background: #e0f2f1;
+}
+
+.text-input {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    resize: none;
+    font-family: inherit;
+    margin-bottom: 15px;
+    width: 100%;
+}
+.text-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+}
+
+/* Sub Tabs (Scrollable) */
+.sub-tabs-scroll {
+    display: flex;
+    overflow-x: auto;
+    gap: 5px;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+    -webkit-overflow-scrolling: touch;
+}
+.sub-tabs-scroll::-webkit-scrollbar { height: 0; width: 0; }
+
+.sub-tab {
+    flex: 0 0 auto;
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 20px;
+    background: #f5f5f5;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.sub-tab.active {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+/* Sub Panels */
+.sub-panel { display: none; }
+.sub-panel.active { display: block; animation: fadeIn 0.3s; }
+
+.align-controls, .style-toggles {
+    display: flex;
+    justify-content: space-between;
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 5px;
+    margin-bottom: 15px;
+}
+
+.btn-icon {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 8px;
+    border-radius: 6px;
+    color: #555;
+    transition: all 0.2s;
+}
+.btn-icon:hover { background: rgba(0,0,0,0.05); }
+.btn-icon.active { background: #fff; color: var(--primary-color); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+.move-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+.move-controls .d-flex { display: flex; gap: 5px; }
+.move-controls button {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+/* Footer */
+.editor-footer {
+    padding: 20px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+}
+@media (max-width: 991px) {
+    /* Sticky footer on mobile */
+    .editor-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    }
+    .mobile-app-container { padding-bottom: 80px; }
+}
+
+.btn-finish {
+    background: var(--primary-color);
+    border: none;
+    color: #fff;
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0, 150, 136, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid #ddd;
+    padding: 8px 20px;
+    border-radius: 20px;
+    color: #666;
+}
+.btn-outline:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+/* Preview Step */
+.preview-header { margin-bottom: 30px; }
+.preview-header h3 { color: var(--primary-color); font-weight: 700; margin-bottom: 5px; }
+
+.preview-box {
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    display: inline-block;
+    max-width: 100%;
+}
+.preview-box img {
+    border-radius: 4px;
+    max-height: 400px;
+}
+
+.preview-actions {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-download {
+    background: var(--accent-color);
+    border: none;
+    color: #fff;
+    padding: 12px 35px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
+    transition: transform 0.2s;
+}
+.btn-download:hover {
+    transform: translateY(-2px);
+    background: #d81b60;
+}
+
+/* Helpers */
+.d-flex { display: flex; }
+.mt-10 { margin-top: 10px; }
+.mt-20 { margin-top: 20px; }
+.mb-10 { margin-bottom: 10px; }
+.w-100 { width: 100%; }
+.text-center { text-align: center; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
