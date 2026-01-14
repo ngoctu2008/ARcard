@@ -19,8 +19,11 @@ $result = $db->query($sql);
 $row = $result->fetch();
 
 if ($row) {
+    // Ensure unicode characters are not escaped if the stored JSON was escaped
+    // But usually DB stores it correctly. We just echo it.
+    // However, if the client JS needs JSON, and DB content is JSON string, echoing it is correct.
     echo $row['config_value'];
 } else {
-    echo json_encode(['title' => 'New Notification', 'body' => 'You have a new update.']);
+    echo json_encode(['title' => 'Thông báo mới', 'body' => 'Có thông tin cập nhật mới.'], JSON_UNESCAPED_UNICODE);
 }
 die();

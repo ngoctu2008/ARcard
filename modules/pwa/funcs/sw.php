@@ -101,7 +101,8 @@ self.addEventListener('push', function(event) {
         const options = {
             body: data.body || '',
             icon: data.icon || '<?php echo $notification_icon; ?>',
-            badge: data.badge || '<?php echo $notification_icon; ?>',
+            badge: '<?php echo $notification_icon; ?>', // Badge usually small monochrome, but we reuse icon for now
+            image: data.image || null, // Rich image (big picture)
             data: {
                 url: data.url || '<?php echo NV_BASE_SITEURL; ?>'
             }
