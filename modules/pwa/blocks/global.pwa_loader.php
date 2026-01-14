@@ -40,6 +40,15 @@ function nv_global_pwa_loader($block_config)
     $vapidPublicKey = isset($module_config['vapid_public_key']) ? $module_config['vapid_public_key'] : '';
     $subscribeNote = isset($module_config['subscribe_note']) ? $module_config['subscribe_note'] : '';
 
+    // Load PWA module language
+    if (file_exists(NV_ROOTDIR . '/modules/' . $pwa_module_name . '/language/' . NV_LANG_DATA . '.php')) {
+        require NV_ROOTDIR . '/modules/' . $pwa_module_name . '/language/' . NV_LANG_DATA . '.php';
+    } elseif (file_exists(NV_ROOTDIR . '/modules/' . $pwa_module_name . '/language/en.php')) {
+        require NV_ROOTDIR . '/modules/' . $pwa_module_name . '/language/en.php';
+    } else {
+        $lang_module = [];
+    }
+
     // Determine template path
     $block_theme = $global_config['module_theme'];
     if (!file_exists(NV_ROOTDIR . '/themes/' . $block_theme . '/modules/pwa/global.pwa_loader.tpl')) {
@@ -63,6 +72,7 @@ function nv_global_pwa_loader($block_config)
     $xtpl->assign('SUBSCRIBE_NOTE', $subscribeNote);
     $xtpl->assign('MODULE_NAME', $pwa_module_name);
     $xtpl->assign('NV_BASE_SITEURL', NV_BASE_SITEURL);
+    $xtpl->assign('LANG', $lang_module);
 
     $xtpl->parse('main');
     return $xtpl->text('main');
