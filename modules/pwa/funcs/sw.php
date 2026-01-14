@@ -17,7 +17,7 @@ header('Content-Type: application/javascript; charset=utf-8');
 $offlineUrl = NV_BASE_SITEURL . 'index.php?nv=' . $module_name . '&op=offline';
 
 // Load module config for icon
-$sql = "SELECT config_value FROM " . NV_CONFIG_GLOBALTABLE . " WHERE lang='" . $lang . "' AND module='" . $module_name . "' AND config_name='icon_path'";
+$sql = "SELECT config_value FROM " . NV_CONFIG_GLOBALTABLE . " WHERE lang='" . NV_LANG_DATA . "' AND module='" . $module_name . "' AND config_name='icon_path'";
 $result = $db->query($sql);
 $icon_path = $result->fetchColumn();
 $notification_icon = NV_BASE_SITEURL . $global_config['site_logo'];

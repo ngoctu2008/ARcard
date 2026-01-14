@@ -15,7 +15,7 @@ if (!defined('NV_MAINFILE')) {
 header('Content-Type: application/manifest+json; charset=utf-8');
 
 // Load module config
-$sql = "SELECT config_name, config_value FROM " . NV_CONFIG_GLOBALTABLE . " WHERE lang='" . $lang . "' AND module='" . $module_name . "'";
+$sql = "SELECT config_name, config_value FROM " . NV_CONFIG_GLOBALTABLE . " WHERE lang='" . NV_LANG_DATA . "' AND module='" . $module_name . "'";
 $result = $db->query($sql);
 $module_config = [];
 while ($row = $result->fetch()) {
