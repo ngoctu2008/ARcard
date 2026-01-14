@@ -34,37 +34,35 @@ class WebPush
             return ['success' => false, 'message' => 'PHP 7.1+ required for Web Push Encryption'];
         }
 
-        // Prepare Encryption
-        $salt = random_bytes(16);
-        // Generate local keys
-        $configArgs = [
-            'private_key_type' => OPENSSL_KEYTYPE_EC,
-            'curve_name' => 'prime256v1'
-        ];
-
-        $bundledConfig = str_replace('\\', '/', __DIR__ . '/openssl.cnf');
-        if (file_exists($bundledConfig)) {
-            $configArgs['config'] = $bundledConfig;
-        }
-
-        $localKeyPair = openssl_pkey_new($configArgs);
-
-        if ($localKeyPair === false) {
-             // Failed to generate ephemeral key.
-             // Cannot perform encryption.
-             // Return error or fallback to no payload?
-             return ['success' => false, 'message' => 'Failed to generate ephemeral key for encryption. OpenSSL Config issue?'];
-        }
-
-        openssl_pkey_export($localKeyPair, $localPrivateKeyPem, null, $configArgs);
-        $keyDetails = openssl_pkey_get_details($localKeyPair);
-        $localPublicKey = $this->pemToRaw($keyDetails['key']); // Uncompressed point
-        $localPrivateKey = $this->pemToRawPrivate($localPrivateKeyPem);
-
         // Shared Secret (ECDH) - Only needed if we are encrypting payload
         $sharedSecret = null;
 
         if ($payload !== null && $payload !== '') {
+            // Prepare Encryption
+            $salt = random_bytes(16);
+            // Generate local keys
+            $configArgs = [
+                'private_key_type' => OPENSSL_KEYTYPE_EC,
+                'curve_name' => 'prime256v1'
+            ];
+
+            $bundledConfig = str_replace('\\', '/', __DIR__ . '/openssl.cnf');
+            if (file_exists($bundledConfig)) {
+                $configArgs['config'] = $bundledConfig;
+            }
+
+            $localKeyPair = openssl_pkey_new($configArgs);
+
+            if ($localKeyPair === false) {
+                 // Failed to generate ephemeral key.
+                 return ['success' => false, 'message' => 'Failed to generate ephemeral key for encryption. OpenSSL Config issue?'];
+            }
+
+            openssl_pkey_export($localKeyPair, $localPrivateKeyPem, null, $configArgs);
+            $keyDetails = openssl_pkey_get_details($localKeyPair);
+            $localPublicKey = $this->pemToRaw($keyDetails['key']); // Uncompressed point
+            $localPrivateKey = $this->pemToRawPrivate($localPrivateKeyPem);
+
             if (version_compare(PHP_VERSION, '7.3.0') < 0) {
                  // Fallback or error.
                  return ['success' => false, 'message' => 'PHP 7.3+ required for ECDH to encrypt payload'];
