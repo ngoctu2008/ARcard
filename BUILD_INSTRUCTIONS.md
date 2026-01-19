@@ -1,38 +1,25 @@
-# Building for Windows
+# Instructions for Building Windows Executable & Installer
+(Hướng dẫn đóng gói ứng dụng cho Windows)
 
-## Quick Start (One-Click)
+## Prerequisites (Yêu cầu)
+1.  **Python 3.x** installed and added to PATH.
+2.  **Inno Setup Compiler** installed (for creating the installer).
 
-1.  **Double-click** the `build_windows.bat` file.
-2.  Wait for the process to finish.
-3.  Find your app in the `dist` folder: `dist\OfficeAutomator.exe`.
+## Step 1: Build the Executable (Bước 1: Tạo file chạy .exe)
+**Important:** You must perform this step first!
+(Quan trọng: Bạn phải làm bước này trước!)
 
----
+1.  Open the folder containing the source code.
+2.  Double-click `build_windows.bat`.
+3.  Wait for the process to complete. It will install dependencies and use PyInstaller to create the executable.
+4.  Verify that `dist\OfficeAutomator.exe` exists.
 
-## Manual Build Instructions
+## Step 2: Create the Installer (Bước 2: Tạo bộ cài đặt)
+1.  Open `setup.iss` with Inno Setup Compiler.
+2.  Click the "Compile" button (or press F9).
+3.  The installer `OfficeAutomatorSetup.exe` will be created in the `Output` folder (or project root depending on config).
 
-### 1. Create Standalone Executable
-If you prefer running commands manually:
-
-1. **Install Python Dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **Build with PyInstaller**
-   ```bash
-   pyinstaller --noconsole --onefile --name "OfficeAutomator" office_app.py
-   ```
-   This creates `dist\OfficeAutomator.exe`.
-
-### 2. Create Installer (Optional)
-To create a professional installation wizard (`setup.exe`) that installs the program to `Program Files` and creates desktop shortcuts:
-
-1. **Install Inno Setup**
-   Download and install [Inno Setup](https://jrsoftware.org/isdl.php).
-
-2. **Compile the Installer**
-   - Open `setup.iss` with Inno Setup Compiler.
-   - Click **Build > Compile**.
-
-3. **Locate the Installer**
-   The `OfficeAutomatorSetup.exe` will be created in the `Output` directory.
+## Troubleshooting (Khắc phục lỗi)
+*   **"Source file ... does not exist"**: This means you skipped Step 1, or Step 1 failed. Run `build_windows.bat` and check for errors.
+    (Lỗi này nghĩa là bạn chưa chạy Bước 1, hoặc Bước 1 bị lỗi. Hãy chạy lại `build_windows.bat`).
+*   **"pip is not recognized"**: Ensure Python is installed and checked "Add to PATH" during installation.
