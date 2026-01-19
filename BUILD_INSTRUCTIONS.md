@@ -1,7 +1,17 @@
 # Building for Windows
 
-## 1. Create Standalone Executable
-First, compile the Python code into a single executable file.
+## Quick Start (One-Click)
+
+1.  **Double-click** the `build_windows.bat` file.
+2.  Wait for the process to finish.
+3.  Find your app in the `dist` folder: `dist\OfficeAutomator.exe`.
+
+---
+
+## Manual Build Instructions
+
+### 1. Create Standalone Executable
+If you prefer running commands manually:
 
 1. **Install Python Dependencies**
    ```bash
@@ -14,7 +24,7 @@ First, compile the Python code into a single executable file.
    ```
    This creates `dist\OfficeAutomator.exe`.
 
-## 2. Create Installer (Optional)
+### 2. Create Installer (Optional)
 To create a professional installation wizard (`setup.exe`) that installs the program to `Program Files` and creates desktop shortcuts:
 
 1. **Install Inno Setup**
@@ -25,6 +35,4 @@ To create a professional installation wizard (`setup.exe`) that installs the pro
    - Click **Build > Compile**.
 
 3. **Locate the Installer**
-   The `OfficeAutomatorSetup.exe` will be created in the `Output` directory (or same directory if not specified).
-
-   **You can send this `OfficeAutomatorSetup.exe` to users.**
+   The `OfficeAutomatorSetup.exe` will be created in the `Output` directory.
