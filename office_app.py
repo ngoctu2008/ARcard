@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from office_lib import OfficeAutomator
 import os
+import platform
+import subprocess
 
 class OfficeApp:
     def __init__(self, root):
@@ -17,9 +19,9 @@ class OfficeApp:
         # Header
         header_frame = tk.Frame(self.root, bg="#007bff")
         header_frame.pack(fill=tk.X)
-        tk.Label(header_frame, text("TỰ ĐỘNG THIẾT LẬP CHO OFFICE"),
+        tk.Label(header_frame, text=text("TỰ ĐỘNG THIẾT LẬP CHO OFFICE"),
                  bg="#007bff", fg="white", font=("Arial", 14, "bold"), pady=10).pack()
-        tk.Label(header_frame, text("version 1.0"),
+        tk.Label(header_frame, text=text("version 1.0"),
                  bg="#007bff", fg="white", font=("Arial", 8)).pack(side=tk.RIGHT, padx=5)
 
         # File Selection
@@ -132,8 +134,17 @@ class OfficeApp:
             # For simplicity: overwrite.
             self.automator.save_document()
             messagebox.showinfo("Thành công", f"Đã đổi hướng toàn bộ sang {target_orient}")
+            self.open_file_if_windows()
         except Exception as e:
             messagebox.showerror("Lỗi", str(e))
+
+    def open_file_if_windows(self):
+        filepath = self.file_path_var.get()
+        if platform.system() == "Windows" and os.path.exists(filepath):
+            try:
+                os.startfile(filepath)
+            except Exception:
+                pass # Ignore if fails
 
     def apply_changes(self):
         # This button in the footer usually applies all pending changes.
