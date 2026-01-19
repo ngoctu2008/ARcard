@@ -1,24 +1,30 @@
 # Building for Windows
-To create a standalone executable (.exe) for Windows users, follow these steps:
 
-1. **Install Dependencies**
-   Ensure Python 3 is installed, then run:
+## 1. Create Standalone Executable
+First, compile the Python code into a single executable file.
+
+1. **Install Python Dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Build the Executable**
-   Run the following command to bundle the application into a single file:
+2. **Build with PyInstaller**
    ```bash
    pyinstaller --noconsole --onefile --name "OfficeAutomator" office_app.py
    ```
+   This creates `dist\OfficeAutomator.exe`.
 
-3. **Locate the Output**
-   The `OfficeAutomator.exe` file will be located in the `dist/` directory.
-   You can distribute this file to Windows users; they do not need Python installed to run it.
+## 2. Create Installer (Optional)
+To create a professional installation wizard (`setup.exe`) that installs the program to `Program Files` and creates desktop shortcuts:
 
-# Running the Source
-You can also run the script directly:
-```bash
-python office_app.py
-```
+1. **Install Inno Setup**
+   Download and install [Inno Setup](https://jrsoftware.org/isdl.php).
+
+2. **Compile the Installer**
+   - Open `setup.iss` with Inno Setup Compiler.
+   - Click **Build > Compile**.
+
+3. **Locate the Installer**
+   The `OfficeAutomatorSetup.exe` will be created in the `Output` directory (or same directory if not specified).
+
+   **You can send this `OfficeAutomatorSetup.exe` to users.**
