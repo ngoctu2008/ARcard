@@ -23,3 +23,5 @@
 *   **"Source file ... does not exist"**: This means you skipped Step 1, or Step 1 failed. Run `build_windows.bat` and check for errors.
     (Lỗi này nghĩa là bạn chưa chạy Bước 1, hoặc Bước 1 bị lỗi. Hãy chạy lại `build_windows.bat`).
 *   **"pip is not recognized"**: Ensure Python is installed and checked "Add to PATH" during installation.
+*   **Antivirus Interference**: Sometimes Antivirus software (Windows Defender, etc.) may flag the new .exe as suspicious and delete/quarantine it. If the file disappears, check your Antivirus history.
+    (Đôi khi phần mềm diệt virus có thể xóa nhầm file .exe vừa tạo. Nếu file bị mất, hãy kiểm tra lịch sử phần mềm diệt virus).

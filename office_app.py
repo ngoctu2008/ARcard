@@ -3,7 +3,6 @@ from tkinter import ttk, filedialog, messagebox
 from office_lib import OfficeAutomator
 import os
 import platform
-import subprocess
 
 class OfficeApp:
     def __init__(self, root):
@@ -120,6 +119,9 @@ class OfficeApp:
     def change_orientation_all(self):
         if not self.file_path_var.get():
             messagebox.showwarning("Cảnh báo", "Vui lòng chọn file trước!")
+            return
+
+        if not messagebox.askyesno("Xác nhận", "Hành động này sẽ thay đổi trực tiếp file gốc. Bạn có chắc chắn muốn tiếp tục?"):
             return
 
         # Determine selection

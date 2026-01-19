@@ -1,4 +1,5 @@
 @echo off
+cd /d "%~dp0"
 chcp 65001 >nul
 echo ===================================================
 echo   OFFICE AUTOMATOR - BUILD SCRIPT
@@ -32,7 +33,9 @@ if exist "dist\OfficeAutomator.exe" (
     echo [SUCCESS] Build Complete! (Thành công!)
     echo.
     echo The application is ready at: dist\OfficeAutomator.exe
-    echo File đã được tạo tại thư mục 'dist'.
+    echo File đã được tạo tại thư mục 'dist':
+    dir "dist\OfficeAutomator.exe" | findstr "OfficeAutomator.exe"
+    echo.
     echo Bây giờ bạn có thể chạy file 'setup.iss' để tạo bộ cài đặt.
 ) else (
     echo [ERROR] File executable not found in dist folder!
