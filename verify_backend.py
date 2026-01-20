@@ -59,9 +59,6 @@ class TestOfficeAutomator(unittest.TestCase):
             if target_run: break
 
         self.assertIsNotNone(target_run, "Could not find bold run")
-        # Verify initial state
-        # In some python-docx versions/XML states, boolean True is returned.
-        # If None, it means inherited. But we saved it as True.
         self.assertTrue(target_run.bold, f"Initial bold state is {target_run.bold}")
 
         self.automator.clean_extra_spaces()
@@ -70,6 +67,14 @@ class TestOfficeAutomator(unittest.TestCase):
         self.assertIn("Bold Text", target_run.text)
         # Verify formatting preserved
         self.assertTrue(target_run.bold, f"Post-clean bold state is {target_run.bold}")
+
+    def test_add_toc(self):
+        self.automator.add_table_of_contents()
+        # Verify the first paragraph is the TOC
+        p = self.automator.doc.paragraphs[0]
+        xml = p._element.xml
+        self.assertIn('w:instrText', xml)
+        self.assertIn('TOC', xml)
 
 if __name__ == '__main__':
     unittest.main()

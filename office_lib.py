@@ -241,10 +241,6 @@ class OfficeAutomator:
                     sectPr.append(pgNumType)
                 pgNumType.set(qn('w:start'), str(int(start_at)))
 
-            # If not first section, we should arguably NOT set w:start to let it continue.
-            # But we might need to remove w:start if it existed from previous settings?
-            # For now, we only touch the first section.
-
             # Skip First Page Logic (Different First Page)
             if skip_first and i == 0:
                 section.different_first_page_header_footer = True
@@ -441,8 +437,6 @@ class OfficeAutomator:
     def protect_document(self, protection_type='NONE', password=''):
         """
         protection_type: 'NONE', 'READ_ONLY'
-        Note: Password hashing is complex. This enforces protection but without password (empty).
-        Users can stop protection easily, but it prevents accidental edits.
         """
         if self.doc is None: raise Exception("No document loaded.")
 
@@ -459,8 +453,43 @@ class OfficeAutomator:
 
             doc_protect.set(qn('w:edit'), 'readOnly')
             doc_protect.set(qn('w:enforcement'), '1')
-            # doc_protect.set(qn('w:cryptProviderType'), 'rsaAES') # Requires valid hash
-            # If we don't set a password, it's just enforced without password.
+
+        return True
+
+    def add_table_of_contents(self):
+        """
+        Inserts a Table of Contents (TOC) at the start of the document.
+        Note: The TOC needs to be updated by the user (Right-click -> Update Field)
+        in Word, as python-docx cannot generate page numbers/content dynamically.
+        """
+        if self.doc is None: raise Exception("No document loaded.")
+
+        # Add paragraph at the beginning
+        p = self.doc.add_paragraph()
+
+        # Move to top
+        body = self.doc._element.body
+        body.insert(0, p._element)
+
+        run = p.add_run()
+
+        fldChar1 = OxmlElement('w:fldChar')
+        fldChar1.set(qn('w:fldCharType'), 'begin')
+
+        instrText = OxmlElement('w:instrText')
+        instrText.set(qn('xml:space'), 'preserve')
+        instrText.text = 'TOC \\o "1-3" \\h \\z \\u'
+
+        fldChar2 = OxmlElement('w:fldChar')
+        fldChar2.set(qn('w:fldCharType'), 'separate')
+
+        fldChar3 = OxmlElement('w:fldChar')
+        fldChar3.set(qn('w:fldCharType'), 'end')
+
+        run._r.append(fldChar1)
+        run._r.append(instrText)
+        run._r.append(fldChar2)
+        run._r.append(fldChar3)
 
         return True
 
