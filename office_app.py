@@ -8,7 +8,7 @@ class OfficeApp:
     def __init__(self, root):
         self.root = root
         self.root.title("TỰ ĐỘNG THIẾT LẬP CHO OFFICE")
-        self.root.geometry("600x600")
+        self.root.geometry("600x650") # Increased height for more controls
 
         self.automator = OfficeAutomator()
 
@@ -20,140 +20,162 @@ class OfficeApp:
         header_frame.pack(fill=tk.X)
         tk.Label(header_frame, text=text("TỰ ĐỘNG THIẾT LẬP CHO OFFICE"),
                  bg="#007bff", fg="white", font=("Arial", 14, "bold"), pady=10).pack()
-        tk.Label(header_frame, text=text("version 1.1"),
+        tk.Label(header_frame, text=text("version 2.0"),
                  bg="#007bff", fg="white", font=("Arial", 8)).pack(side=tk.RIGHT, padx=5)
 
-        # File Selection
-        file_frame = tk.LabelFrame(self.root, text="Áp dụng cho file Word có sẵn", padx=10, pady=10, fg="green")
-        file_frame.pack(fill=tk.X, padx=10, pady=5)
+        # Main Scrollable Container (optional if window gets too tall, but 650 should fit)
+        # For now, sticking to standard pack/grid.
+
+        # --- Section 1: File Selection ---
+        self.setup_file_section()
+
+        # --- Section 2: Options ---
+        self.setup_options_section()
+
+        # --- Section 3: Font - Paragraph Setup ---
+        self.setup_font_para_section()
+
+        # --- Section 4: Summary (Visual) ---
+        self.setup_summary_section()
+
+        # --- Section 5: Advanced Options ---
+        self.setup_advanced_section()
+
+        # Footer Buttons
+        footer_frame = tk.Frame(self.root, pady=10)
+        footer_frame.pack(fill=tk.X, side=tk.BOTTOM)
+
+        btn_apply = tk.Button(footer_frame, text="✔ Áp dụng", bg="aquamarine", width=20, command=self.apply_all_changes, font=("Arial", 10, "bold"))
+        btn_apply.pack(side=tk.LEFT, padx=50)
+
+        btn_exit = tk.Button(footer_frame, text="❌ Thoát", bg="lightpink", width=15, command=self.root.quit, font=("Arial", 10, "bold"))
+        btn_exit.pack(side=tk.RIGHT, padx=50)
+
+    def setup_file_section(self):
+        file_frame = tk.LabelFrame(self.root, text="Áp dụng cho file Word có sẵn (tùy chọn)", padx=5, pady=5, fg="green", font=("Arial", 9, "bold"))
+        file_frame.pack(fill=tk.X, padx=10, pady=2)
+
+        f_top = tk.Frame(file_frame)
+        f_top.pack(fill=tk.X)
 
         self.file_path_var = tk.StringVar()
-        entry_file = tk.Entry(file_frame, textvariable=self.file_path_var, width=50)
+        entry_file = tk.Entry(f_top, textvariable=self.file_path_var)
         entry_file.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 5))
 
-        btn_browse = tk.Button(file_frame, text="📂 Chọn file Word", bg="yellow", command=self.browse_file)
+        btn_browse = tk.Button(f_top, text="📁 Chọn file Word", bg="yellow", command=self.browse_file)
         btn_browse.pack(side=tk.LEFT)
 
         self.apply_all_var = tk.BooleanVar(value=True)
-        tk.Checkbutton(file_frame, text="Áp dụng cho toàn bộ nội dung văn bản", variable=self.apply_all_var).pack(anchor="w", pady=(5,0))
+        tk.Checkbutton(file_frame, text="Áp dụng cho toàn bộ nội dung văn bản", variable=self.apply_all_var).pack(anchor="w")
 
-        # Tabs
-        self.notebook = ttk.Notebook(self.root)
-        self.notebook.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
+    def setup_options_section(self):
+        opt_frame = tk.Frame(self.root)
+        opt_frame.pack(fill=tk.X, padx=10, pady=2)
 
-        self.tab_font = ttk.Frame(self.notebook)
-        self.tab_page_num = ttk.Frame(self.notebook)
-        self.tab_orient = ttk.Frame(self.notebook)
+        self.create_new_var = tk.BooleanVar(value=True)
+        tk.Checkbutton(opt_frame, text="Luôn tạo tài liệu mới", variable=self.create_new_var).pack(side=tk.LEFT)
 
-        self.notebook.add(self.tab_font, text="📄 Thiết lập Font/Đoạn văn")
-        self.notebook.add(self.tab_page_num, text="🔢 Số trang")
-        self.notebook.add(self.tab_orient, text="📐 Hướng giấy")
+        self.show_word_var = tk.BooleanVar(value=True)
+        tk.Checkbutton(opt_frame, text="Hiển thị Word sau khi áp dụng", variable=self.show_word_var).pack(side=tk.LEFT, padx=20)
 
-        self.notebook.select(self.tab_orient) # Default to Orientation tab
+    def setup_font_para_section(self):
+        frame = tk.LabelFrame(self.root, text="Thiết lập Font - Đoạn văn", fg="green", font=("Arial", 9, "bold"), padx=5, pady=5)
+        frame.pack(fill=tk.X, padx=10, pady=5)
 
-        self.setup_font_tab()
-        self.setup_page_num_tab()
-        self.setup_orientation_tab()
-
-        # Footer
-        footer_frame = tk.Frame(self.root, pady=10)
-        footer_frame.pack(fill=tk.X)
-
-        btn_apply = tk.Button(footer_frame, text="✔ Áp dụng (Tab hiện tại)", bg="lightblue", width=20, command=self.apply_changes)
-        btn_apply.pack(side=tk.LEFT, padx=50)
-
-        btn_exit = tk.Button(footer_frame, text="❌ Thoát", bg="lightblue", width=15, command=self.root.quit)
-        btn_exit.pack(side=tk.RIGHT, padx=50)
-
-    def setup_font_tab(self):
-        tab = self.tab_font
-
-        # Font Group
-        group_font = tk.LabelFrame(tab, text="Font & Size", fg="blue", padx=10, pady=10)
-        group_font.pack(fill=tk.X, padx=5, pady=5)
-
-        tk.Label(group_font, text="Font Name:").grid(row=0, column=0, sticky="w")
+        # Grid layout
+        # Row 0: Font, Size, Ruler
+        tk.Label(frame, text="Font:").grid(row=0, column=0, sticky="w")
         self.font_name_var = tk.StringVar(value="Times New Roman")
-        ttk.Combobox(group_font, textvariable=self.font_name_var, values=["Times New Roman", "Arial", "Calibri", "Verdana"]).grid(row=0, column=1, padx=5)
+        ttk.Combobox(frame, textvariable=self.font_name_var, values=["Times New Roman", "Arial", "Calibri", "Verdana"], width=15).grid(row=0, column=1, sticky="w")
 
-        tk.Label(group_font, text="Size (pt):").grid(row=0, column=2, sticky="w", padx=(10,0))
+        tk.Label(frame, text="Cỡ:").grid(row=0, column=2, sticky="e")
         self.font_size_var = tk.StringVar(value="14")
-        tk.Entry(group_font, textvariable=self.font_size_var, width=5).grid(row=0, column=3, padx=5)
+        tk.Spinbox(frame, from_=8, to=72, textvariable=self.font_size_var, width=5).grid(row=0, column=3, sticky="w")
 
-        # Paragraph Group
-        group_para = tk.LabelFrame(tab, text="Đoạn văn (Paragraph)", fg="blue", padx=10, pady=10)
-        group_para.pack(fill=tk.X, padx=5, pady=5)
+        self.ruler_var = tk.BooleanVar(value=True)
+        tk.Checkbutton(frame, text="Mở Ruler", variable=self.ruler_var).grid(row=0, column=4, sticky="w", padx=10)
 
-        tk.Label(group_para, text="Line Spacing:").grid(row=0, column=0, sticky="w")
-        self.line_spacing_var = tk.StringVar(value="1.5")
-        tk.Entry(group_para, textvariable=self.line_spacing_var, width=5).grid(row=0, column=1, padx=5)
+        # Row 1: Line Spacing, Spacing Before/After
+        tk.Label(frame, text="Giãn dòng:").grid(row=1, column=0, sticky="w")
+        self.line_spacing_var = tk.StringVar(value="1.15")
+        ttk.Combobox(frame, textvariable=self.line_spacing_var, values=["1.0", "1.15", "1.5", "2.0"], width=5).grid(row=1, column=1, sticky="w")
 
-        tk.Label(group_para, text="Space Before (pt):").grid(row=0, column=2, sticky="w", padx=(10,0))
-        self.space_before_var = tk.StringVar(value="0")
-        tk.Entry(group_para, textvariable=self.space_before_var, width=5).grid(row=0, column=3, padx=5)
+        tk.Label(frame, text="Cách đoạn (pt):").grid(row=1, column=2, sticky="w")
 
-        tk.Label(group_para, text="Space After (pt):").grid(row=0, column=4, sticky="w", padx=(10,0))
-        self.space_after_var = tk.StringVar(value="6")
-        tk.Entry(group_para, textvariable=self.space_after_var, width=5).grid(row=0, column=5, padx=5)
+        f_spacing = tk.Frame(frame)
+        f_spacing.grid(row=1, column=3, columnspan=2, sticky="w")
+        tk.Label(f_spacing, text="Trước:").pack(side=tk.LEFT)
+        self.space_before_var = tk.StringVar(value="3")
+        tk.Spinbox(f_spacing, from_=0, to=100, textvariable=self.space_before_var, width=4).pack(side=tk.LEFT, padx=2)
 
-        # Apply Button (Internal)
-        tk.Button(tab, text="✔ Áp dụng Font & Paragraph", bg="lightgreen", command=self.apply_font_para).pack(pady=10)
+        tk.Label(f_spacing, text="Sau:").pack(side=tk.LEFT, padx=(5,0))
+        self.space_after_var = tk.StringVar(value="3")
+        tk.Spinbox(f_spacing, from_=0, to=100, textvariable=self.space_after_var, width=4).pack(side=tk.LEFT, padx=2)
 
-    def setup_page_num_tab(self):
-        tab = self.tab_page_num
+        # Row 2: Indentation
+        tk.Label(frame, text="Thụt lề đầu dòng:").grid(row=2, column=0, sticky="w")
+        self.indent_type_var = tk.StringVar(value="(Không)")
+        ttk.Combobox(frame, textvariable=self.indent_type_var, values=["(Không)", "First Line", "Hanging"], width=10, state="readonly").grid(row=2, column=1, sticky="w")
 
-        group_pg = tk.LabelFrame(tab, text="Đánh số trang", fg="purple", padx=10, pady=10)
-        group_pg.pack(fill=tk.X, padx=5, pady=5)
+        tk.Label(frame, text="Giá trị:").grid(row=2, column=2, sticky="e")
+        self.indent_val_var = tk.StringVar(value="1.27")
+        f_indent = tk.Frame(frame)
+        f_indent.grid(row=2, column=3, sticky="w")
+        tk.Entry(f_indent, textvariable=self.indent_val_var, width=6).pack(side=tk.LEFT)
+        tk.Label(f_indent, text="cm").pack(side=tk.LEFT)
 
-        tk.Label(group_pg, text="Vị trí (Footer):").pack(side=tk.LEFT)
+        # Row 3: Paper Size
+        tk.Label(frame, text="Khổ giấy:").grid(row=3, column=0, sticky="w")
+        self.paper_size_var = tk.StringVar(value="A4")
+        ttk.Combobox(frame, textvariable=self.paper_size_var, values=["A4", "Letter", "Legal", "A3", "A5"], width=10, state="readonly").grid(row=3, column=1, sticky="w")
 
-        self.pg_align_var = tk.StringVar(value="CENTER")
-        ttk.Combobox(group_pg, textvariable=self.pg_align_var, values=["LEFT", "CENTER", "RIGHT"], state="readonly").pack(side=tk.LEFT, padx=5)
+        tk.Label(frame, text="(21 x 29.7 cm)", fg="gray").grid(row=3, column=2, columnspan=2, sticky="w")
 
-        tk.Button(tab, text="✔ Thêm số trang", bg="lightgreen", command=self.apply_page_num).pack(pady=10)
+    def setup_summary_section(self):
+        frame = tk.LabelFrame(self.root, text="Tóm tắt tác vụ tự động", fg="#007bff", font=("Arial", 9, "bold"), padx=5, pady=5)
+        frame.pack(fill=tk.X, padx=10, pady=5)
 
-    def setup_orientation_tab(self):
-        tab = self.tab_orient
+        lbl_text = """✓ Word: Khổ giấy/font/cỡ/giãn dòng/đoạn/thụt lề theo cài đặt
+✓ Word: Tắt kiểm tra chính tả / grammar (Giả lập)
+✓ Excel: Font mặc định theo cài đặt (Giả lập)
+✓ Tắt Protected View / Start Screen (Giả lập)"""
+        tk.Label(frame, text=lbl_text, justify=tk.LEFT, anchor="w", fg="#555").pack(fill=tk.X)
 
-        # Whole Doc Group
-        group_whole = tk.LabelFrame(tab, text="Hướng giấy toàn bộ tài liệu", fg="#007bff", padx=10, pady=10)
-        group_whole.pack(fill=tk.X, padx=5, pady=5)
+    def setup_advanced_section(self):
+        frame = tk.LabelFrame(self.root, text="Tùy chọn nâng cao", fg="#d9534f", font=("Arial", 9, "bold"), padx=5, pady=5)
+        frame.pack(fill=tk.X, padx=10, pady=5)
 
-        tk.Label(group_whole, text="Chọn hướng giấy:").pack(side=tk.LEFT)
+        # Checkboxes (Visual Only for now)
+        f_checks = tk.Frame(frame)
+        f_checks.pack(fill=tk.X)
+        tk.Checkbutton(f_checks, text="Đặt làm mặc định Normal.dotm").pack(side=tk.LEFT)
+        tk.Checkbutton(f_checks, text="Tắt Protected View").pack(side=tk.LEFT)
+        tk.Checkbutton(f_checks, text="Bỏ Start Screen").pack(side=tk.LEFT)
 
-        self.orient_var = tk.StringVar(value="PORTRAIT")
-        cbo_orient = ttk.Combobox(group_whole, textvariable=self.orient_var, values=["Đứng (Portrait)", "Ngang (Landscape)"], state="readonly")
-        cbo_orient.pack(side=tk.LEFT, padx=5)
-        cbo_orient.current(0)
+        f_checks2 = tk.Frame(frame)
+        f_checks2.pack(fill=tk.X)
+        tk.Checkbutton(f_checks2, text="Tắt AutoCorrect / Tự động số thứ tự").pack(side=tk.LEFT)
 
-        tk.Label(group_whole, text="Giữ nguyên giá trị...", fg="gray", font=("Arial", 8, "italic")).pack(side=tk.LEFT, padx=5)
+        # Margins
+        f_margins = tk.Frame(frame, pady=5)
+        f_margins.pack(fill=tk.X)
+        tk.Label(f_margins, text="Lề (cm):").pack(side=tk.LEFT)
 
-        # Specific Page Group (UI Only for now)
-        group_specific = tk.LabelFrame(tab, text="Xoay một số trang theo ý", fg="#d9534f", padx=10, pady=10)
-        group_specific.pack(fill=tk.X, padx=5, pady=5)
+        tk.Label(f_margins, text="Trên:").pack(side=tk.LEFT, padx=(5,2))
+        self.margin_top_var = tk.StringVar(value="2")
+        tk.Entry(f_margins, textvariable=self.margin_top_var, width=4).pack(side=tk.LEFT)
 
-        tk.Label(group_specific, text="Hướng trang cần xoay:").grid(row=0, column=0, sticky="w")
-        ttk.Combobox(group_specific, values=["Ngang (Landscape)", "Đứng (Portrait)"], state="readonly").grid(row=0, column=1, padx=5)
+        tk.Label(f_margins, text="Dưới:").pack(side=tk.LEFT, padx=(5,2))
+        self.margin_bottom_var = tk.StringVar(value="2")
+        tk.Entry(f_margins, textvariable=self.margin_bottom_var, width=4).pack(side=tk.LEFT)
 
-        tk.Label(group_specific, text="Nhập số trang cần xoay:").grid(row=1, column=0, sticky="w", pady=5)
-        tk.Entry(group_specific).grid(row=1, column=1, padx=5, sticky="ew")
-        tk.Label(group_specific, text="Ví dụ: 3 hoặc 3,5,7-10", fg="gray").grid(row=1, column=2, sticky="w")
+        tk.Label(f_margins, text="Trái:").pack(side=tk.LEFT, padx=(5,2))
+        self.margin_left_var = tk.StringVar(value="3")
+        tk.Entry(f_margins, textvariable=self.margin_left_var, width=4).pack(side=tk.LEFT)
 
-        tk.Label(group_specific, text="⚠ Tự động tạo Section Break...", fg="#d9534f", font=("Arial", 8, "italic")).grid(row=2, column=0, columnspan=3, sticky="w")
-
-        tk.Button(group_specific, text="📐 Xoay trang đã chọn", bg="orange", command=lambda: messagebox.showinfo("Thông báo", "Chức năng này chưa được cài đặt.")).grid(row=3, column=0, pady=5)
-
-        # Action Buttons
-        frame_actions = tk.Frame(tab, pady=10)
-        frame_actions.pack(fill=tk.X)
-
-        btn_change_all = tk.Button(frame_actions, text="🔄 Đổi hướng toàn bộ", bg="lightgreen", command=self.change_orientation_all)
-        btn_change_all.pack(side=tk.LEFT, padx=20)
-
-        btn_reset = tk.Button(frame_actions, text="↩ Reset về dọc + Xóa Section", bg="pink")
-        btn_reset.pack(side=tk.LEFT)
-
-        tk.Label(tab, text="⚠ Lưu ý: Xoay trang sẽ tạo Section Break...", fg="#d9534f", font=("Arial", 8, "italic")).pack(pady=5)
+        tk.Label(f_margins, text="Phải:").pack(side=tk.LEFT, padx=(5,2))
+        self.margin_right_var = tk.StringVar(value="1.5")
+        tk.Entry(f_margins, textvariable=self.margin_right_var, width=4).pack(side=tk.LEFT)
 
     def browse_file(self):
         filename = filedialog.askopenfilename(filetypes=[("Word Documents", "*.docx")])
@@ -161,89 +183,77 @@ class OfficeApp:
             self.file_path_var.set(filename)
             try:
                 self.automator.load_document(filename)
-                messagebox.showinfo("Thông báo", "Đã tải file thành công!")
             except Exception as e:
                 messagebox.showerror("Lỗi", str(e))
 
-    def check_ready(self):
-        if not self.file_path_var.get():
-            messagebox.showwarning("Cảnh báo", "Vui lòng chọn file trước!")
-            return False
-        return True
-
-    def confirm_and_save(self):
-        if not messagebox.askyesno("Xác nhận", "Hành động này sẽ thay đổi trực tiếp file gốc. Bạn có chắc chắn muốn tiếp tục?"):
-            return False
-
-        try:
-            self.automator.save_document()
-            messagebox.showinfo("Thành công", "Đã cập nhật file thành công!")
-            self.open_file_if_windows()
-            return True
-        except Exception as e:
-            messagebox.showerror("Lỗi Lưu File", str(e))
-            return False
-
-    def apply_font_para(self):
-        if not self.check_ready(): return
-
-        try:
-            font = self.font_name_var.get()
-            size = self.font_size_var.get()
-            self.automator.set_font_style(font, size)
-
-            line = self.line_spacing_var.get()
-            before = self.space_before_var.get()
-            after = self.space_after_var.get()
-            self.automator.set_paragraph_style(line, before, after)
-
-            self.confirm_and_save()
-        except Exception as e:
-            messagebox.showerror("Lỗi", str(e))
-
-    def apply_page_num(self):
-        if not self.check_ready(): return
-        try:
-            align = self.pg_align_var.get()
-            self.automator.add_page_number(align)
-            self.confirm_and_save()
-        except Exception as e:
-            messagebox.showerror("Lỗi", str(e))
-
-    def change_orientation_all(self):
-        if not self.check_ready(): return
-
-        # Determine selection
-        selection = self.orient_var.get()
-        target_orient = "LANDSCAPE" if "Landscape" in selection else "PORTRAIT"
-
-        try:
-            self.automator.set_orientation_whole_doc(target_orient)
-            self.confirm_and_save()
-        except Exception as e:
-            messagebox.showerror("Lỗi", str(e))
-
-    def open_file_if_windows(self):
+    def apply_all_changes(self):
         filepath = self.file_path_var.get()
+        if not filepath:
+            messagebox.showwarning("Cảnh báo", "Vui lòng chọn file Word!")
+            return
+
+        # Load if not loaded
+        if not self.automator.doc or self.automator.doc_path != filepath:
+            try:
+                self.automator.load_document(filepath)
+            except Exception as e:
+                messagebox.showerror("Lỗi Load", str(e))
+                return
+
+        try:
+            # 1. Font & Size
+            self.automator.set_font_style(self.font_name_var.get(), self.font_size_var.get())
+
+            # 2. Paragraph Spacing
+            self.automator.set_paragraph_style(
+                self.line_spacing_var.get(),
+                self.space_before_var.get(),
+                self.space_after_var.get()
+            )
+
+            # 3. Indentation
+            indent_map = {"(Không)": "None", "First Line": "First Line", "Hanging": "Hanging"}
+            self.automator.set_indentation(
+                indent_map.get(self.indent_type_var.get(), "None"),
+                self.indent_val_var.get()
+            )
+
+            # 4. Paper Size
+            self.automator.set_paper_size(self.paper_size_var.get())
+
+            # 5. Margins
+            self.automator.set_margins(
+                self.margin_top_var.get(),
+                self.margin_bottom_var.get(),
+                self.margin_left_var.get(),
+                self.margin_right_var.get()
+            )
+
+            # Save
+            target_path = filepath
+            if self.create_new_var.get():
+                base, ext = os.path.splitext(filepath)
+                target_path = f"{base}_fixed{ext}"
+
+            self.automator.save_document(target_path)
+
+            msg = f"Đã xử lý xong!\nLưu tại: {target_path}"
+            messagebox.showinfo("Thành công", msg)
+
+            if self.show_word_var.get():
+                self.open_file_if_windows(target_path)
+
+        except Exception as e:
+            messagebox.showerror("Lỗi Xử Lý", f"Đã xảy ra lỗi: {e}")
+
+    def open_file_if_windows(self, filepath):
         if platform.system() == "Windows" and os.path.exists(filepath):
             try:
                 os.startfile(filepath)
             except Exception:
-                pass # Ignore if fails
-
-    def apply_changes(self):
-        current_tab = self.notebook.index(self.notebook.select())
-        if current_tab == 0: # Font
-            self.apply_font_para()
-        elif current_tab == 1: # Page Num
-            self.apply_page_num()
-        elif current_tab == 2: # Orientation
-            self.change_orientation_all()
-        else:
-            messagebox.showinfo("Thông báo", "Chức năng này chưa được cài đặt cho tab hiện tại.")
+                pass
 
 def text(s):
-    # Helper to return text (placeholder for translation if needed)
     return s
 
 if __name__ == "__main__":

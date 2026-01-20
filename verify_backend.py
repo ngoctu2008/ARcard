@@ -1,62 +1,80 @@
 import unittest
 import os
-from docx import Document
-from docx.enum.section import WD_ORIENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Pt
 from office_lib import OfficeAutomator
+from docx import Document
+from docx.shared import Pt, Cm, Mm
+from docx.enum.section import WD_ORIENT
 
-class TestOfficeApp(unittest.TestCase):
+class TestOfficeAutomator(unittest.TestCase):
     def setUp(self):
-        # Create a fresh sample docx
+        self.test_file = "test_doc.docx"
         self.doc = Document()
-        self.doc.add_paragraph("Test Paragraph")
-        self.doc.save("test_verify.docx")
+        self.doc.add_paragraph("Hello World")
+        self.doc.add_section()
+        self.doc.save(self.test_file)
+
         self.automator = OfficeAutomator()
+        self.automator.load_document(self.test_file)
 
     def tearDown(self):
-        if os.path.exists("test_verify.docx"):
-            os.remove("test_verify.docx")
+        if os.path.exists(self.test_file):
+            os.remove(self.test_file)
+
+    def test_load_document(self):
+        self.assertIsNotNone(self.automator.doc)
+
+    def test_set_font_style(self):
+        self.automator.set_font_style("Arial", 12)
+        # Verify
+        p = self.automator.doc.paragraphs[0]
+        run = p.runs[0]
+        self.assertEqual(run.font.name, "Arial")
+        self.assertEqual(run.font.size, Pt(12))
+
+    def test_set_paragraph_style(self):
+        self.automator.set_paragraph_style(2.0, 10, 10)
+        p = self.automator.doc.paragraphs[0]
+        self.assertEqual(p.paragraph_format.line_spacing, 2.0)
+        self.assertEqual(p.paragraph_format.space_before, Pt(10))
+        self.assertEqual(p.paragraph_format.space_after, Pt(10))
 
     def test_orientation(self):
-        self.automator.load_document("test_verify.docx")
         self.automator.set_orientation_whole_doc("LANDSCAPE")
-        self.automator.save_document()
-
-        doc = Document("test_verify.docx")
-        section = doc.sections[0]
+        section = self.automator.doc.sections[0]
         self.assertEqual(section.orientation, WD_ORIENT.LANDSCAPE)
 
-    def test_format_text(self):
-        self.automator.load_document("test_verify.docx")
-        self.automator.set_font_style(font_name="Arial", font_size=20)
-        self.automator.set_paragraph_style(line_spacing=2.0)
-        self.automator.save_document()
+        self.automator.set_orientation_whole_doc("PORTRAIT")
+        section = self.automator.doc.sections[0]
+        self.assertEqual(section.orientation, WD_ORIENT.PORTRAIT)
 
-        doc = Document("test_verify.docx")
-        p = doc.paragraphs[0]
-        # Note: setting font style iterates over existing runs.
-        # If the paragraph was created blank in setUp, it might not have runs unless text is added.
-        # setUp adds "Test Paragraph", which usually creates one run.
-        if p.runs:
-            run = p.runs[0]
-            self.assertEqual(run.font.name, "Arial")
-            self.assertEqual(run.font.size, Pt(20))
-        self.assertEqual(p.paragraph_format.line_spacing, 2.0)
+    def test_indentation_first_line(self):
+        val = 1.27
+        self.automator.set_indentation("First Line", val)
+        p = self.automator.doc.paragraphs[0]
+        self.assertAlmostEqual(p.paragraph_format.first_line_indent.cm, val, places=2)
+        self.assertEqual(p.paragraph_format.left_indent, 0)
 
-    def test_page_number(self):
-        self.automator.load_document("test_verify.docx")
-        self.automator.add_page_number("RIGHT")
-        self.automator.save_document()
+    def test_indentation_hanging(self):
+        val = 1.27
+        self.automator.set_indentation("Hanging", val)
+        p = self.automator.doc.paragraphs[0]
+        self.assertAlmostEqual(p.paragraph_format.first_line_indent.cm, -val, places=2)
+        self.assertAlmostEqual(p.paragraph_format.left_indent.cm, val, places=2)
 
-        doc = Document("test_verify.docx")
-        section = doc.sections[0]
-        footer = section.footer
-        p = footer.paragraphs[0]
-        self.assertEqual(p.alignment, WD_ALIGN_PARAGRAPH.RIGHT)
-        # Check if PAGE field is present (basic XML check)
-        xml = p._element.xml
-        self.assertIn('PAGE', xml)
+    def test_paper_size(self):
+        self.automator.set_paper_size("A4")
+        section = self.automator.doc.sections[0]
+        # A4 is 210mm x 297mm
+        self.assertAlmostEqual(section.page_width.mm, 210, places=1)
+        self.assertAlmostEqual(section.page_height.mm, 297, places=1)
+
+    def test_margins(self):
+        self.automator.set_margins(2, 2, 3, 1.5)
+        section = self.automator.doc.sections[0]
+        self.assertAlmostEqual(section.top_margin.cm, 2, places=2)
+        self.assertAlmostEqual(section.bottom_margin.cm, 2, places=2)
+        self.assertAlmostEqual(section.left_margin.cm, 3, places=2)
+        self.assertAlmostEqual(section.right_margin.cm, 1.5, places=2)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,6 +1,6 @@
 import os
 from docx import Document
-from docx.shared import Pt
+from docx.shared import Pt, Cm, Mm
 from docx.enum.section import WD_ORIENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
@@ -120,6 +120,90 @@ class OfficeAutomator:
                 for cell in row.cells:
                     for paragraph in cell.paragraphs:
                         apply_para(paragraph)
+        return True
+
+    def set_indentation(self, indent_type, indent_value_cm):
+        """
+        Sets indentation for all paragraphs.
+        indent_type: 'None', 'First Line', 'Hanging'
+        indent_value_cm: float (value in cm)
+        """
+        if self.doc is None: raise Exception("No document loaded.")
+
+        val = Cm(float(indent_value_cm)) if indent_value_cm is not None else Cm(0)
+
+        def apply_indent(p):
+            if indent_type == 'None' or indent_type == '(Không)':
+                p.paragraph_format.first_line_indent = 0
+                p.paragraph_format.left_indent = 0
+            elif indent_type == 'First Line':
+                p.paragraph_format.first_line_indent = val
+                p.paragraph_format.left_indent = 0
+            elif indent_type == 'Hanging':
+                p.paragraph_format.first_line_indent = -val
+                p.paragraph_format.left_indent = val
+
+        for paragraph in self.doc.paragraphs:
+            apply_indent(paragraph)
+
+        for table in self.doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.paragraphs:
+                        apply_indent(paragraph)
+        return True
+
+    def set_paper_size(self, size_name):
+        """
+        Sets paper size for all sections.
+        size_name: 'A4', 'Letter', etc.
+        """
+        if self.doc is None: raise Exception("No document loaded.")
+
+        # Sizes in mm
+        sizes = {
+            'A4': (210, 297),
+            'Letter': (215.9, 279.4),
+            'Legal': (215.9, 355.6),
+            'A3': (297, 420),
+            'A5': (148, 210)
+        }
+
+        # Handle case variations
+        key = None
+        for k in sizes:
+            if k.lower() == size_name.lower():
+                key = k
+                break
+
+        if not key:
+            return False # Size not found
+
+        width_mm, height_mm = sizes[key]
+
+        for section in self.doc.sections:
+            # Respect orientation
+            if section.orientation == WD_ORIENT.LANDSCAPE:
+                section.page_width = Mm(height_mm)
+                section.page_height = Mm(width_mm)
+            else:
+                section.page_width = Mm(width_mm)
+                section.page_height = Mm(height_mm)
+
+        return True
+
+    def set_margins(self, top, bottom, left, right):
+        """
+        Sets margins for all sections in cm.
+        """
+        if self.doc is None: raise Exception("No document loaded.")
+
+        for section in self.doc.sections:
+            if top: section.top_margin = Cm(float(top))
+            if bottom: section.bottom_margin = Cm(float(bottom))
+            if left: section.left_margin = Cm(float(left))
+            if right: section.right_margin = Cm(float(right))
+
         return True
 
     def add_page_number(self, align='CENTER'):
