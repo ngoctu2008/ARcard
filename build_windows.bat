@@ -31,8 +31,8 @@ python -m pip install -r requirements.txt
 if %errorlevel% neq 0 (
     echo [ERROR] Error installing dependencies!
     echo.
-    echo [TIP] If you see a "No such file or directory" error (Long Path):
-    echo        1. Move this project to a shorter path (e.g., C:\OfficeApp).
+    echo [TIP] If you see a "No such file or directory" error - Long Path - :
+    echo        1. Move this project to a shorter path e.g. C:\OfficeApp.
     echo        2. Enable "Long Paths" in Windows Registry.
     pause
     exit /b %errorlevel%
