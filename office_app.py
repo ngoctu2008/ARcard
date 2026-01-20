@@ -8,7 +8,7 @@ class OfficeApp:
     def __init__(self, root):
         self.root = root
         self.root.title("TỰ ĐỘNG THIẾT LẬP CHO OFFICE")
-        self.root.geometry("600x500")
+        self.root.geometry("600x600")
 
         self.automator = OfficeAutomator()
 
@@ -20,7 +20,7 @@ class OfficeApp:
         header_frame.pack(fill=tk.X)
         tk.Label(header_frame, text=text("TỰ ĐỘNG THIẾT LẬP CHO OFFICE"),
                  bg="#007bff", fg="white", font=("Arial", 14, "bold"), pady=10).pack()
-        tk.Label(header_frame, text=text("version 1.0"),
+        tk.Label(header_frame, text=text("version 1.1"),
                  bg="#007bff", fg="white", font=("Arial", 8)).pack(side=tk.RIGHT, padx=5)
 
         # File Selection
@@ -51,17 +51,66 @@ class OfficeApp:
 
         self.notebook.select(self.tab_orient) # Default to Orientation tab
 
+        self.setup_font_tab()
+        self.setup_page_num_tab()
         self.setup_orientation_tab()
 
         # Footer
         footer_frame = tk.Frame(self.root, pady=10)
         footer_frame.pack(fill=tk.X)
 
-        btn_apply = tk.Button(footer_frame, text="✔ Áp dụng", bg="lightblue", width=15, command=self.apply_changes)
-        btn_apply.pack(side=tk.LEFT, padx=50) # Just a placeholder action for now
+        btn_apply = tk.Button(footer_frame, text="✔ Áp dụng (Tab hiện tại)", bg="lightblue", width=20, command=self.apply_changes)
+        btn_apply.pack(side=tk.LEFT, padx=50)
 
         btn_exit = tk.Button(footer_frame, text="❌ Thoát", bg="lightblue", width=15, command=self.root.quit)
         btn_exit.pack(side=tk.RIGHT, padx=50)
+
+    def setup_font_tab(self):
+        tab = self.tab_font
+
+        # Font Group
+        group_font = tk.LabelFrame(tab, text="Font & Size", fg="blue", padx=10, pady=10)
+        group_font.pack(fill=tk.X, padx=5, pady=5)
+
+        tk.Label(group_font, text="Font Name:").grid(row=0, column=0, sticky="w")
+        self.font_name_var = tk.StringVar(value="Times New Roman")
+        ttk.Combobox(group_font, textvariable=self.font_name_var, values=["Times New Roman", "Arial", "Calibri", "Verdana"]).grid(row=0, column=1, padx=5)
+
+        tk.Label(group_font, text="Size (pt):").grid(row=0, column=2, sticky="w", padx=(10,0))
+        self.font_size_var = tk.StringVar(value="14")
+        tk.Entry(group_font, textvariable=self.font_size_var, width=5).grid(row=0, column=3, padx=5)
+
+        # Paragraph Group
+        group_para = tk.LabelFrame(tab, text="Đoạn văn (Paragraph)", fg="blue", padx=10, pady=10)
+        group_para.pack(fill=tk.X, padx=5, pady=5)
+
+        tk.Label(group_para, text="Line Spacing:").grid(row=0, column=0, sticky="w")
+        self.line_spacing_var = tk.StringVar(value="1.5")
+        tk.Entry(group_para, textvariable=self.line_spacing_var, width=5).grid(row=0, column=1, padx=5)
+
+        tk.Label(group_para, text="Space Before (pt):").grid(row=0, column=2, sticky="w", padx=(10,0))
+        self.space_before_var = tk.StringVar(value="0")
+        tk.Entry(group_para, textvariable=self.space_before_var, width=5).grid(row=0, column=3, padx=5)
+
+        tk.Label(group_para, text="Space After (pt):").grid(row=0, column=4, sticky="w", padx=(10,0))
+        self.space_after_var = tk.StringVar(value="6")
+        tk.Entry(group_para, textvariable=self.space_after_var, width=5).grid(row=0, column=5, padx=5)
+
+        # Apply Button (Internal)
+        tk.Button(tab, text="✔ Áp dụng Font & Paragraph", bg="lightgreen", command=self.apply_font_para).pack(pady=10)
+
+    def setup_page_num_tab(self):
+        tab = self.tab_page_num
+
+        group_pg = tk.LabelFrame(tab, text="Đánh số trang", fg="purple", padx=10, pady=10)
+        group_pg.pack(fill=tk.X, padx=5, pady=5)
+
+        tk.Label(group_pg, text="Vị trí (Footer):").pack(side=tk.LEFT)
+
+        self.pg_align_var = tk.StringVar(value="CENTER")
+        ttk.Combobox(group_pg, textvariable=self.pg_align_var, values=["LEFT", "CENTER", "RIGHT"], state="readonly").pack(side=tk.LEFT, padx=5)
+
+        tk.Button(tab, text="✔ Thêm số trang", bg="lightgreen", command=self.apply_page_num).pack(pady=10)
 
     def setup_orientation_tab(self):
         tab = self.tab_orient
@@ -116,13 +165,53 @@ class OfficeApp:
             except Exception as e:
                 messagebox.showerror("Lỗi", str(e))
 
-    def change_orientation_all(self):
+    def check_ready(self):
         if not self.file_path_var.get():
             messagebox.showwarning("Cảnh báo", "Vui lòng chọn file trước!")
-            return
+            return False
+        return True
 
+    def confirm_and_save(self):
         if not messagebox.askyesno("Xác nhận", "Hành động này sẽ thay đổi trực tiếp file gốc. Bạn có chắc chắn muốn tiếp tục?"):
-            return
+            return False
+
+        try:
+            self.automator.save_document()
+            messagebox.showinfo("Thành công", "Đã cập nhật file thành công!")
+            self.open_file_if_windows()
+            return True
+        except Exception as e:
+            messagebox.showerror("Lỗi Lưu File", str(e))
+            return False
+
+    def apply_font_para(self):
+        if not self.check_ready(): return
+
+        try:
+            font = self.font_name_var.get()
+            size = self.font_size_var.get()
+            self.automator.set_font_style(font, size)
+
+            line = self.line_spacing_var.get()
+            before = self.space_before_var.get()
+            after = self.space_after_var.get()
+            self.automator.set_paragraph_style(line, before, after)
+
+            self.confirm_and_save()
+        except Exception as e:
+            messagebox.showerror("Lỗi", str(e))
+
+    def apply_page_num(self):
+        if not self.check_ready(): return
+        try:
+            align = self.pg_align_var.get()
+            self.automator.add_page_number(align)
+            self.confirm_and_save()
+        except Exception as e:
+            messagebox.showerror("Lỗi", str(e))
+
+    def change_orientation_all(self):
+        if not self.check_ready(): return
 
         # Determine selection
         selection = self.orient_var.get()
@@ -130,13 +219,7 @@ class OfficeApp:
 
         try:
             self.automator.set_orientation_whole_doc(target_orient)
-            # Save to a new file to avoid overwriting immediately, or just overwrite as per user expectation?
-            # The UI doesn't specify save location. Let's overwrite for now or save as new.
-            # Usually these tools modify inplace or ask. Let's modify inplace but backup might be good.
-            # For simplicity: overwrite.
-            self.automator.save_document()
-            messagebox.showinfo("Thành công", f"Đã đổi hướng toàn bộ sang {target_orient}")
-            self.open_file_if_windows()
+            self.confirm_and_save()
         except Exception as e:
             messagebox.showerror("Lỗi", str(e))
 
@@ -149,11 +232,12 @@ class OfficeApp:
                 pass # Ignore if fails
 
     def apply_changes(self):
-        # This button in the footer usually applies all pending changes.
-        # Since we have immediate buttons inside tabs, this might be redundant or a 'Commit' button.
-        # For now, I'll make it do the same as 'Change Orientation All' if that tab is active.
         current_tab = self.notebook.index(self.notebook.select())
-        if current_tab == 2: # Orientation tab
+        if current_tab == 0: # Font
+            self.apply_font_para()
+        elif current_tab == 1: # Page Num
+            self.apply_page_num()
+        elif current_tab == 2: # Orientation
             self.change_orientation_all()
         else:
             messagebox.showinfo("Thông báo", "Chức năng này chưa được cài đặt cho tab hiện tại.")
