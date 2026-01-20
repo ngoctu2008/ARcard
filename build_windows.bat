@@ -8,10 +8,22 @@ echo ===================================================
 
 echo.
 echo [1/3] Checking/Installing dependencies (Cài đặt thư viện)...
+echo Updating pip and setuptools to minimize path issues...
+python -m pip install --upgrade pip setuptools wheel
+if %errorlevel% neq 0 (
+    echo [WARNING] Could not update pip/setuptools. Continuing...
+)
+
+echo Installing requirements...
 python -m pip install -r requirements.txt
 if %errorlevel% neq 0 (
     echo [ERROR] Lỗi cài đặt thư viện! Vui lòng kiểm tra Python và pip.
     echo [ERROR] Error installing dependencies!
+    echo.
+    echo [TIP] If you see a "No such file or directory" error with a long path:
+    echo        1. Try running this script as Administrator.
+    echo        2. Enable "Long Paths" in Windows Registry (see BUILD_INSTRUCTIONS.md).
+    echo [MẸO] Nếu lỗi đường dẫn quá dài, hãy bật "Long Paths" trong Windows hoặc chạy Admin.
     pause
     exit /b %errorlevel%
 )

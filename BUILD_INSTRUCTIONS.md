@@ -25,3 +25,9 @@
 *   **"pip is not recognized"**: Ensure Python is installed and checked "Add to PATH" during installation.
 *   **Antivirus Interference**: Sometimes Antivirus software (Windows Defender, etc.) may flag the new .exe as suspicious and delete/quarantine it. If the file disappears, check your Antivirus history.
     (Đôi khi phần mềm diệt virus có thể xóa nhầm file .exe vừa tạo. Nếu file bị mất, hãy kiểm tra lịch sử phần mềm diệt virus).
+*   **"No such file or directory" (Long Path Error)**: If you see an error about a file path being too long during installation:
+    1.  Press `Win + R`, type `regedit`, and press Enter.
+    2.  Navigate to `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem`.
+    3.  Find `LongPathsEnabled` and set it to `1`.
+    4.  Restart your computer and try again.
+    (Nếu gặp lỗi đường dẫn quá dài, hãy bật "LongPathsEnabled" trong Registry hoặc Google từ khóa "Enable Win32 Long Paths").
