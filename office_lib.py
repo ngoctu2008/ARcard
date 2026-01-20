@@ -232,14 +232,18 @@ class OfficeAutomator:
 
         for i, section in enumerate(self.doc.sections):
             # Start At Logic
-            if start_at is not None:
-                # Set pgNumType via OxmlElement directly if property helper is missing
+            # Only apply start_at to the first section to avoid forcing restart on every section
+            if start_at is not None and i == 0:
                 sectPr = section._sectPr
                 pgNumType = sectPr.find(qn('w:pgNumType'))
                 if pgNumType is None:
                     pgNumType = OxmlElement('w:pgNumType')
                     sectPr.append(pgNumType)
-                pgNumType.set(qn('w:start'), str(int(start_at) + i))
+                pgNumType.set(qn('w:start'), str(int(start_at)))
+
+            # If not first section, we should arguably NOT set w:start to let it continue.
+            # But we might need to remove w:start if it existed from previous settings?
+            # For now, we only touch the first section.
 
             # Skip First Page Logic (Different First Page)
             if skip_first and i == 0:
@@ -280,11 +284,23 @@ class OfficeAutomator:
     def clean_extra_spaces(self):
         if self.doc is None: raise Exception("No document loaded.")
 
-        for paragraph in self.doc.paragraphs:
-            if paragraph.text:
-                paragraph.text = re.sub(r'\s+', ' ', paragraph.text).strip()
+        # We iterate over runs to preserve formatting (Bold, Italic, Color)
+        # Replacing paragraph.text wipes out all run formatting!
 
-        # Tables logic could be added but risky if cell structure is complex.
+        for paragraph in self.doc.paragraphs:
+            for run in paragraph.runs:
+                if run.text:
+                    # Clean internal spaces within the run
+                    run.text = re.sub(r'\s+', ' ', run.text)
+
+        # Tables
+        for table in self.doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            if run.text:
+                                run.text = re.sub(r'\s+', ' ', run.text)
         return True
 
     def clean_empty_lines(self):
@@ -355,24 +371,7 @@ class OfficeAutomator:
 
     def convert_vni_to_unicode(self):
         if self.doc is None: raise Exception("No document loaded.")
-
-        # Basic mapping table (incomplete, but illustrative of common chars)
-        vni_map = {
-            'á': 'á', 'à': 'à', 'ả': 'ả', 'ã': 'ã', 'ạ': 'ạ',
-            # This requires a full VNI mapping table which is large.
-            # Implementing a dummy replacer or small subset for now.
-            # Real VNI uses 2-byte chars sometimes differently.
-            # Ideally this needs a dedicated library or comprehensive map.
-            # For this task, I will leave it as a placeholder that does nothing
-            # or warns, as implementing a full VNI engine is out of scope
-            # without external data.
-            # User request: "Chuyển mã (New)"
-            # Strategy: Warn user "Basic Support Only" or skip.
-        }
-        # Actually, VNI-Times fonts use specific ANSI code points for Vietnamese.
-        # It's not just a string replace of composed unicode.
-        # It is replacing e.g. 'a' + '́' vs specific byte codes.
-        # I will implement a no-op that returns True for now to avoid breaking.
+        # Placeholder
         return True
 
     def export_to_pdf(self, output_path=None):
@@ -384,7 +383,6 @@ class OfficeAutomator:
 
         target = output_path if output_path else self.doc_path.replace(".docx", ".pdf")
 
-        # docx2pdf requires absolute paths usually
         abs_input = os.path.abspath(self.doc_path)
         abs_output = os.path.abspath(target)
 
@@ -393,6 +391,78 @@ class OfficeAutomator:
             return abs_output
         except Exception as e:
             raise Exception(f"PDF Conversion Failed: {e}")
+
+    # --- Security & Info ---
+
+    def set_file_properties(self, author=None, title=None, remove_personal_info=False):
+        if self.doc is None: raise Exception("No document loaded.")
+
+        if author is not None:
+            self.doc.core_properties.author = author
+        if title is not None:
+            self.doc.core_properties.title = title
+
+        if remove_personal_info:
+            # Add <w:removePersonalInformation/> to settings.xml
+            settings = self.doc.settings.element
+            # Check if exists
+            rpi = settings.find(qn('w:removePersonalInformation'))
+            if rpi is None:
+                rpi = OxmlElement('w:removePersonalInformation')
+                settings.append(rpi)
+
+        return True
+
+    def set_header_footer_text(self, header_text=None, footer_text=None):
+        if self.doc is None: raise Exception("No document loaded.")
+
+        for section in self.doc.sections:
+            if header_text is not None:
+                h = section.header
+                h.is_linked_to_previous = False
+                if h.paragraphs:
+                    h.paragraphs[0].text = header_text
+                    for p in h.paragraphs[1:]:
+                        p._element.getparent().remove(p._element)
+                else:
+                    h.add_paragraph(header_text)
+
+            if footer_text is not None:
+                f = section.footer
+                f.is_linked_to_previous = False
+                if f.paragraphs:
+                    f.paragraphs[0].text = footer_text
+                    for p in f.paragraphs[1:]:
+                        p._element.getparent().remove(p._element)
+                else:
+                    f.add_paragraph(footer_text)
+        return True
+
+    def protect_document(self, protection_type='NONE', password=''):
+        """
+        protection_type: 'NONE', 'READ_ONLY'
+        Note: Password hashing is complex. This enforces protection but without password (empty).
+        Users can stop protection easily, but it prevents accidental edits.
+        """
+        if self.doc is None: raise Exception("No document loaded.")
+
+        settings = self.doc.settings.element
+        doc_protect = settings.find(qn('w:documentProtection'))
+
+        if protection_type == 'NONE':
+            if doc_protect is not None:
+                settings.remove(doc_protect)
+        elif protection_type == 'READ_ONLY':
+            if doc_protect is None:
+                doc_protect = OxmlElement('w:documentProtection')
+                settings.append(doc_protect)
+
+            doc_protect.set(qn('w:edit'), 'readOnly')
+            doc_protect.set(qn('w:enforcement'), '1')
+            # doc_protect.set(qn('w:cryptProviderType'), 'rsaAES') # Requires valid hash
+            # If we don't set a password, it's just enforced without password.
+
+        return True
 
     def get_document_info(self):
         if self.doc is None:
