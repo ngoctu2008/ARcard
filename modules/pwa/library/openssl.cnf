@@ -1,0 +1,18 @@
+[req]
+distinguished_name = req_distinguished_name
+x509_extensions = v3_ca
+prompt = no
+
+[req_distinguished_name]
+countryName = VN
+stateOrProvinceName = Hanoi
+localityName = Hanoi
+organizationName = PWA
+organizationalUnitName = PWA Unit
+commonName = PWA VAPID
+emailAddress = admin@localhost
+
+[v3_ca]
+basicConstraints = CA:TRUE
+
+[oid_section]
